@@ -1,0 +1,24 @@
+# PlatformIO / VS Code
+.pio/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Sesiones de la estación terrena (se generan en cada uso)
+estacion-terrena/logs/*
+!estacion-terrena/logs/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*_resultados/
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini

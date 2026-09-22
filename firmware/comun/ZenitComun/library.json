@@ -1,0 +1,11 @@
+{
+  "name": "ZenitComun",
+  "version": "1.0.0",
+  "description": "Lógica compartida del CanSat Zénit (protocolo, filtros, máquina de estados, geo, simulador). C++ puro, sin dependencias de Arduino, para poder probarse en la PC.",
+  "keywords": "cansat, telemetria, filtro, lora",
+  "frameworks": "*",
+  "platforms": "*",
+  "build": {
+    "libArchive": false
+  }
+}

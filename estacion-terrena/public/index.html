@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zénit · Estación terrena</title>
+  <link rel="stylesheet" href="estilos.css">
+  <script src="/vendor/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="barra">
+    <div class="marca">
+      <span class="logo">Z<span class="acento">É</span>NIT</span>
+      <span class="sub">Estación terrena · CanSat 2026 · PEU-UM</span>
+    </div>
+    <div class="conexion">
+      <select id="selPuerto" aria-label="Puerto del receptor"></select>
+      <button id="btnRefrescar" class="btn icono" title="Buscar puertos">↻</button>
+      <button id="btnConectar" class="btn primario">Conectar</button>
+      <button id="btnSim" class="btn">Simulación</button>
+      <button id="btnDesconectar" class="btn">Desconectar</button>
+      <span id="pillConexion" class="pill apagado">Sin conexión</span>
+      <button id="btnTema" class="btn icono" title="Cambiar tema claro / oscuro">◐</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Fases de la misión -->
+    <section class="fases tarjeta" aria-label="Fase de la misión">
+      <ol id="fases">
+        <li data-e="0">Prevuelo</li>
+        <li data-e="1">Ascenso</li>
+        <li data-e="2">Caída libre</li>
+        <li data-e="3">Descenso autogiro</li>
+        <li data-e="4">Aterrizado</li>
+      </ol>
+      <div class="reloj">
+        <div><span class="etq">Tiempo a bordo</span><span id="tMision" class="num">—</span></div>
+        <div><span class="etq">Último paquete</span><span id="tUltimo" class="num">—</span></div>
+      </div>
+    </section>
+
+    <!-- Indicadores principales -->
+    <section class="kpis" aria-label="Indicadores">
+      <div class="kpi grande"><span class="etq">Altitud</span><span id="kAlt" class="valor">—</span><span class="u">m</span></div>
+      <div class="kpi grande"><span class="etq">Velocidad</span><span id="kVel" class="valor">—</span><span class="u">m/s</span><span id="kVelNota" class="nota"></span></div>
+      <div class="kpi grande"><span class="etq">Altura máxima</span><span id="kMax" class="valor">—</span><span class="u">m</span></div>
+      <div class="kpi"><span class="etq">Aceleración máx.</span><span id="kG" class="valor">—</span><span class="u">g</span></div>
+      <div class="kpi"><span class="etq">Temperatura</span><span id="kTemp" class="valor">—</span><span class="u">°C</span></div>
+      <div class="kpi"><span class="etq">Presión</span><span id="kPres" class="valor">—</span><span class="u">hPa</span></div>
+      <div class="kpi"><span class="etq">Batería</span><span id="kBat" class="valor">—</span><span class="u">V</span></div>
+      <div class="kpi"><span class="etq">Orientación</span><span id="kOri" class="valor chico">—</span><span class="u">roll / pitch / yaw °</span></div>
+    </section>
+
+    <div class="rejilla">
+      <!-- Gráficas -->
+      <section class="tarjeta grafica"><h2>Altitud <small>m</small></h2><div class="lienzo"><canvas id="gAlt"></canvas></div></section>
+      <section class="tarjeta grafica"><h2>Velocidad vertical <small>m/s · banda = meta del autogiro 8–12 m/s</small></h2><div class="lienzo"><canvas id="gVel"></canvas></div></section>
+      <section class="tarjeta grafica"><h2>Aceleración <small>g</small></h2><div class="lienzo"><canvas id="gAcel"></canvas></div></section>
+
+      <!-- Requisitos -->
+      <section class="tarjeta" id="tarjetaReq">
+        <h2>Requisitos de la misión</h2>
+        <ul id="requisitos" class="requisitos"></ul>
+      </section>
+
+      <!-- Carga secundaria -->
+      <section class="tarjeta">
+        <h2>Carga secundaria <small>desde la primaria</small></h2>
+        <div class="brujula-caja">
+          <svg id="brujula" viewBox="-60 -60 120 120" aria-label="Dirección hacia la carga secundaria">
+            <circle r="52" class="aro"/>
+            <text y="-40" class="card">N</text><text x="42" y="4" class="card">E</text>
+            <text y="48" class="card">S</text><text x="-42" y="4" class="card">O</text>
+            <g id="flecha"><path d="M0,-40 L9,6 L0,0 L-9,6 Z" class="flecha"/></g>
+          </svg>
+          <div class="brujula-datos">
+            <div><span class="etq">Distancia</span><span id="sDist" class="num grande">—</span></div>
+            <div><span class="etq">Dirección</span><span id="sRumbo" class="num">—</span></div>
+            <div><span class="etq">Baliza</span><span id="sEdad" class="num">—</span></div>
+          </div>
+        </div>
+        <dl class="coords">
+          <dt>Primaria</dt><dd id="cPri">—</dd>
+          <dt>Secundaria</dt><dd id="cSec">—</dd>
+        </dl>
+      </section>
+
+      <!-- Enlace -->
+      <section class="tarjeta">
+        <h2>Enlace de radio</h2>
+        <dl class="enlace">
+          <dt>RSSI</dt><dd id="lRssi">—</dd>
+          <dt>SNR</dt><dd id="lSnr">—</dd>
+          <dt>Primaria</dt><dd id="lPri">—</dd>
+          <dt>Secundaria</dt><dd id="lSec">—</dd>
+          <dt>Receptor</dt><dd id="lRec">—</dd>
+          <dt>Registro</dt><dd id="lLog">—</dd>
+        </dl>
+        <div id="chips" class="chips"></div>
+      </section>
+
+      <!-- Comandos -->
+      <section class="tarjeta">
+        <h2>Comandos a la primaria</h2>
+        <div class="comandos">
+          <button class="btn" data-orden="PING">Ping</button>
+          <button class="btn" data-orden="BUZZER">Probar buzzer</button>
+          <button class="btn" data-orden="CALIBRAR" title="Solo en tierra, con el CanSat quieto">Calibrar en tierra</button>
+          <button class="btn" data-orden="CERRAR" title="Solo en tierra: cierra el seguro del servo">Cerrar seguro</button>
+          <button class="btn peligro" id="btnDesacoplar" data-orden="DESACOPLAR">Desacople manual</button>
+        </div>
+        <p class="ayuda">El desacople es automático a 200 m. El botón manual es solo respaldo: pide confirmación.</p>
+        <p id="respuesta" class="ayuda"></p>
+      </section>
+
+      <!-- Eventos -->
+      <section class="tarjeta ancho">
+        <h2>Eventos</h2>
+        <ol id="eventos" class="eventos"></ol>
+      </section>
+
+      <!-- Consola -->
+      <section class="tarjeta completo">
+        <h2>Consola <small>líneas crudas del receptor</small></h2>
+        <pre id="consola" class="consola"></pre>
+      </section>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

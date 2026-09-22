@@ -1,0 +1,212 @@
+/* =============================================================================
+   Estación terrena Zénit — estilos
+   Tema claro para usar en la cancha con sol; oscuro para interiores.
+   ========================================================================== */
+:root {
+  --fondo: #eef1f6;
+  --tarjeta: #ffffff;
+  --borde: #d8dde7;
+  --texto: #121826;
+  --suave: #5b6475;
+  --marca: #1b2a56;
+  --acento: #2f6bff;
+  --ok: #138a4b;
+  --ok-fondo: #e3f5eb;
+  --aviso: #b26a00;
+  --aviso-fondo: #fff2dc;
+  --error: #c0392b;
+  --error-fondo: #fde7e4;
+  --serie1: #2f6bff;
+  --serie2: #d9480f;
+  --serie3: #0f9d74;
+  --banda: rgba(47, 107, 255, 0.10);
+  --rejilla: rgba(18, 24, 38, 0.08);
+  --sombra: 0 1px 2px rgba(18, 24, 38, 0.06), 0 2px 8px rgba(18, 24, 38, 0.04);
+  --mono: ui-monospace, "Cascadia Mono", "Consolas", "SFMono-Regular", monospace;
+  color-scheme: light;
+}
+:root[data-tema="oscuro"] {
+  --fondo: #0b0f1a;
+  --tarjeta: #121829;
+  --borde: #232c44;
+  --texto: #e8ecf5;
+  --suave: #93a0ba;
+  --marca: #e8ecf5;
+  --acento: #6b9bff;
+  --ok: #3ccf82;
+  --ok-fondo: rgba(60, 207, 130, 0.14);
+  --aviso: #ffb547;
+  --aviso-fondo: rgba(255, 181, 71, 0.14);
+  --error: #ff6b5b;
+  --error-fondo: rgba(255, 107, 91, 0.15);
+  /* validado para fondo oscuro (banda de luminosidad + daltonismo) */
+  --serie1: #4f82ec;
+  --serie2: #e0692a;
+  --serie3: #1fa47d;
+  --banda: rgba(107, 155, 255, 0.14);
+  --rejilla: rgba(232, 236, 245, 0.08);
+  --sombra: none;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ---------------------------------------------------------------- barra -- */
+.barra {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+  padding: 10px 20px;
+  background: var(--tarjeta);
+  border-bottom: 1px solid var(--borde);
+}
+.marca { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.logo { font-weight: 800; letter-spacing: 0.22em; font-size: 20px; color: var(--marca); }
+.logo .acento { color: var(--acento); }
+.sub { color: var(--suave); font-size: 13px; }
+.conexion { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+select, .btn {
+  font: inherit; color: var(--texto);
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  padding: 7px 12px;
+  min-height: 36px;
+}
+select { min-width: 220px; max-width: 100%; }
+.btn { cursor: pointer; font-weight: 600; }
+.btn:hover { border-color: var(--acento); }
+.btn:focus-visible, select:focus-visible { outline: 2px solid var(--acento); outline-offset: 1px; }
+.btn.primario { background: var(--acento); border-color: var(--acento); color: #fff; }
+.btn.icono { width: 36px; padding: 0; }
+.btn.peligro { border-color: var(--error); color: var(--error); }
+.btn.peligro.armado { background: var(--error); color: #fff; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px; border-radius: 999px; font-weight: 600; font-size: 13px;
+}
+.pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.pill.ok { color: var(--ok); background: var(--ok-fondo); }
+.pill.aviso { color: var(--aviso); background: var(--aviso-fondo); }
+.pill.apagado { color: var(--suave); background: var(--fondo); }
+.pill.error { color: var(--error); background: var(--error-fondo); }
+
+main { padding: 16px 20px 32px; max-width: 1600px; margin: 0 auto; display: grid; gap: 16px; }
+
+.tarjeta {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: var(--sombra);
+  min-width: 0;
+}
+h2 { margin: 0 0 10px; font-size: 14px; font-weight: 700; }
+h2 small { font-weight: 500; color: var(--suave); margin-left: 6px; }
+.etq { display: block; color: var(--suave); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 16px; }
+.num.grande { font-size: 24px; font-weight: 700; }
+
+/* ---------------------------------------------------------------- fases -- */
+.fases { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
+.fases ol { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; flex: 1; }
+.fases li {
+  flex: 1; min-width: 120px; text-align: center;
+  padding: 10px 8px; border-radius: 8px;
+  background: var(--fondo); color: var(--suave); font-weight: 600;
+  border: 1px solid transparent;
+}
+.fases li.hecha { color: var(--ok); background: var(--ok-fondo); }
+.fases li.actual { color: #fff; background: var(--acento); border-color: var(--acento); }
+.reloj { display: flex; gap: 24px; }
+
+/* ----------------------------------------------------------------- KPIs -- */
+.kpis { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 12px; }
+.kpi {
+  background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px;
+  padding: 12px 14px; box-shadow: var(--sombra); min-width: 0;
+}
+.kpi .valor { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 24px; font-weight: 700; display: block; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kpi.grande .valor { font-size: 32px; }
+.kpi .valor.chico { font-size: 17px; }
+.kpi .u { color: var(--suave); font-size: 12px; }
+.kpi .nota { display: block; font-size: 12px; font-weight: 600; margin-top: 2px; min-height: 16px; }
+.nota.ok { color: var(--ok); }
+.nota.aviso { color: var(--aviso); }
+
+/* --------------------------------------------------------------- rejilla -- */
+.rejilla { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.ancho { grid-column: span 2; }
+.completo { grid-column: 1 / -1; }
+.grafica .lienzo { position: relative; height: 240px; }
+
+/* ----------------------------------------------------------- requisitos -- */
+.requisitos { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.requisitos li { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; align-items: start; padding: 6px 0; border-bottom: 1px solid var(--borde); }
+.requisitos li:last-child { border-bottom: 0; }
+.requisitos .marca-req { font-weight: 800; text-align: center; }
+.requisitos .ok .marca-req { color: var(--ok); }
+.requisitos .pendiente .marca-req { color: var(--suave); }
+.requisitos .falla .marca-req { color: var(--error); }
+.requisitos .valor-req { font-family: var(--mono); color: var(--suave); font-size: 13px; text-align: right; }
+
+/* ------------------------------------------------------------- brújula --- */
+.brujula-caja { display: flex; gap: 16px; align-items: center; }
+#brujula { width: 132px; height: 132px; flex: none; }
+#brujula .aro { fill: var(--fondo); stroke: var(--borde); stroke-width: 2; }
+#brujula .card { fill: var(--suave); font-size: 11px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; }
+#brujula .flecha { fill: var(--acento); }
+#flecha { transition: transform 0.4s ease; }
+#flecha.inactiva .flecha { fill: var(--borde); }
+.brujula-datos { display: grid; gap: 8px; }
+.coords, .enlace { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 12px 0 0; }
+.coords dt, .enlace dt { color: var(--suave); font-weight: 600; }
+.coords dd, .enlace dd { margin: 0; font-family: var(--mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.chip { font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+.chip.ok { color: var(--ok); background: var(--ok-fondo); }
+.chip.mal { color: var(--error); background: var(--error-fondo); }
+.chip.info { color: var(--aviso); background: var(--aviso-fondo); }
+
+/* ------------------------------------------------------------- comandos -- */
+.comandos { display: flex; flex-wrap: wrap; gap: 8px; }
+.ayuda { color: var(--suave); font-size: 13px; margin: 10px 0 0; }
+
+/* ----------------------------------------------------- eventos / consola -- */
+.eventos { list-style: none; margin: 0; padding: 0; max-height: 260px; overflow: auto; font-size: 13px; }
+.eventos li { display: grid; grid-template-columns: 70px 180px 1fr; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--borde); }
+.eventos .t { font-family: var(--mono); color: var(--suave); }
+.eventos .c { font-weight: 700; }
+.eventos .c.importante { color: var(--acento); }
+.eventos .c.malo { color: var(--error); }
+.consola {
+  margin: 0; height: 200px; overflow: auto; font: 12px/1.45 var(--mono);
+  background: var(--fondo); border-radius: 8px; padding: 8px 10px; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+
+/* ----------------------------------------------------------- responsivo -- */
+@media (max-width: 1280px) {
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 1100px) {
+  .rejilla { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ancho { grid-column: 1 / -1; }
+}
+@media (max-width: 700px) {
+  main, .barra { padding-left: 16px; padding-right: 16px; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rejilla { grid-template-columns: minmax(0, 1fr); }
+  select { min-width: 0; flex: 1; }
+  .eventos li { grid-template-columns: 60px 1fr; }
+  .eventos li .d { grid-column: 1 / -1; }
+  .kpi.grande .valor { font-size: 26px; }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "zenit-estacion-terrena",
+  "version": "1.0.0",
+  "description": "Estación terrena del CanSat Zénit: recibe la telemetría LoRa y la muestra en tiempo real.",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "simular": "node server.js --sim",
+    "replay": "node server.js --replay",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "dependencies": {
+    "@serialport/parser-readline": "^12.0.0",
+    "chart.js": "^4.4.7",
+    "express": "^4.21.2",
+    "serialport": "^12.0.0",
+    "ws": "^8.18.0"
+  }
+}

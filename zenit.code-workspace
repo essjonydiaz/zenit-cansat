@@ -1,0 +1,24 @@
+{
+  "folders": [
+    { "name": "Zénit (raíz)", "path": "." },
+    { "name": "firmware · primaria", "path": "firmware/primaria" },
+    { "name": "firmware · secundaria", "path": "firmware/secundaria" },
+    { "name": "firmware · receptor", "path": "firmware/receptor" },
+    { "name": "firmware · pruebas", "path": "firmware/pruebas" },
+    { "name": "estación terrena", "path": "estacion-terrena" }
+  ],
+  "settings": {
+    "files.encoding": "utf8",
+    "files.eol": "\n",
+    "editor.tabSize": 2,
+    "files.exclude": { "**/.pio": true, "**/node_modules": true }
+  },
+  "extensions": {
+    "recommendations": [
+      "platformio.platformio-ide",
+      "ms-vscode.cpptools",
+      "ms-python.python",
+      "bierner.markdown-mermaid"
+    ]
+  }
+}
