@@ -15,11 +15,11 @@ El **líder** engancha el CanSat al dron; el resto opera la estación terrena.
 
 ## En la mesa (antes del turno)
 
-- [ ] `npm start` → elegir el COM del receptor → pill verde "Receptor en COMx".
+- [ ] `npm start` → elegir el COM del receptor → **Conectar**. En *Cadena de conexión*, Navegador, Servidor y Receptor en verde.
 - [ ] Encender la **secundaria**: 2 pitidos; en el panel aparece la baliza (enlace secundaria).
 - [ ] Encender la **primaria** con el CanSat **quieto y vertical** (se calibra al encender):
       3 pitidos = todo bien, 1 pitido largo = falta un sensor.
-- [ ] En el panel: evento `ARRANQUE` con `baro=1 imu=1 lora=1 sd=1`, chips en verde.
+- [ ] En el panel: evento `ARRANQUE` con `baro=1 imu=1 lora=1 sd=1` y los 6 mosaicos de *Salud de subsistemas* en verde.
 - [ ] Comando **Ping** → llega `PONG PREVUELO`.
 - [ ] Batería ≥ 8.5 V en el panel.
 - [ ] Con el interruptor, **apagar** mientras se espera turno (la guía lo pide para no gastar pila).
@@ -30,7 +30,7 @@ El **líder** engancha el CanSat al dron; el resto opera la estación terrena.
 - [ ] Huevo 1 → carga primaria; huevo 2 → carga secundaria (procedimiento de 5 pasos del CoDR).
 - [ ] Unir primaria y secundaria; comando **Cerrar seguro** si hace falta.
 - [ ] Encender ambas cargas (vertical y quieta la primaria) y esperar 3 pitidos.
-- [ ] Revisar en el panel: estado **Prevuelo**, altitud ≈ 0, baliza vigente.
+- [ ] Revisar en el panel: fase **Prevuelo**, altitud ≈ 0, baliza vigente y el sello **LISTO PARA VUELO** en *Verificación prevuelo* (si dice "NO LISTO", el panel marca con ✕ lo que falta).
 - [ ] Revisar orificio superior libre y envolvente sin protuberancias.
 - [ ] Entregar al dron.
 

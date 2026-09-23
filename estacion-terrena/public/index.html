@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-tema="oscuro">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,126 +8,280 @@
   <script src="/vendor/chart.umd.min.js"></script>
 </head>
 <body>
-  <header class="barra">
-    <div class="marca">
-      <span class="logo">Z<span class="acento">É</span>NIT</span>
-      <span class="sub">Estación terrena · CanSat 2026 · PEU-UM</span>
-    </div>
-    <div class="conexion">
-      <select id="selPuerto" aria-label="Puerto del receptor"></select>
-      <button id="btnRefrescar" class="btn icono" title="Buscar puertos">↻</button>
-      <button id="btnConectar" class="btn primario">Conectar</button>
-      <button id="btnSim" class="btn">Simulación</button>
-      <button id="btnDesconectar" class="btn">Desconectar</button>
-      <span id="pillConexion" class="pill apagado">Sin conexión</span>
-      <button id="btnTema" class="btn icono" title="Cambiar tema claro / oscuro">◐</button>
-    </div>
-  </header>
+<!-- ============================================================ ÍCONOS -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-laptop" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 19h20"/></symbol>
+    <symbol id="i-servidor" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7" ry="2.5"/><path d="M5 5.5v13c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-13"/><path d="M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/></symbol>
+    <symbol id="i-receptor" viewBox="0 0 24 24"><path d="M12 11v10M8.5 21h7M9 13l3-2 3 2"/><circle cx="12" cy="9" r="1.5"/><path d="M8.2 5.8a5.4 5.4 0 0 0 0 6.4M15.8 5.8a5.4 5.4 0 0 1 0 6.4M5.6 3.4a9 9 0 0 0 0 11.2M18.4 3.4a9 9 0 0 1 0 11.2"/></symbol>
+    <symbol id="i-senal" viewBox="0 0 24 24"><path d="M5 20v-4M10 20v-8M15 20v-12M20 20V4"/></symbol>
+    <symbol id="i-cubo" viewBox="0 0 24 24"><path d="M12 2.5 20.5 7v10L12 21.5 3.5 17V7z"/><path d="M3.5 7 12 11.5 20.5 7M12 11.5v10"/></symbol>
+    <symbol id="i-baliza" viewBox="0 0 24 24"><circle cx="12" cy="11" r="2"/><path d="M12 13v8M8.6 7.6a4.8 4.8 0 0 0 0 6.8M15.4 7.6a4.8 4.8 0 0 1 0 6.8M5.8 4.8a8.8 8.8 0 0 0 0 12.4M18.2 4.8a8.8 8.8 0 0 1 0 12.4"/></symbol>
+    <symbol id="i-baro" viewBox="0 0 24 24"><path d="M4.5 17a8.5 8.5 0 1 1 15 0"/><path d="m12 13 3.5-4"/><circle cx="12" cy="13.5" r="1"/></symbol>
+    <symbol id="i-imu" viewBox="0 0 24 24"><path d="M12 12V3M12 12l-7.5 5M12 12l7.5 5"/><path d="m9.5 5.5 2.5-2.5 2.5 2.5"/></symbol>
+    <symbol id="i-sd" viewBox="0 0 24 24"><path d="M7 3h8l4 4v14H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M9 3v4M12 3v4M15 3v4"/></symbol>
+    <symbol id="i-gps" viewBox="0 0 24 24"><path d="m13.5 10.5 3-3M4 14l6 6M7.5 10.5l6 6"/><rect x="11" y="2.5" width="9" height="5" rx="1" transform="rotate(45 15.5 5)"/><rect x="4" y="9.5" width="9" height="5" rx="1" transform="rotate(45 8.5 12)"/><path d="M16 20a4 4 0 0 0 4-4"/></symbol>
+    <symbol id="i-bateria" viewBox="0 0 24 24"><rect x="2.5" y="7" width="17" height="10" rx="2"/><path d="M21.5 10.5v3"/></symbol>
+    <symbol id="i-alerta" viewBox="0 0 24 24"><path d="M12 3 2.5 20h19z"/><path d="M12 10v4.5M12 17.2v.3"/></symbol>
+    <symbol id="i-campana" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="i-sol" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></symbol>
+    <symbol id="i-luna" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></symbol>
+    <symbol id="i-enviar" viewBox="0 0 24 24"><path d="M21 3 3 10.5l7 3 3 7z"/><path d="m10 13.5 5-5"/></symbol>
+    <symbol id="i-bocina" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+    <symbol id="i-mira" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2.5V5M12 19v2.5M2.5 12H5M19 12h2.5"/></symbol>
+    <symbol id="i-candado" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+    <symbol id="i-altimetro" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 13V8.5M12 13l3 2M10 2.5h4"/></symbol>
+    <symbol id="i-velocimetro" viewBox="0 0 24 24"><path d="M3.5 17a8.5 8.5 0 1 1 17 0"/><path d="m12 16 4-5"/></symbol>
+    <symbol id="i-orientacion" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></symbol>
+    <symbol id="i-lista" viewBox="0 0 24 24"><path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="m7 10 3 2.5L7 15M12 15h5"/></symbol>
+    <symbol id="i-corazon" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.5-7.5-10A4.3 4.3 0 0 1 12 7.2 4.3 4.3 0 0 1 19.5 10c0 5.5-7.5 10-7.5 10z"/></symbol>
+    <symbol id="i-cadena" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 18.7l1-1"/></symbol>
+  </defs>
+</svg>
 
-  <main>
-    <!-- Fases de la misión -->
-    <section class="fases tarjeta" aria-label="Fase de la misión">
-      <ol id="fases">
-        <li data-e="0">Prevuelo</li>
-        <li data-e="1">Ascenso</li>
-        <li data-e="2">Caída libre</li>
-        <li data-e="3">Descenso autogiro</li>
-        <li data-e="4">Aterrizado</li>
-      </ol>
-      <div class="reloj">
-        <div><span class="etq">Tiempo a bordo</span><span id="tMision" class="num">—</span></div>
-        <div><span class="etq">Último paquete</span><span id="tUltimo" class="num">—</span></div>
+<!-- ======================================================= ENCABEZADO -->
+<header class="encabezado">
+  <div class="marca">
+    <svg class="logo" viewBox="0 0 48 48" aria-hidden="true">
+      <path class="logo-arco" d="M8 32a17 17 0 1 1 32 0"/>
+      <path class="logo-cohete" d="M24 8c3.2 3 4.5 7.5 4.5 12v7h-9v-7c0-4.5 1.3-9 4.5-12z"/>
+      <path class="logo-cohete" d="M19.5 22l-3.5 5v3h3.5M28.5 22l3.5 5v3h-3.5"/>
+      <path class="logo-fuego" d="M21.5 30c0 4 1.2 7 2.5 9 1.3-2 2.5-5 2.5-9z"/>
+      <path class="logo-orbita" d="M5 36c8 4 30 4 38 0"/>
+    </svg>
+    <div class="marca-texto">
+      <span class="marca-nombre">Z<span class="acento">É</span>NIT</span>
+      <span class="tricolor" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="marca-pais">MÉXICO</span>
+    </div>
+    <div class="separador" aria-hidden="true"></div>
+    <div class="titulo">
+      <h1>Estación terrena · CanSat 2026</h1>
+      <span class="lema">Programa Espacial Universitario · Universidad de Montemorelos</span>
+    </div>
+  </div>
+
+  <div class="controles">
+    <select id="selPuerto" aria-label="Puerto del receptor"></select>
+    <button id="btnRefrescar" class="btn icono" title="Buscar puertos otra vez">↻</button>
+    <button id="btnConectar" class="btn">Conectar</button>
+    <button id="btnSim" class="btn">Simulación</button>
+    <button id="btnDesconectar" class="btn">Desconectar</button>
+  </div>
+
+  <div class="reloj-caja">
+    <span id="reloj" class="reloj">T+--:--</span>
+  </div>
+
+  <button id="btnCampana" class="campana" title="Ver alertas">
+    <svg class="ico"><use href="#i-campana"/></svg>
+    <span id="campanaTexto">0 críticas · 0 avisos</span>
+  </button>
+
+  <div class="meta">
+    <span>LoRa 433 MHz</span><span>Carga útil: 2 huevos</span>
+  </div>
+
+  <div class="tema" role="group" aria-label="Tema">
+    <button id="btnClaro" class="tema-btn" title="Tema claro (para usar al sol)"><svg class="ico"><use href="#i-sol"/></svg></button>
+    <button id="btnOscuro" class="tema-btn" title="Tema oscuro"><svg class="ico"><use href="#i-luna"/></svg></button>
+  </div>
+</header>
+
+<!-- Banner de falla crítica -->
+<div id="banner" class="banner" hidden>
+  <svg class="ico"><use href="#i-alerta"/></svg>
+  <strong>CRÍTICO</strong><span id="bannerTexto"></span>
+</div>
+
+<main class="tablero">
+  <!-- =================================================== CADENA -->
+  <section class="panel cadena" aria-label="Cadena de conexión">
+    <h2 class="mini"><svg class="ico"><use href="#i-cadena"/></svg>Cadena de conexión</h2>
+    <ol id="cadena" class="eslabones"></ol>
+    <p id="cadenaDetalle" class="cadena-detalle" hidden></p>
+  </section>
+
+  <!-- ================================================ IZQUIERDA -->
+  <section class="columna estado" aria-label="Estado del sistema">
+    <h2 class="columna-titulo">Estado del sistema</h2>
+
+    <div class="tarjeta">
+      <h3>Salud de subsistemas</h3>
+      <div id="salud" class="salud"></div>
+    </div>
+
+    <div class="tarjeta">
+      <h3>Batería</h3>
+      <div class="bateria">
+        <div class="pila" aria-hidden="true"><div id="pilaNivel" class="pila-nivel"></div><div class="pila-borne"></div></div>
+        <div class="bateria-datos">
+          <span id="batValor" class="num grande">—</span>
+          <span class="tenue">(pila de 9 V)</span>
+        </div>
       </div>
-    </section>
+      <p id="batSec" class="tenue chico"></p>
+    </div>
 
-    <!-- Indicadores principales -->
-    <section class="kpis" aria-label="Indicadores">
-      <div class="kpi grande"><span class="etq">Altitud</span><span id="kAlt" class="valor">—</span><span class="u">m</span></div>
-      <div class="kpi grande"><span class="etq">Velocidad</span><span id="kVel" class="valor">—</span><span class="u">m/s</span><span id="kVelNota" class="nota"></span></div>
-      <div class="kpi grande"><span class="etq">Altura máxima</span><span id="kMax" class="valor">—</span><span class="u">m</span></div>
-      <div class="kpi"><span class="etq">Aceleración máx.</span><span id="kG" class="valor">—</span><span class="u">g</span></div>
-      <div class="kpi"><span class="etq">Temperatura</span><span id="kTemp" class="valor">—</span><span class="u">°C</span></div>
-      <div class="kpi"><span class="etq">Presión</span><span id="kPres" class="valor">—</span><span class="u">hPa</span></div>
-      <div class="kpi"><span class="etq">Batería</span><span id="kBat" class="valor">—</span><span class="u">V</span></div>
-      <div class="kpi"><span class="etq">Orientación</span><span id="kOri" class="valor chico">—</span><span class="u">roll / pitch / yaw °</span></div>
-    </section>
+    <div class="tarjeta alertas-tarjeta" id="alertasTarjeta">
+      <h3>Alertas</h3>
+      <ol id="alertas" class="alertas"></ol>
+      <p id="alertasVacio" class="tenue">Sin alertas.</p>
+    </div>
+  </section>
 
-    <div class="rejilla">
-      <!-- Gráficas -->
-      <section class="tarjeta grafica"><h2>Altitud <small>m</small></h2><div class="lienzo"><canvas id="gAlt"></canvas></div></section>
-      <section class="tarjeta grafica"><h2>Velocidad vertical <small>m/s · banda = meta del autogiro 8–12 m/s</small></h2><div class="lienzo"><canvas id="gVel"></canvas></div></section>
-      <section class="tarjeta grafica"><h2>Aceleración <small>g</small></h2><div class="lienzo"><canvas id="gAcel"></canvas></div></section>
+  <!-- =================================================== CENTRO -->
+  <section class="columna vuelo" aria-label="Vuelo">
+    <h2 class="columna-titulo">Vuelo</h2>
 
-      <!-- Requisitos -->
-      <section class="tarjeta" id="tarjetaReq">
-        <h2>Requisitos de la misión</h2>
-        <ul id="requisitos" class="requisitos"></ul>
-      </section>
+    <div class="tarjeta perfil">
+      <div class="tarjeta-cabeza">
+        <h3>Perfil de misión</h3>
+        <span class="leyenda"><i class="l-solida"></i>Completado <i class="l-punteada"></i>Pendiente</span>
+      </div>
+      <svg id="perfil" class="perfil-svg" viewBox="0 0 900 150" preserveAspectRatio="none" aria-label="Perfil de la misión"></svg>
+      <ol id="fases" class="fases">
+        <li data-e="0">Prevuelo</li><li data-e="1">Ascenso</li><li data-e="2">Caída libre</li>
+        <li data-e="3">Descenso autogiro</li><li data-e="4">Aterrizado</li>
+      </ol>
+    </div>
 
-      <!-- Carga secundaria -->
-      <section class="tarjeta">
-        <h2>Carga secundaria <small>desde la primaria</small></h2>
-        <div class="brujula-caja">
-          <svg id="brujula" viewBox="-60 -60 120 120" aria-label="Dirección hacia la carga secundaria">
-            <circle r="52" class="aro"/>
-            <text y="-40" class="card">N</text><text x="42" y="4" class="card">E</text>
-            <text y="48" class="card">S</text><text x="-42" y="4" class="card">O</text>
-            <g id="flecha"><path d="M0,-40 L9,6 L0,0 L-9,6 Z" class="flecha"/></g>
-          </svg>
-          <div class="brujula-datos">
-            <div><span class="etq">Distancia</span><span id="sDist" class="num grande">—</span></div>
-            <div><span class="etq">Dirección</span><span id="sRumbo" class="num">—</span></div>
-            <div><span class="etq">Baliza</span><span id="sEdad" class="num">—</span></div>
+    <div class="instrumentos">
+      <div class="tarjeta instrumento" id="instAlt">
+        <h3 class="inst-titulo"><svg class="ico"><use href="#i-altimetro"/></svg>Altímetro <small>(m)</small></h3>
+        <div class="altimetro">
+          <svg id="cinta" viewBox="0 0 150 190" aria-hidden="true"></svg>
+          <div class="inst-valor">
+            <span class="linea-valor"><span id="altValor" class="num enorme">—</span><span class="unidad">m</span></span>
+            <span id="altMax" class="tenue chico">Altura máxima —</span>
+            <span id="altEdad" class="edad"></span>
           </div>
         </div>
-        <dl class="coords">
-          <dt>Primaria</dt><dd id="cPri">—</dd>
-          <dt>Secundaria</dt><dd id="cSec">—</dd>
-        </dl>
-      </section>
-
-      <!-- Enlace -->
-      <section class="tarjeta">
-        <h2>Enlace de radio</h2>
-        <dl class="enlace">
-          <dt>RSSI</dt><dd id="lRssi">—</dd>
-          <dt>SNR</dt><dd id="lSnr">—</dd>
-          <dt>Primaria</dt><dd id="lPri">—</dd>
-          <dt>Secundaria</dt><dd id="lSec">—</dd>
-          <dt>Receptor</dt><dd id="lRec">—</dd>
-          <dt>Registro</dt><dd id="lLog">—</dd>
-        </dl>
-        <div id="chips" class="chips"></div>
-      </section>
-
-      <!-- Comandos -->
-      <section class="tarjeta">
-        <h2>Comandos a la primaria</h2>
-        <div class="comandos">
-          <button class="btn" data-orden="PING">Ping</button>
-          <button class="btn" data-orden="BUZZER">Probar buzzer</button>
-          <button class="btn" data-orden="CALIBRAR" title="Solo en tierra, con el CanSat quieto">Calibrar en tierra</button>
-          <button class="btn" data-orden="CERRAR" title="Solo en tierra: cierra el seguro del servo">Cerrar seguro</button>
-          <button class="btn peligro" id="btnDesacoplar" data-orden="DESACOPLAR">Desacople manual</button>
+      </div>
+      <div class="tarjeta instrumento" id="instVel">
+        <h3 class="inst-titulo"><svg class="ico"><use href="#i-velocimetro"/></svg>Velocímetro <small>(m/s)</small></h3>
+        <svg id="gauge" viewBox="0 0 260 150" aria-hidden="true"></svg>
+        <div class="inst-valor centro">
+          <span><span id="velValor" class="num enorme">—</span><span class="unidad">m/s</span> <span id="velFlecha" class="flecha"></span></span>
+          <span id="velNota" class="etiqueta-rango" hidden></span>
+          <span id="velEdad" class="edad"></span>
         </div>
-        <p class="ayuda">El desacople es automático a 200 m. El botón manual es solo respaldo: pide confirmación.</p>
-        <p id="respuesta" class="ayuda"></p>
-      </section>
-
-      <!-- Eventos -->
-      <section class="tarjeta ancho">
-        <h2>Eventos</h2>
-        <ol id="eventos" class="eventos"></ol>
-      </section>
-
-      <!-- Consola -->
-      <section class="tarjeta completo">
-        <h2>Consola <small>líneas crudas del receptor</small></h2>
-        <pre id="consola" class="consola"></pre>
-      </section>
+      </div>
+      <div class="tarjeta instrumento" id="instOri">
+        <h3 class="inst-titulo"><svg class="ico"><use href="#i-orientacion"/></svg>Orientación</h3>
+        <div class="orientacion">
+          <svg id="horizonte" viewBox="-80 -80 160 160" aria-hidden="true"></svg>
+          <dl class="angulos">
+            <dt>Roll</dt><dd id="oRoll" class="num">—</dd>
+            <dt>Pitch</dt><dd id="oPitch" class="num">—</dd>
+            <dt>Yaw</dt><dd id="oYaw" class="num">—</dd>
+          </dl>
+        </div>
+      </div>
     </div>
-  </main>
 
-  <script src="app.js"></script>
+    <div class="graficas">
+      <div class="tarjeta grafica">
+        <div class="tarjeta-cabeza"><h3>Altitud <span id="gAltValor" class="num valor-g">—</span></h3><div class="rangos" data-g="alt"></div></div>
+        <div class="lienzo"><canvas id="gAlt"></canvas></div>
+      </div>
+      <div class="tarjeta grafica">
+        <div class="tarjeta-cabeza"><h3>Velocidad <span id="gVelValor" class="num valor-g">—</span></h3><div class="rangos" data-g="vel"></div></div>
+        <div class="lienzo"><canvas id="gVel"></canvas></div>
+      </div>
+      <div class="tarjeta grafica">
+        <div class="tarjeta-cabeza"><h3>Aceleración <span id="gAcelValor" class="num valor-g"></span></h3><div class="rangos" data-g="acel"></div></div>
+        <div class="lienzo"><canvas id="gAcel"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================== DERECHA -->
+  <section class="columna mision" aria-label="Misión">
+    <h2 class="columna-titulo">Misión</h2>
+
+    <div class="tarjeta">
+      <h3 id="reqTitulo">Requisitos de la misión</h3>
+      <div class="requisitos-caja">
+        <div class="anillo">
+          <svg viewBox="0 0 100 100" aria-hidden="true"><circle class="anillo-fondo" cx="50" cy="50" r="42"/><circle id="anilloArco" class="anillo-arco" cx="50" cy="50" r="42"/></svg>
+          <span id="anilloTexto" class="num">0/8</span>
+        </div>
+        <div>
+          <p id="prevueloSello" class="sello" hidden></p>
+          <ul id="requisitos" class="requisitos"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h3>Carga secundaria</h3>
+      <div class="secundaria">
+        <div class="brujula-caja">
+          <svg id="brujula" viewBox="-60 -60 120 120" aria-hidden="true">
+            <circle r="50" class="b-aro"/>
+            <g class="b-marcas"></g>
+            <text y="-35" class="b-card">N</text><text x="37" y="4" class="b-card">E</text>
+            <text y="42" class="b-card">S</text><text x="-37" y="4" class="b-card">O</text>
+            <g id="bFlecha"><path d="M0,-30 L7,4 L0,-1 L-7,4 Z" class="b-flecha"/><path d="M0,30 L5,4 L0,8 L-5,4 Z" class="b-cola"/></g>
+            <circle r="3" class="b-centro"/>
+          </svg>
+          <span id="secResumen" class="num">—</span>
+          <span id="secEdad" class="tenue chico"></span>
+        </div>
+        <div class="plano-caja">
+          <svg id="plano" viewBox="0 0 150 150" aria-hidden="true"></svg>
+          <ul class="plano-leyenda">
+            <li><i class="p-lanz"></i>Punto de lanzamiento</li>
+            <li><i class="p-pri"></i>Carga primaria</li>
+            <li><i class="p-sec"></i>Carga secundaria</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h3>Comandos</h3>
+      <div class="comandos">
+        <button class="btn cmd" data-orden="PING"><svg class="ico"><use href="#i-enviar"/></svg>Ping</button>
+        <button class="btn cmd" data-orden="BUZZER"><svg class="ico"><use href="#i-bocina"/></svg>Probar buzzer</button>
+        <button class="btn cmd" data-orden="CALIBRAR" title="Solo en tierra y con el CanSat quieto"><svg class="ico"><use href="#i-mira"/></svg>Calibrar en tierra</button>
+        <button class="btn cmd" data-orden="CERRAR" title="Solo en tierra: cierra el seguro del servo"><svg class="ico"><use href="#i-candado"/></svg>Cerrar seguro</button>
+      </div>
+      <button id="btnDesacoplar" class="btn peligro" data-orden="DESACOPLAR"><svg class="ico"><use href="#i-candado"/></svg><span>Desacople manual (doble clic)</span></button>
+      <p id="respuesta" class="tenue chico respuesta">El desacople es automático a 200 m; el manual es solo respaldo.</p>
+    </div>
+  </section>
+
+  <!-- ================================================ INFERIOR -->
+  <section class="tarjeta eventos-tarjeta" aria-label="Eventos">
+    <h3>Eventos</h3>
+    <div id="lineaTiempo" class="linea-tiempo"></div>
+  </section>
+
+  <section class="tarjeta consola-tarjeta" aria-label="Consola">
+    <div class="tarjeta-cabeza">
+      <h3>Consola</h3>
+      <div class="consola-controles">
+        <select id="filtroConsola" aria-label="Filtro de la consola">
+          <option value="todo">Todo</option><option value="error">Solo errores</option>
+          <option value="E">Eventos</option><option value="INFO">INFO</option>
+        </select>
+        <label class="casilla"><input id="autoscroll" type="checkbox" checked> Autoscroll</label>
+        <button id="btnLimpiar" class="btn chico">Limpiar</button>
+      </div>
+    </div>
+    <div id="consola" class="consola" role="log"></div>
+  </section>
+</main>
+
+<footer class="pie">
+  <span>Universidad de Montemorelos · Programa Espacial Universitario</span>
+  <span id="pieFuente"></span>
+  <span>ZÉNIT · CanSat 2026</span>
+</footer>
+
+<script src="app.js"></script>
 </body>
 </html>
