@@ -157,6 +157,22 @@ app.get('/api/logs', (_req, res) => {
 });
 
 // ------------------------------------------------------------ Arranque --
+function errorServidor(error) {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`[error] El puerto ${args.http} ya está ocupado. Puede haber otra estación terrena abierta.`);
+    console.error(`Si ya está funcionando, abre http://localhost:${args.http} y recarga con Ctrl+F5.`);
+    console.error('Para reiniciarla, detén la instancia anterior con Ctrl+C en su terminal.');
+    console.error(`Para usar otro puerto: npm ${args.sim ? 'run simular' : 'start'} -- --http ${Number(args.http) === 3001 ? 3002 : 3001}`);
+  } else {
+    console.error(`[error] No se pudo iniciar el servidor: ${error.message}`);
+  }
+  process.exit(1);
+}
+
+// ws también propaga los errores del servidor HTTP, incluido el puerto ocupado.
+servidor.on('error', errorServidor);
+wss.on('error', errorServidor);
+
 servidor.listen(Number(args.http), async () => {
   console.log('==================================================');
   console.log('  ZÉNIT · Estación terrena');

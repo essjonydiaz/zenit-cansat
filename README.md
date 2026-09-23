@@ -60,6 +60,17 @@ npm run simular
 Abrir **http://localhost:3000** → se ve un vuelo completo: ascenso, liberación, desacople a
 200 m, autogiro, aterrizaje. Se pueden probar los botones de comandos.
 
+Deja esa terminal abierta mientras usas el panel. Para detenerlo y liberar el puerto,
+presiona **Ctrl+C** en esa misma terminal. Si aparece «puerto 3000 ocupado», ya hay
+otro proceso escuchando: si es la estación, basta abrir la dirección y recargar con
+**Ctrl+F5**. También puedes ejecutar `npm run simular -- --http 3001` y abrir
+**http://localhost:3001**.
+
+Si cerraste la terminal pero quedó un proceso en segundo plano, identifica su PID
+en PowerShell con `Get-NetTCPConnection -LocalPort 3000 -State Listen` y consulta
+`Get-Process -Id <PID>`. Solo cuando hayas confirmado que es la instancia que quieres
+cerrar, ejecuta `Stop-Process -Id <PID>` (reemplaza `<PID>` por el número real).
+
 ### 4. Con un ESP32 solo (sin sensores)
 
 En la barra de PlatformIO elegir **`env:primaria_sim`** → *Upload* → *Monitor*. La placa
@@ -115,7 +126,7 @@ Matriz completa, riesgos y pendientes: [docs/07-requisitos-y-riesgos.md](docs/07
 - El firmware de la primaria en modo simulación se **ejecutó en un ESP32 emulado (QEMU)**:
   detectó la liberación a 449 m, desacopló solo a 198 m, midió −10.0 m/s con autogiro y
   confirmó 10 s de transmisión tras aterrizar.
-- La estación terrena tiene 6 pruebas (`npm test`), una de ellas con tramas reales del firmware.
+- La estación terrena tiene 7 pruebas (`npm test`), incluidas tramas reales del firmware y el manejo de un puerto ocupado.
 
 Lo que **falta validar con hardware**: pines reales, alcance LoRa con la antena dentro del
 cilindro, ángulos del servo, velocidad real del autogiro y autonomía de la pila.
