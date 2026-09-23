@@ -126,7 +126,7 @@ Matriz completa, riesgos y pendientes: [docs/07-requisitos-y-riesgos.md](docs/07
 - El firmware de la primaria en modo simulación se **ejecutó en un ESP32 emulado (QEMU)**:
   detectó la liberación a 449 m, desacopló solo a 198 m, midió −10.0 m/s con autogiro y
   confirmó 10 s de transmisión tras aterrizar.
-- La estación terrena tiene 7 pruebas (`npm test`), incluidas tramas reales del firmware y el manejo de un puerto ocupado.
+- La estación terrena tiene 8 pruebas (`npm test`), incluidas tramas reales del firmware, conexión simulada y el manejo de un puerto ocupado.
 
 Lo que **falta validar con hardware**: pines reales, alcance LoRa con la antena dentro del
 cilindro, ángulos del servo, velocidad real del autogiro y autonomía de la pila.

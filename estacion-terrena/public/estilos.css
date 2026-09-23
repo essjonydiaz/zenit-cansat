@@ -4,20 +4,20 @@
    ========================================================================== */
 :root,
 :root[data-tema="oscuro"] {
-  --fondo: #050a18;
-  --fondo-2: #0a1432;
-  --panel: rgba(11, 20, 46, 0.82);
-  --tarjeta: rgba(15, 27, 60, 0.78);
-  --tarjeta-2: rgba(22, 38, 82, 0.55);
-  --borde: rgba(84, 132, 255, 0.24);
-  --borde-fuerte: rgba(84, 132, 255, 0.45);
+  --fondo: #04101f;
+  --fondo-2: #0a1f3b;
+  --panel: rgba(9, 32, 57, 0.94);
+  --tarjeta: rgba(10, 38, 65, 0.88);
+  --tarjeta-2: rgba(20, 51, 81, 0.74);
+  --borde: rgba(46, 139, 220, 0.48);
+  --borde-fuerte: rgba(71, 163, 245, 0.72);
   --brillo: inset 0 1px 0 rgba(160, 190, 255, 0.07);
-  --texto: #e7edff;
-  --suave: #a3b2d6;
-  --tenue: #6f7fa6;
-  --azul: #2f6bff;
-  --azul-texto: #6f9bff;
-  --cian: #3fd3f5;
+  --texto: #eaf5ff;
+  --suave: #b5d0e6;
+  --tenue: #84a8c6;
+  --azul: #167cf3;
+  --azul-texto: #57aaff;
+  --cian: #78e6ff;
   --ok: #2fd27a;
   --ok-fondo: rgba(47, 210, 122, 0.12);
   --aviso: #f5b227;
@@ -96,7 +96,7 @@ body {
 .num { font-family: "Cascadia Mono", "JetBrains Mono", Consolas, ui-monospace, monospace; font-variant-numeric: tabular-nums; }
 .tenue { color: var(--tenue); }
 .chico { font-size: 12px; }
-.ico { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.ico { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 [hidden] { display: none !important; }
 
 /* ------------------------------------------------------------- botones -- */
@@ -118,19 +118,19 @@ select { min-width: 0; width: 250px; max-width: 100%; cursor: pointer; text-over
 
 /* ---------------------------------------------------------- encabezado -- */
 .encabezado {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
-  padding: 8px 22px;
+  display: flex; flex-wrap: nowrap; align-items: center; gap: 10px;
+  padding: 5px 14px;
   background: var(--panel);
   border-bottom: 1px solid var(--borde);
   backdrop-filter: blur(6px);
   position: sticky; top: 0; z-index: 20;
 }
-.marca { display: flex; align-items: center; gap: 12px; margin-right: auto; }
+.marca { display: flex; align-items: center; gap: 10px; margin-right: auto; min-width: 0; }
 .logo-enlace { display: block; flex: none; border-radius: 6px; overflow: hidden; }
 .logo-enlace:focus-visible { outline: 2px solid var(--azul-texto); outline-offset: 2px; }
-.logo { display: block; width: 40px; height: 40px; object-fit: contain; background: #000; }
+.logo { display: block; width: 68px; height: 54px; object-fit: cover; object-position: center 8%; background: #000; }
 .marca-texto { display: grid; justify-items: center; line-height: 1; }
-.marca-nombre { font-size: 24px; font-weight: 800; letter-spacing: 0.26em; margin-right: -0.26em; }
+.marca-nombre { font-size: 27px; font-weight: 800; letter-spacing: 0.27em; margin-right: -0.27em; }
 .marca-nombre .acento { color: var(--azul-texto); }
 .tricolor { display: flex; width: 100%; height: 2px; margin: 5px 0 3px; }
 .tricolor i { flex: 1; }
@@ -138,11 +138,17 @@ select { min-width: 0; width: 250px; max-width: 100%; cursor: pointer; text-over
 .tricolor i:nth-child(2) { background: #e9eef9; }
 .tricolor i:nth-child(3) { background: #ce1126; }
 .marca-pais { font-size: 9px; letter-spacing: 0.5em; margin-right: -0.5em; color: var(--suave); }
-.separador { width: 1px; height: 38px; background: var(--borde); }
-.titulo h1 { margin: 0; font-size: 17px; font-weight: 700; }
-.lema { font-size: 11px; letter-spacing: 0.08em; color: var(--tenue); text-transform: uppercase; }
-.controles { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.reloj { font-family: "Cascadia Mono", Consolas, monospace; font-size: 28px; font-weight: 700; color: var(--azul-texto); letter-spacing: 0.02em; }
+.separador { width: 1px; height: 40px; background: var(--borde); }
+.titulo { min-width: 0; }
+.titulo h1 { margin: 0; font-size: 17px; font-weight: 700; white-space: nowrap; }
+.lema { font-size: 11px; letter-spacing: 0.19em; color: var(--suave); text-transform: uppercase; white-space: nowrap; }
+.controles { display: flex; flex-wrap: nowrap; gap: 6px; align-items: center; }
+.controles select { width: 196px; font-size: 12px; }
+.controles .btn { padding: 5px 10px; font-size: 12px; white-space: nowrap; }
+.reloj-caja { display: grid; gap: 1px; min-width: 118px; padding: 0 12px; border-left: 1px solid var(--borde); border-right: 1px solid var(--borde); }
+.reloj-etiqueta { font-size: 9px; font-weight: 700; letter-spacing: .1em; color: var(--tenue); white-space: nowrap; }
+.reloj { font-family: "Cascadia Mono", Consolas, monospace; font-size: 20px; font-weight: 700; color: var(--cian); letter-spacing: 0.02em; white-space: nowrap; }
+.reloj.atrasado { color: var(--aviso); }
 .campana {
   display: inline-flex; align-items: center; gap: 8px;
   font: inherit; font-weight: 700; font-size: 13px; cursor: pointer;
@@ -151,7 +157,8 @@ select { min-width: 0; width: 250px; max-width: 100%; cursor: pointer; text-over
 }
 .campana.aviso { color: var(--aviso); border-color: color-mix(in srgb, var(--aviso) 45%, transparent); background: var(--aviso-fondo); }
 .campana.critico { color: var(--critico); border-color: color-mix(in srgb, var(--critico) 50%, transparent); background: var(--critico-fondo); }
-.meta { display: grid; font-size: 11px; color: var(--tenue); gap: 2px; }
+.meta { display: grid; font-size: 10px; color: var(--suave); gap: 2px; white-space: nowrap; }
+.lema-final { border-left: 1px solid var(--borde); padding-left: 10px; font-size: 9px; font-weight: 700; line-height: 1.2; letter-spacing: .16em; color: var(--tenue); white-space: nowrap; }
 .tema { display: flex; border: 1px solid var(--borde); border-radius: 999px; padding: 3px; gap: 2px; }
 .tema-btn { width: 30px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 999px; background: transparent; color: var(--tenue); cursor: pointer; }
 .tema-btn.activo { background: var(--azul); color: #fff; }
@@ -170,14 +177,14 @@ select { min-width: 0; width: 250px; max-width: 100%; cursor: pointer; text-over
 
 /* -------------------------------------------------------------- tablero -- */
 .tablero {
-  display: grid; gap: 10px 12px;
-  padding: 8px 22px 6px;
-  grid-template-columns: 290px minmax(0, 1fr) minmax(0, 1fr) 420px;
+  display: grid; gap: 8px;
+  padding: 7px 12px 5px;
+  grid-template-columns: minmax(260px, 19.5%) minmax(0, 1fr) minmax(0, 1fr) minmax(330px, 21%);
   grid-template-areas:
     "cadena  cadena  cadena  cadena"
     "estado  vuelo   vuelo   mision"
     "eventos eventos consola consola";
-  max-width: 1900px; margin: 0 auto;
+  max-width: 2200px; margin: 0 auto;
 }
 .cadena { grid-area: cadena; }
 .estado { grid-area: estado; }
@@ -189,32 +196,32 @@ select { min-width: 0; width: 250px; max-width: 100%; cursor: pointer; text-over
 .panel, .columna {
   background: var(--panel);
   border: 1px solid var(--borde);
-  border-radius: 16px;
+  border-radius: 10px;
   box-shadow: var(--brillo);
   min-width: 0;
 }
-.columna { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 8px; }
-.columna-titulo { margin: 0 4px; font-size: 18px; font-weight: 600; color: var(--azul-texto); }
+.columna { padding: 7px; display: flex; flex-direction: column; gap: 7px; }
+.columna-titulo { margin: 0 4px; font-size: 18px; font-weight: 700; color: var(--suave); }
 .tarjeta {
   background: var(--tarjeta);
   border: 1px solid var(--borde);
-  border-radius: 12px;
-  padding: 10px 14px;
+  border-radius: 9px;
+  padding: 8px 10px;
   box-shadow: var(--brillo);
   min-width: 0;
 }
-.tarjeta h3 { margin: 0 0 8px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.tarjeta h3 { margin: 0 0 6px; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 .tarjeta-cabeza { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
 .tarjeta-cabeza h3 { margin: 0; }
 h2.mini { margin: 0 0 6px; font-size: 13px; font-weight: 600; color: var(--suave); display: flex; gap: 6px; align-items: center; }
 
 /* -------------------------------------------------------------- cadena --- */
-.cadena { padding: 8px 14px 10px; }
-.eslabones { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 34px; }
+.cadena { padding: 7px 14px 10px; }
+.eslabones { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 28px; }
 .eslabon {
   position: relative;
   display: flex; align-items: center; gap: 10px;
-  padding: 6px 12px; border-radius: 10px;
+  padding: 6px 10px; border-radius: 7px;
   border: 1px solid var(--borde); background: var(--tarjeta);
   cursor: pointer; min-width: 0;
 }
@@ -223,12 +230,12 @@ h2.mini { margin: 0 0 6px; font-size: 13px; font-weight: 600; color: var(--suave
 .eslabon small { display: block; color: var(--tenue); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .eslabon .marca-est { font-weight: 800; margin-left: 4px; }
 .eslabon:not(:last-child)::after {
-  content: ""; position: absolute; right: -34px; top: 50%;
-  width: 34px; height: 2px; transform: translateY(-50%);
+  content: ""; position: absolute; right: -28px; top: 50%;
+  width: 28px; height: 2px; transform: translateY(-50%);
   background: linear-gradient(90deg, var(--borde-fuerte), var(--azul));
 }
 .eslabon:not(:last-child)::before {
-  content: ""; position: absolute; right: -21px; top: 50%;
+  content: ""; position: absolute; right: -18px; top: 50%;
   width: 7px; height: 7px; border-radius: 50%;
   transform: translateY(-50%); background: var(--cian);
   box-shadow: 0 0 8px var(--cian);
@@ -244,6 +251,7 @@ h2.mini { margin: 0 0 6px; font-size: 13px; font-weight: 600; color: var(--suave
 .eslabon.critico .ico, .eslabon.critico .marca-est, .eslabon.critico small { color: var(--critico); }
 .eslabon.gris { opacity: 0.55; }
 .eslabon.seleccionado { outline: 2px solid var(--azul-texto); outline-offset: 2px; }
+.eslabon:focus-visible { outline: 2px solid var(--cian); outline-offset: 2px; }
 .cadena-detalle { margin: 10px 2px 0; font-size: 13px; color: var(--suave); }
 .cadena-detalle b { color: var(--texto); }
 
@@ -475,13 +483,17 @@ h2.mini { margin: 0 0 6px; font-size: 13px; font-weight: 600; color: var(--suave
 
 /* ----------------------------------------------------------- responsivo -- */
 @media (max-width: 1500px) {
-  .tablero { grid-template-columns: 250px minmax(0, 1fr) minmax(0, 1fr) 340px; }
-  .reloj { font-size: 24px; }
+  .tablero { grid-template-columns: 250px minmax(0, 1fr) minmax(0, 1fr) 330px; }
+  .lema-final, .meta { display: none; }
+  .titulo h1 { font-size: 15px; }
+  .marca-nombre { font-size: 23px; }
+  .logo { width: 58px; height: 47px; }
+  .controles select { width: 175px; }
+  .reloj { font-size: 20px; }
   .num.enorme { font-size: 32px; }
   .eslabones { gap: 22px; }
   .eslabon:not(:last-child)::after { right: -22px; width: 22px; }
   .eslabon:not(:last-child)::before { right: -15px; }
-  .meta { display: none; }
   .altimetro { grid-template-columns: 110px 1fr; }
   .plano-caja { grid-template-columns: 1fr; }
   .secundaria { grid-template-columns: 118px 1fr; }
@@ -490,6 +502,12 @@ h2.mini { margin: 0 0 6px; font-size: 13px; font-weight: 600; color: var(--suave
   .unidad { font-size: 16px; }
   .btn.cmd { white-space: normal; text-align: left; line-height: 1.15; font-size: 12.5px; }
   .hito-ev .et { font-size: 10px; letter-spacing: 0; white-space: normal; max-width: 78px; line-height: 1.1; }
+}
+@media (max-width: 1450px) {
+  .encabezado { flex-wrap: wrap; }
+  .marca { flex: 1 1 100%; }
+  .controles { flex: 1 1 auto; }
+  .controles select { width: min(32vw, 220px); }
 }
 @media (max-width: 1250px) {
   .tablero {
@@ -501,6 +519,11 @@ h2.mini { margin: 0 0 6px; font-size: 13px; font-weight: 600; color: var(--suave
   .lema { display: none; }
 }
 @media (max-width: 760px) {
+  .reloj-caja { min-width: 100px; padding: 0 8px; }
+  .reloj { font-size: 16px; }
+  .campana { font-size: 11px; padding: 6px 8px; }
+  .controles { flex-wrap: wrap; }
+  .controles select { flex: 1 1 100%; width: 100%; }
   .eslabon > div { min-width: 0; }
   .eslabon b { white-space: normal; font-size: 13px; }
   .consola-controles { flex-wrap: wrap; justify-content: flex-end; }

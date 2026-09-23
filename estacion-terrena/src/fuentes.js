@@ -25,6 +25,7 @@ class PuertoSerie extends EventEmitter {
       puertos = await SerialPort.list();
     } catch (e) {
       console.warn(`[puertos] no se pudieron listar: ${e.message}`);
+      throw e;
     }
     return puertos.map((p) => ({
       ruta: p.path,

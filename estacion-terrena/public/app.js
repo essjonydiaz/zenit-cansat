@@ -374,23 +374,34 @@ function evaluarAlertas(c) {
 // --------------------------------------------------------------- dibujo ---
 function dibujarCadena(c) {
   const ol = $('cadena');
+  const eslabonConFoco = ol.contains(document.activeElement) ? document.activeElement.dataset.id : null;
   ol.innerHTML = ESLABONES.map((e) => {
     const s = c[e.id];
     const marca = { ok: '✓', aviso: '⚠', critico: '✕', gris: '' }[s.estado];
-    return `<li class="eslabon ${s.estado}${cadenaSel === e.id ? ' seleccionado' : ''}" data-id="${e.id}" title="Clic para ver qué revisar">
+    return `<li class="eslabon ${s.estado}${cadenaSel === e.id ? ' seleccionado' : ''}" data-id="${e.id}" role="button" tabindex="0" aria-expanded="${cadenaSel === e.id}" title="Ver diagnóstico y qué revisar">
       ${icono(e.icono)}<div><b>${e.nombre}<span class="marca-est">${marca}</span></b><small>${escapar(s.sub)}</small></div></li>`;
   }).join('');
+  if (eslabonConFoco) ol.querySelector(`[data-id="${eslabonConFoco}"]`)?.focus({ preventScroll: true });
   const det = $('cadenaDetalle');
   if (cadenaSel && c[cadenaSel]) {
     det.hidden = false;
     det.innerHTML = `<b>${ESLABONES.find((e) => e.id === cadenaSel).nombre}:</b> ${c[cadenaSel].ayuda}`;
   } else det.hidden = true;
 }
-$('cadena').addEventListener('click', (ev) => {
-  const li = ev.target.closest('.eslabon');
+function seleccionarEslabon(li) {
   if (!li) return;
   cadenaSel = cadenaSel === li.dataset.id ? null : li.dataset.id;
   S.sucio = true;
+}
+$('cadena').addEventListener('click', (ev) => {
+  seleccionarEslabon(ev.target.closest('.eslabon'));
+});
+$('cadena').addEventListener('keydown', (ev) => {
+  if (ev.key !== 'Enter' && ev.key !== ' ') return;
+  const li = ev.target.closest('.eslabon');
+  if (!li) return;
+  ev.preventDefault();
+  seleccionarEslabon(li);
 });
 
 function dibujarSalud(c) {
@@ -989,7 +1000,10 @@ function dibujarTodo() {
   dibujarSecundaria();
   dibujarEventos();
   dibujarConsola();
-  $('reloj').textContent = S.T ? `T+${mmss(S.T.t_ms / 1000 - (S.hitos.ARRANQUE || 0))}` : 'T+--:--';
+  const edadPaquete = hace(S.tPriPc);
+  $('reloj').textContent = fuente.conectado && wsAbierto && Number.isFinite(edadPaquete)
+    ? `${fmt(edadPaquete)} s` : 'SIN DATOS';
+  $('reloj').classList.toggle('atrasado', fuente.conectado && wsAbierto && edadPaquete > 3);
   $('respuesta').textContent = S.respuesta || (comandoPendiente ? `Enviado ${comandoPendiente.orden}… esperando respuesta` : 'El desacople es automático a 200 m; el manual es solo respaldo.');
   $('pieFuente').textContent = fuente.archivoLog ? `Registro: logs/${fuente.archivoLog}.txt` : '';
   $('btnConectar').classList.toggle('activo', fuente.conectado && fuente.modo === 'serie');
