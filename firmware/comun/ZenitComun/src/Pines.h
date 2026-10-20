@@ -1,50 +1,108 @@
 // =============================================================================
-//  Pines.h — Mapa ÚNICO de conexiones para todas las placas ESP32 DevKit V1
-//  del CanSat Zénit (primaria, secundaria, receptor de tierra y pruebas).
+//  Pines.h — Mapa ÚNICO de conexiones del CanSat Zénit (según el PDR, etapa 3).
+//
+//    Carga primaria  -> Heltec WiFi LoRa 32 V3  (ESP32-S3 + SX1262 + OLED)
+//    Receptor tierra -> Heltec WiFi LoRa 32 V3  (misma placa, solo radio + OLED)
+//    Carga secundaria-> ESP32-C3 SuperMini + RFM95W (SX1276) + GPS NEO-6M
 //
 //  Si electrónica cambia un cable, se cambia AQUÍ y en docs/02-conexiones.md.
-//
-//  Reglas del ESP32 que se respetaron:
-//   - GPIO 6 a 11 están conectados a la memoria flash: NUNCA usarlos.
-//   - GPIO 34, 35, 36, 39 son solo de entrada (sirven para medir batería).
-//   - GPIO 20, 24, 28-31 no existen en el ESP32.
-//   - GPIO 0, 2, 12, 15 afectan el arranque: se evitan para periféricos
-//     (el GPIO 2 solo maneja el LED integrado).
+//  Antes de cambiar un pin, revisar las reglas de cada placa (abajo).
 // =============================================================================
 #pragma once
 #include <stdint.h>
 
-namespace pines {
+// -----------------------------------------------------------------------------
+//  Heltec WiFi LoRa 32 V3 (ESP32-S3FN8)
+//  Reglas de esta placa:
+//   - GPIO 8-14 van al radio SX1262 por dentro: NO se pueden usar.
+//   - GPIO 17/18 (I2C del OLED) y 21 (reset del OLED) son internos.
+//   - GPIO 19/20 = USB, 43/44 = puerto serie USB (CP2102): no usar.
+//   - GPIO 26, 33-34, 37-38: no usar (memoria / control interno).
+//   - GPIO 0, 45, 46: afectan el arranque. 35 = LED blanco. 36 = Vext.
+//   - GPIO 22-25 NO EXISTEN en el ESP32-S3 (el diagrama del PDR usa 25/26).
+//   - Libres en los pines de la placa: 2-7 (con ADC), 39-42, 47, 48.
+//   - Entradas analógicas: usar ADC1 = GPIO 1-10 (aquí: 6).
+// -----------------------------------------------------------------------------
+namespace heltec {
 
-// --- Bus I2C (BMP280 en 0x76/0x77 y MPU6050 en 0x68) ---
-constexpr int8_t I2C_SDA = 21;
-constexpr int8_t I2C_SCL = 22;
+// Radio SX1262 integrado (fijo en la placa)
+constexpr int8_t LORA_NSS  = 8;
+constexpr int8_t LORA_SCK  = 9;
+constexpr int8_t LORA_MOSI = 10;
+constexpr int8_t LORA_MISO = 11;
+constexpr int8_t LORA_RST  = 12;
+constexpr int8_t LORA_BUSY = 13;
+constexpr int8_t LORA_DIO1 = 14;
 
-// --- Bus SPI VSPI (compartido por LoRa y microSD, cada uno con su CS) ---
-constexpr int8_t SPI_SCK  = 18;
-constexpr int8_t SPI_MISO = 19;
-constexpr int8_t SPI_MOSI = 23;
+// Pantalla OLED SSD1306 integrada (bus I2C propio, fijo en la placa)
+constexpr int8_t OLED_SDA = 17;
+constexpr int8_t OLED_SCL = 18;
+constexpr int8_t OLED_RST = 21;
+constexpr int8_t VEXT     = 36;  // LOW = enciende la pantalla y los pines "Ve"
 
-// --- LoRa SX1278 (Ra-02) ---
-constexpr int8_t LORA_CS   = 5;   // NSS
-constexpr int8_t LORA_RST  = 14;  // RESET
-constexpr int8_t LORA_DIO0 = 26;  // DIO0 (interrupción TX/RX listo)
+constexpr int8_t LED   = 35;  // LED blanco integrado
+constexpr int8_t BOTON = 0;   // botón PRG
 
-// --- microSD (lector SPI) ---
-constexpr int8_t SD_CS = 4;
+// ---- Conexiones externas de la CARGA PRIMARIA ----
+// GY-91 (MPU9250 en 0x68 + BMP280 en 0x76) por I2C (bus "Wire")
+constexpr int8_t I2C_SDA = 41;
+constexpr int8_t I2C_SCL = 42;
 
-// --- Servo SG90 del desacople (señal PWM) ---
-constexpr int8_t SERVO_DESACOPLE = 13;
+// GPS NEO-M8N por UART1  (TX del GPS -> GPS_RX de la placa)
+constexpr int8_t GPS_RX = 47;  // la placa RECIBE aquí  <- TX del GPS
+constexpr int8_t GPS_TX = 48;  // la placa ENVÍA aquí   -> RX del GPS
 
-// --- GPS NEO-6M por UART2 (TX del GPS -> RX2 del ESP32) ---
-constexpr int8_t GPS_RX = 16;  // RX2 del ESP32  <- TX del GPS
-constexpr int8_t GPS_TX = 17;  // TX2 del ESP32  -> RX del GPS
+// OpenLog (registro en microSD) por UART2
+constexpr int8_t OPENLOG_TX = 4;  // la placa ENVÍA aquí  -> RXI del OpenLog
+constexpr int8_t OPENLOG_RX = 5;  // la placa RECIBE aquí <- TXO del OpenLog (para saber si está vivo)
 
-// --- Medición de batería (divisor resistivo) — pin solo de entrada ---
-constexpr int8_t BATERIA_ADC = 34;
+// Alternativa si se usa un lector microSD SPI en lugar del OpenLog
+// (bus SPI propio, separado del radio). Ver REGISTRO_TIPO en config.h.
+constexpr int8_t SD_CS   = 4;
+constexpr int8_t SD_SCK  = 5;
+constexpr int8_t SD_MISO = 39;
+constexpr int8_t SD_MOSI = 40;
 
-// --- Indicadores ---
-constexpr int8_t BUZZER = 25;  // buzzer activo para localizar el satélite
-constexpr int8_t LED    = 2;   // LED azul integrado del DevKit
+// Servos SG90 (señal PWM; alimentación 5 V del MP1584EN, NO de la placa)
+constexpr int8_t SERVO_DESACOPLE = 2;  // suelta la carga secundaria
+constexpr int8_t SERVO_AUTOGIRO  = 3;  // libera las palas del autogiro
 
-}  // namespace pines
+// Voltaje de la pila de 9 V: divisor 100k / 33k hacia este pin (ADC1_CH5)
+constexpr int8_t BATERIA_ADC = 6;
+
+// Buzzer de localización (opcional; si no se instala, no pasa nada)
+constexpr int8_t BUZZER = 7;
+
+}  // namespace heltec
+
+// -----------------------------------------------------------------------------
+//  ESP32-C3 SuperMini (carga secundaria)
+//  Reglas de esta placa:
+//   - Solo existen GPIO 0-10, 20 y 21.
+//   - GPIO 2, 8 y 9 afectan el arranque (8 = LED azul, activo en LOW; 9 = BOOT).
+//   - El USB es nativo: el monitor serie va por USB (USB CDC), así que los
+//     pines 20/21 quedan libres para el GPS.
+//   - Entradas analógicas: GPIO 0-4.
+// -----------------------------------------------------------------------------
+namespace c3 {
+
+// RFM95W / SX1276 (915 MHz) — según el diagrama de la carga secundaria del PDR
+constexpr int8_t LORA_SCK  = 4;
+constexpr int8_t LORA_MISO = 5;
+constexpr int8_t LORA_MOSI = 6;
+constexpr int8_t LORA_NSS  = 7;   // con resistencia de 10k a 3.3 V (como en el PDR)
+constexpr int8_t LORA_RST  = 3;
+constexpr int8_t LORA_DIO0 = 10;
+
+// GPS NEO-6M por UART1 (TX del GPS -> GPIO20)
+constexpr int8_t GPS_RX = 20;
+constexpr int8_t GPS_TX = 21;
+
+// Voltaje de la pila de 9 V (opcional): divisor 100k / 33k hacia GPIO1
+constexpr int8_t BATERIA_ADC = 1;
+
+// Baliza sonora (opcional) y LED integrado
+constexpr int8_t BUZZER = 0;
+constexpr int8_t LED = 8;  // activo en LOW
+
+}  // namespace c3

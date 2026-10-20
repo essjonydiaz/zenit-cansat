@@ -16,9 +16,6 @@ float presionDesdeAltura(float alturaM, float presionTierraPa) {
 }
 
 // ---------------------------------------------------------------------------
-FiltroVertical::FiltroVertical(float omega, float zeta)
-    : k1_(2.0f * zeta * omega), k2_(omega * omega) {}
-
 void FiltroVertical::reiniciar(float altura, float velocidad) {
   h_ = altura;
   v_ = velocidad;
@@ -45,8 +42,6 @@ void FiltroVertical::actualizar(float hBaro, float aVertical, float dt,
 static inline float invSqrt(float x) { return 1.0f / sqrtf(x); }
 static constexpr float RAD_A_GRAD = 57.2957795f;
 
-Orientacion::Orientacion(float kp, float ki) : kp_(kp), ki_(ki) {}
-
 void Orientacion::iniciarDesdeAcel(float ax, float ay, float az) {
   const float roll = atan2f(ay, az);
   const float pitch = atan2f(-ax, sqrtf(ay * ay + az * az));
@@ -58,6 +53,8 @@ void Orientacion::iniciarDesdeAcel(float ax, float ay, float az) {
   q2_ = cr * sp;
   q3_ = -sr * sp;
   ix_ = iy_ = iz_ = 0;
+  desfaseYaw_ = 0.0f;
+  conRumbo_ = false;
 }
 
 void Orientacion::actualizar(float gx, float gy, float gz, float ax, float ay,
@@ -113,6 +110,12 @@ float Orientacion::verticalDelMundo(float x, float y, float z) const {
   return vx * x + vy * y + vz * z;
 }
 
+void Orientacion::arriba(float& x, float& y, float& z) const {
+  x = 2.0f * (q1_ * q3_ - q0_ * q2_);
+  y = 2.0f * (q0_ * q1_ + q2_ * q3_);
+  z = q0_ * q0_ - q1_ * q1_ - q2_ * q2_ + q3_ * q3_;
+}
+
 float Orientacion::roll() const {
   return atan2f(2.0f * (q0_ * q1_ + q2_ * q3_),
                 1.0f - 2.0f * (q1_ * q1_ + q2_ * q2_)) *
@@ -126,10 +129,57 @@ float Orientacion::pitch() const {
   return asinf(s) * RAD_A_GRAD;
 }
 
-float Orientacion::yaw() const {
+float Orientacion::yawGiro() const {
   return atan2f(2.0f * (q0_ * q3_ + q1_ * q2_),
                 1.0f - 2.0f * (q2_ * q2_ + q3_ * q3_)) *
          RAD_A_GRAD;
+}
+
+float Orientacion::yaw() const {
+  float y = yawGiro() + desfaseYaw_;
+  while (y > 180.0f) y -= 360.0f;
+  while (y <= -180.0f) y += 360.0f;
+  return y;
+}
+
+float Orientacion::rumbo() const {
+  float r = -yaw();
+  if (r < 0.0f) r += 360.0f;
+  return r;
+}
+
+void Orientacion::fusionarRumbo(float rumboGrados, float dt, float tau) {
+  // La brújula crece en sentido horario y el yaw en antihorario: objetivo = -rumbo.
+  const float error = diferenciaAngular(yaw(), -rumboGrados);
+  if (!conRumbo_) {  // primera lectura: alinear de golpe
+    desfaseYaw_ += error;
+    conRumbo_ = true;
+    return;
+  }
+  const float k = (tau > 0.0f) ? dt / (tau + dt) : 1.0f;
+  desfaseYaw_ += k * error;
+  if (desfaseYaw_ > 180.0f) desfaseYaw_ -= 360.0f;
+  if (desfaseYaw_ < -180.0f) desfaseYaw_ += 360.0f;
+}
+
+float diferenciaAngular(float a, float b) {
+  float d = fmodf(b - a, 360.0f);
+  if (d > 180.0f) d -= 360.0f;
+  if (d <= -180.0f) d += 360.0f;
+  return d;
+}
+
+float rumboMagnetico(float mx, float my, float mz, float ux, float uy, float uz) {
+  // este = m × arriba
+  const float ex = my * uz - mz * uy;
+  const float ey = mz * ux - mx * uz;
+  const float ez = mx * uy - my * ux;
+  // norte = arriba × este
+  const float nx = uy * ez - uz * ey;
+  // Rumbo del eje X del sensor: ángulo desde el norte hacia el este.
+  float rumbo = atan2f(ex, nx) * RAD_A_GRAD;
+  if (rumbo < 0.0f) rumbo += 360.0f;
+  return rumbo;
 }
 
 }  // namespace filtros

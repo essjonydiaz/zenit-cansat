@@ -11,26 +11,31 @@ La primaria también ubica a la secundaria (**distancia y dirección**) y sigue 
 después de aterrizar.
 
 ```
- CARGA SECUNDARIA            CARGA PRIMARIA                       ESTACIÓN TERRENA
- ESP32 + GPS + LoRa   ──B──> ESP32 + BMP280 + MPU6050   ──T,P,E──> Receptor LoRa (ESP32)
- (baliza de posición)        + LoRa + microSD + servo               │ USB
-                             + GPS                                  ▼
-                                    <────── C (comandos) ───── Node.js ──> panel web
+ CARGA SECUNDARIA              CARGA PRIMARIA                          ESTACIÓN TERRENA
+ ESP32-C3 SuperMini   ──B──>   Heltec WiFi LoRa 32 V3 (ESP32-S3)  ──T,P,E──> Heltec V3 receptor
+ + RFM95W 915 MHz              + GY-91 (MPU9250 + BMP280)                 │ USB
+ + GPS NEO-6M                  + GPS NEO-M8N + OpenLog (microSD)          ▼
+ + pila 9 V                    + 2 servos SG90 (desacople, autogiro)    Node.js ──> panel web
+                               + pila 9 V            <──── C (comandos) ────┘
 ```
+
+Hardware tal como quedó en el **PDR (etapa 3)**. Pines y diferencias encontradas en el PDR:
+[docs/02-conexiones.md](docs/02-conexiones.md).
 
 ## Qué hay en este repositorio
 
 | Carpeta | Qué es | Lenguaje |
 |---|---|---|
-| [`firmware/primaria`](firmware/primaria) | Firmware de vuelo: sensores, filtros, máquina de estados, desacople, radio, microSD. Incluye **modo simulación** | C++ (PlatformIO) |
-| [`firmware/secundaria`](firmware/secundaria) | Baliza GPS de la carga secundaria | C++ |
-| [`firmware/receptor`](firmware/receptor) | Receptor LoRa de tierra (puente radio ↔ USB) | C++ |
-| [`firmware/pruebas`](firmware/pruebas) | Programas para las pruebas P1–P6 del CoDR | C++ |
-| [`firmware/comun`](firmware/comun/ZenitComun) | Librería compartida: pines, protocolo, filtros, máquina de estados, GPS, simulador | C++ puro |
+| [`firmware/primaria`](firmware/primaria) | Firmware de vuelo (Heltec V3): GY-91, filtros, máquina de estados, 2 servos, radio, OpenLog, pantalla. Incluye **modo simulación** | C++ (PlatformIO) |
+| [`firmware/secundaria`](firmware/secundaria) | Baliza GPS de la carga secundaria (ESP32-C3 + RFM95W) | C++ |
+| [`firmware/receptor`](firmware/receptor) | Receptor LoRa de tierra (Heltec V3, puente radio ↔ USB, pantalla con RSSI) | C++ |
+| [`firmware/pruebas`](firmware/pruebas) | Programas para las pruebas P1–P6 (autodiagnóstico, GY-91, alcance, pila, OpenLog, servos) | C++ |
+| [`firmware/comun`](firmware/comun) | `ZenitComun` (pines, protocolo, filtros, máquina de estados, separación, GPS, simulador; C++ puro) + `ZenitRadio`, `ZenitSensores`, `ZenitPantalla` (drivers) | C++ |
 | [`estacion-terrena`](estacion-terrena) | Servidor + panel web en tiempo real, simulador y registro de sesión | JavaScript (Node.js) |
 | [`herramientas`](herramientas) | Análisis del vuelo para el documento RAM (gráficas + tabla) | Python |
 | [`docs`](docs) | Arquitectura, conexiones, protocolo, pruebas, día del lanzamiento, requisitos | Markdown |
-| `mecanica/`, `documentos/` | Lugar para los CAD/STL y los entregables (CoDR, PDR, CDR, RAM) | — |
+| `mecanica/`, `documentos/` | Lugar para los CAD/STL y los entregables (CoDR, PDR, CDR, RAM). `documentos/openlog/config.txt` va en la microSD | — |
+| [`AGENTS.md`](AGENTS.md), [`graphify-out/`](graphify-out) | Guía para asistentes de IA (Claude, Copilot, Codex…) y mapa del código | — |
 
 ## Empezar (Windows)
 
@@ -39,8 +44,8 @@ después de aterrizar.
 1. **[Visual Studio Code](https://code.visualstudio.com/)**
 2. Extensión **PlatformIO IDE** (en VS Code: `Ctrl+Shift+X` → buscar *PlatformIO IDE* → Install).
    No hace falta Arduino IDE: PlatformIO descarga solo el compilador y las librerías.
-3. **Driver USB** de la placa: [CP210x](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
-   o [CH340](https://www.wch-ic.com/downloads/CH341SER_EXE.html) (depende del chip junto al conector USB del ESP32).
+3. **Driver USB** de la Heltec V3: [CP210x](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers).
+   El ESP32-C3 SuperMini usa el USB nativo (Windows 10/11 no necesita driver).
 4. **[Node.js LTS](https://nodejs.org/)** (para la estación terrena).
 5. **[Python 3](https://www.python.org/downloads/)** (para el análisis; marcar *Add to PATH*).
 6. **[Git](https://git-scm.com/download/win)**.
@@ -71,31 +76,33 @@ en PowerShell con `Get-NetTCPConnection -LocalPort 3000 -State Listen` y consult
 `Get-Process -Id <PID>`. Solo cuando hayas confirmado que es la instancia que quieres
 cerrar, ejecuta `Stop-Process -Id <PID>` (reemplaza `<PID>` por el número real).
 
-### 4. Con un ESP32 solo (sin sensores)
+### 4. Con la Heltec V3 sola (sin sensores)
 
 En la barra de PlatformIO elegir **`env:primaria_sim`** → *Upload* → *Monitor*. La placa
-ejecuta el firmware de vuelo real con un vuelo simulado. Conectando la estación terrena a ese
-puerto (`npm start` y elegir el COM en el panel) se ve el vuelo "en vivo" desde el ESP32.
+ejecuta el firmware de vuelo real con un vuelo simulado (y lo transmite por LoRa si tiene la
+antena puesta). Conectando la estación terrena a ese puerto (`npm start` y elegir el COM en el
+panel) se ve el vuelo "en vivo" desde la placa. **Nunca encender la Heltec sin su antena.**
 
 ### 5. Con el hardware armado
 
 | Placa | Entorno de PlatformIO |
 |---|---|
-| Carga primaria | `firmware/primaria` → `env:primaria` |
-| Carga secundaria | `firmware/secundaria` → `env:secundaria` |
-| Receptor de tierra | `firmware/receptor` → `env:receptor` |
+| Carga primaria (Heltec V3) | `firmware/primaria` → `env:primaria` |
+| Carga secundaria (ESP32-C3) | `firmware/secundaria` → `env:secundaria` |
+| Receptor de tierra (Heltec V3) | `firmware/receptor` → `env:receptor` |
 | Pruebas | `firmware/pruebas` → `env:p1_autodiagnostico`, `env:p2_sensores`, … |
 
-Primero `env:p1_autodiagnostico`: dice PASA/FALLA para cada módulo. Conexiones en
-[docs/02-conexiones.md](docs/02-conexiones.md).
+Primero `env:p1_autodiagnostico`: dice PASA/FALLA para cada módulo (en el monitor y en la
+pantalla). Conexiones en [docs/02-conexiones.md](docs/02-conexiones.md). Antes de volar:
+`env:p2_sensores` para calibrar la brújula y `env:p6_servos` para los ángulos de los servos.
 
 ### 6. Después del vuelo (documento RAM, máximo 7 h)
 
 ```powershell
 pip install -r herramientas/requirements.txt
 python herramientas/analisis_vuelo.py estacion-terrena/logs/sesion_XXXX_telemetria.csv
-# o con el archivo de la microSD:
-python herramientas/analisis_vuelo.py E:/VUELO_000.CSV
+# o con el archivo del OpenLog (microSD):
+python herramientas/analisis_vuelo.py E:/LOG00001.TXT
 ```
 Genera `resumen.md` con la tabla de resultados (altura máxima, velocidades, desacople,
 autogiro, transmisión post-aterrizaje) y las gráficas. Para practicar:
@@ -105,31 +112,36 @@ autogiro, transmisión post-aterrizaje) y las gráficas. Para practicar:
 
 | Requisito de la guía | Dónde se resuelve |
 |---|---|
-| Transmitir presión, temperatura, orientación y aceleración en tiempo real | Trama `T` a 4 Hz — `firmware/primaria/src/main.cpp` |
+| Transmitir presión, temperatura, orientación y aceleración en tiempo real | Trama `T` a 2 Hz (PDR: ≥ 1 Hz) — `firmware/primaria/src/main.cpp` |
 | Calcular velocidad en todo el trayecto | Filtro complementario barómetro + acelerómetro — `Filtros.cpp` |
 | Calcular altura máxima | Máquina de estados — `MaquinaEstados.cpp` |
-| Desacople + autogiro a 200 m | Máquina de estados + servo, con protección contra disparos falsos |
+| Desacople + autogiro a 200 m | Máquina de estados + secuencia de 2 servos (desacople → confirmación con IMU → autogiro) — `Separacion.cpp` |
 | Descenso con autogiro entre 8 y 12 m/s | Se mide y se muestra en vivo; el ajuste es mecánico (aspas) |
 | Distancia y dirección de la secundaria | Baliza GPS + Haversine — `Geo.cpp`, trama `P` |
 | Transmitir ≥ 10 s tras aterrizar | Detección de aterrizaje + evento `POST_ATERRIZAJE_OK` |
 | Estación terrena en tiempo real | `estacion-terrena/` |
-| Alcance ≥ 250 m | LoRa 433 MHz SF7 — prueba `p3_alcance_lora` |
+| Alcance ≥ 250 m (guía) / ≥ 1 km (PDR) | LoRa 915 MHz SF7 250 kHz 20 dBm — prueba `p3_alcance_lora` |
 
 Matriz completa, riesgos y pendientes: [docs/07-requisitos-y-riesgos.md](docs/07-requisitos-y-riesgos.md).
 
 ## Estado verificado
 
-- La lógica (protocolo, filtros, máquina de estados, GPS) tiene **9 pruebas automáticas**
-  (`pio test -e native` en `firmware/primaria`) incluyendo un vuelo simulado completo.
-- Los 3 firmwares y los 6 programas de prueba **compilan sin advertencias** para ESP32
-  (núcleo Arduino-ESP32 2.0.17).
-- El firmware de la primaria en modo simulación se **ejecutó en un ESP32 emulado (QEMU)**:
-  detectó la liberación a 449 m, desacopló solo a 198 m, midió −10.0 m/s con autogiro y
-  confirmó 10 s de transmisión tras aterrizar.
-- La estación terrena tiene 8 pruebas (`npm test`), incluidas tramas reales del firmware, conexión simulada y el manejo de un puerto ocupado.
+- La lógica (protocolo, filtros, máquina de estados, separación con 2 servos, brújula, GPS,
+  tiempo en el aire de LoRa) tiene **16 pruebas automáticas** (`pio test -e native` en
+  `firmware/primaria`), incluido un vuelo simulado completo.
+- Los 3 firmwares y los 6 programas de prueba **compilan sin advertencias** para sus placas
+  reales: Heltec WiFi LoRa 32 V3 (ESP32-S3) y ESP32-C3 (núcleo Arduino-ESP32 2.0.17,
+  RadioLib 7.8).
+- El firmware de la primaria en modo simulación se **ejecutó en un ESP32-S3 emulado (QEMU)**:
+  liberación a 449 m, desacople automático a 198 m, separación confirmada por el IMU,
+  autogiro a 183 m, −10 m/s con autogiro y 10 s de transmisión tras aterrizar.
+- La estación terrena tiene 8 pruebas (`npm test`), incluidas tramas reales de ese firmware
+  emulado (verifica el orden DESACOPLE → SEPARACION → AUTOGIRO).
 
-Lo que **falta validar con hardware**: pines reales, alcance LoRa con la antena dentro del
-cilindro, ángulos del servo, velocidad real del autogiro y autonomía de la pila.
+Lo que **falta validar con hardware**: alcance a 1 km con la antena dentro del cilindro (y
+SX1262 ↔ RFM95W), ángulos de los servos, calibración de la brújula, velocidad real del
+autogiro y autonomía de la pila. Para medir la pila hay que agregar el divisor 100k/33k que
+no está en el PDR.
 
 ## Equipo
 

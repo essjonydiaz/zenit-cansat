@@ -22,8 +22,10 @@ const TEXTO = new Set(['tipo', 'codigo', 'detalle', 'clave', 'orden']);
 
 const ESTADOS = ['PREVUELO', 'ASCENSO', 'CAIDA_LIBRE', 'DESCENSO_AUTOGIRO', 'ATERRIZADO'];
 
-// Bits del campo "flags" de la trama T.
-const BANDERAS = ['baro', 'imu', 'sd', 'lora', 'gps', 'baliza', 'desacople', 'simulacion', 'bateria_baja'];
+// Bits del campo "flags" de la trama T (mismo orden que banderas() en
+// firmware/primaria/src/main.cpp).
+const BANDERAS = ['baro', 'imu', 'sd', 'lora', 'gps', 'baliza', 'desacople', 'simulacion',
+  'bateria_baja', 'autogiro', 'separacion', 'magnetometro', 'bateria_sin_medir', 'sd_sin_confirmar'];
 
 // Qué placa manda cada tipo (para contar paquetes perdidos por fuente).
 const FUENTE = { T: 'primaria', P: 'primaria', E: 'primaria', B: 'secundaria', R: 'prueba' };

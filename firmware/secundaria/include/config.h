@@ -1,18 +1,26 @@
 // =============================================================================
 //  config.h — CARGA SECUNDARIA (baliza de localización)
-//  Radio: firmware/comun/ZenitComun/src/RadioConfig.h  ·  Pines: Pines.h
+//  ESP32-C3 SuperMini + RFM95W (915 MHz) + GPS NEO-6M + pila 9 V (MP1584EN a 3.3 V)
+//  Radio: firmware/comun/ZenitComun/src/RadioConfig.h  ·  Pines: Pines.h (namespace c3)
 // =============================================================================
 #pragma once
 
-#define PERIODO_BALIZA_MS      1000  // una trama B por segundo
-#define VARIACION_BALIZA_MS    200   // ± aleatorio para no chocar siempre con la primaria
+// PDR: "cada carga transmite su posición por LoRa cada 2 segundos durante al
+// menos 10 minutos". El ± aleatorio evita chocar siempre con la primaria.
+#define PERIODO_BALIZA_MS      2000
+#define VARIACION_BALIZA_MS    300
 #define GPS_BAUDIOS            9600
+#define GPS_MODO_AEREO         1     // UBX-CFG-NAV5 "aerotransportado < 1 g"
 
-// Batería (mismo divisor que la primaria; ver docs/02-conexiones.md)
+// Batería (opcional; mismo divisor que la primaria: 100k / 33k hacia GPIO1).
+// Sin divisor se reporta 0.00 V y el panel lo muestra como "sin medir".
+#define USAR_MEDICION_BATERIA  1
 #define BATERIA_R_ARRIBA_KOHM  100.0f
 #define BATERIA_R_ABAJO_KOHM   33.0f
+#define BATERIA_MINIMA_REAL_V  3.0f
 
-// Buzzer de localización: empieza a sonar este tiempo después de encender
-// (la secundaria no tiene barómetro para saber cuándo aterrizó).
-#define BUZZER_DESPUES_DE_MIN  8
+// Baliza sonora/luminosa de respaldo (riesgo 2 del PDR: pérdida de GPS).
+// Empieza este tiempo después de encender: la secundaria no tiene barómetro
+// para saber cuándo aterrizó.
+#define BALIZA_SONORA_DESPUES_DE_MIN 8
 #define BUZZER_ACTIVO_ALTO     1

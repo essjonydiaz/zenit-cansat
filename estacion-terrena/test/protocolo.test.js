@@ -35,17 +35,21 @@ test('el detalle de un evento puede traer comas', () => {
 });
 
 // Tramas producidas por el firmware REAL de la primaria (compilado y
-// ejecutado en un ESP32 emulado). Si alguien cambia el formato en C++ y no
+// ejecutado en un ESP32-S3 emulado con QEMU, entorno primaria_sim). Si alguien cambia el formato en C++ y no
 // en JavaScript, esta prueba falla.
 test('entiende las tramas del firmware de la primaria', () => {
   const lineas = fs.readFileSync(path.join(__dirname, 'datos', 'salida_firmware_sim.txt'), 'utf8')
     .split('\n').filter(Boolean);
   assert.ok(lineas.length > 10);
   const tipos = new Set();
+  const eventos = [];
+  let autogiroEnBanderas = false;
   for (const l of lineas) {
     const m = procesarLinea(l);
     assert.ok(m.valida, `trama inválida: ${l}`);
     tipos.add(m.datos.tipo);
+    if (m.datos.tipo === 'E') eventos.push(m.datos.codigo);
+    if (m.datos.tipo === 'T' && m.datos.banderas.autogiro) autogiroEnBanderas = true;
     if (m.datos.tipo === 'T') {
       assert.ok(Number.isFinite(m.datos.alt));
       assert.ok(Number.isFinite(m.datos.vel));
@@ -54,6 +58,11 @@ test('entiende las tramas del firmware de la primaria', () => {
     }
   }
   assert.ok(tipos.has('T') && tipos.has('P') && tipos.has('E'));
+  // Secuencia de los 2 servos a 200 m: desacople -> separación -> autogiro.
+  const orden = ['DESACOPLE', 'SEPARACION', 'AUTOGIRO', 'ATERRIZAJE'].map((c) => eventos.indexOf(c));
+  assert.ok(orden.every((i) => i >= 0), `faltan eventos: ${eventos.join(' ')}`);
+  assert.deepStrictEqual([...orden].sort((a, b) => a - b), orden);
+  assert.ok(autogiroEnBanderas, 'la bandera de autogiro desplegado nunca se encendió');
 });
 
 test('el simulador produce un vuelo completo con desacople', async () => {
@@ -66,7 +75,7 @@ test('el simulador produce un vuelo completo con desacople', async () => {
   sim._reiniciar();
   for (let i = 0; i < 2400; i++) sim._paso(0.05);  // 120 s de vuelo
   const codigos = eventos.map((e) => e.codigo);
-  for (const c of ['ASCENSO', 'LIBERACION', 'DESACOPLE', 'ATERRIZAJE', 'POST_ATERRIZAJE_OK']) {
+  for (const c of ['ASCENSO', 'LIBERACION', 'DESACOPLE', 'SEPARACION', 'AUTOGIRO', 'ATERRIZAJE', 'POST_ATERRIZAJE_OK']) {
     assert.ok(codigos.includes(c), `falta el evento ${c}`);
   }
   const des = eventos.find((e) => e.codigo === 'DESACOPLE');

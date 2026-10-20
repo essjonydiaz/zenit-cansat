@@ -1,73 +1,106 @@
-# 2. Conexiones (pinout)
+# 2. Conexiones (pinout) — según el PDR
 
 Fuente única en el código: [`firmware/comun/ZenitComun/src/Pines.h`](../firmware/comun/ZenitComun/src/Pines.h).
 Si se cambia un cable, cambiar **ese archivo y esta tabla**.
 
-## Carga primaria — ESP32 DevKit V1 (30 pines)
+Componentes (PDR, diapositivas 10 y 12):
 
-| Módulo | Pin del módulo | GPIO del ESP32 | Notas |
+| Carga | Placa | Radio | Sensores / módulos | Energía |
+|---|---|---|---|---|
+| Primaria | **Heltec WiFi LoRa 32 V3** (ESP32-S3) | SX1262 integrado, 915 MHz | GY-91 (MPU9250 + BMP280), GPS NEO-M8N, OpenLog + microSD, 2× SG90 | Pila 9 V → interruptor → MP1584EN (5 V) → AMS1117 (3.3 V) |
+| Secundaria | **ESP32-C3 SuperMini** | RFM95W (SX1276), 915 MHz | GPS NEO-6M, baliza LED/buzzer | Pila 9 V → reed switch → MP1584EN (3.3 V) |
+| Receptor de tierra | **Heltec WiFi LoRa 32 V3** | SX1262 integrado + antena SMA 915 MHz | — | USB de la laptop |
+
+## Carga primaria — Heltec WiFi LoRa 32 V3
+
+| Módulo | Pin del módulo | Pin de la Heltec | Notas |
 |---|---|---|---|
-| **BMP280** | VCC / GND | 3V3 / GND | Módulos de 6 pines: CSB a 3V3 para modo I2C |
-| | SDA / SCL | **21 / 22** | Dirección 0x76 (SDO a GND) o 0x77 |
-| **MPU6050** | VCC / GND | 3V3 (o 5V si el módulo trae regulador) / GND | |
-| | SDA / SCL | **21 / 22** | Mismo bus que el BMP280. AD0 a GND → 0x68 |
-| **LoRa SX1278 (Ra-02)** | VCC / GND | **3V3** / GND | ¡Solo 3.3 V! Nunca transmitir sin antena |
-| | SCK / MISO / MOSI | **18 / 19 / 23** | Bus VSPI compartido con la microSD |
-| | NSS | **5** | |
-| | RST | **14** | |
-| | DIO0 | **26** | |
-| **microSD** | VCC / GND | 5V o 3V3 según el módulo / GND | FAT32, ≤ 32 GB |
-| | SCK / MISO / MOSI | **18 / 19 / 23** | |
-| | CS | **4** | |
-| **Servo SG90** | Rojo / Café | 5 V (del regulador) / GND | Capacitor de 470 µF entre 5 V y GND junto al servo |
-| | Naranja (señal) | **13** | |
-| **GPS NEO-6M** | VCC / GND | 3V3 o 5V según módulo / GND | |
-| | TX del GPS | **16** (RX2) | |
-| | RX del GPS | **17** (TX2) | Opcional |
-| **Batería** | Divisor 100 kΩ / 33 kΩ | **34** | Ver abajo |
-| **Buzzer activo** | + / − | **25** / GND | Para encontrar el CanSat en el pasto |
-| LED | integrado | 2 | Parpadeo lento en tierra, rápido en vuelo, fijo al aterrizar |
+| **GY-91** | VIN / GND | 3.3 V del AMS1117 / GND | El GY-91 trae su propio regulador: acepta 3.3–5 V |
+| | SDA / SCL | **GPIO41 / GPIO42** | Bus `Wire`. MPU9250 en 0x68, BMP280 en 0x76, magnetómetro en 0x0C |
+| **GPS NEO-M8N** | VCC / GND | 3.3 V o 5 V según el módulo / GND | Antena cerámica mirando hacia arriba |
+| | TX del GPS | **GPIO47** | La placa recibe aquí |
+| | RX del GPS | **GPIO48** | Para mandarle el modo "aerotransportado" |
+| **OpenLog** | VCC / GND | 3.3 V / GND | microSD FAT32 con `documentos/openlog/config.txt` (115200 baudios) |
+| | RXI | **GPIO4** | La placa escribe aquí |
+| | TXO | **GPIO5** | Para saber si el OpenLog está vivo (responde `<`) |
+| **Servo DESACOPLE (SG90)** | Rojo / Café | **5 V del MP1584EN** / GND | Nunca del 3.3 V de la placa. Capacitor 470 µF entre 5 V y GND |
+| | Naranja (señal) | **GPIO2** | |
+| **Servo AUTOGIRO (SG90)** | Rojo / Café | 5 V del MP1584EN / GND | |
+| | Naranja (señal) | **GPIO3** | |
+| **Pila 9 V (medición)** | divisor 100 kΩ / 33 kΩ | **GPIO6** | **Falta en el PDR**: ver abajo |
+| Buzzer activo (opcional) | + / − | **GPIO7** / GND | Para encontrar el CanSat en el pasto |
+| Radio SX1262 | — | GPIO 8–14 (internos) | Ya viene conectado. Antena IPEX de 915 MHz, **nunca transmitir sin antena** |
+| Pantalla OLED | — | GPIO 17, 18, 21 y Vext (36) (internos) | Muestra el estado en tierra; se apaga en vuelo |
+| LED blanco | — | GPIO35 (interno) | Parpadeo lento en tierra, rápido en vuelo, fijo al aterrizar |
 
-**Carga secundaria:** mismo LoRa (18/19/23/5/14/26), GPS (16/17), batería (34) y buzzer (25).
-**Receptor de tierra:** solo el LoRa (18/19/23/5/14/26), alimentado por el USB de la laptop.
-
-## Pines que NO se deben usar
-
-El esquemático de la diapositiva 8 del CoDR usa etiquetas que **no existen** en el ESP32 o que
-no se pueden usar:
-
-- **GPIO 6, 7, 8, 9, 10, 11** ("GP6", etc.): están conectados a la memoria flash interna.
-  Usarlos bloquea la placa.
-- **GPIO 20, 24**: no existen en el ESP32.
-- **GPIO 0, 2, 12, 15**: definen el modo de arranque; evitarlos para módulos (el 12 en alto
-  al encender puede impedir que arranque).
-- **GPIO 34–39**: solo entrada (sirven para medir, no para controlar).
-
-Hay que actualizar ese esquemático con la tabla de arriba para el PDR.
-
-## Alimentación
-
-La Guía de Misión exige **pila cuadrada de 9 V** (ninguna otra batería). Propuesta:
+### Alimentación de la primaria
 
 ```
-Pila 9V ─ interruptor ─┬─> regulador step-down a 5 V (mini-buck tipo MP1584) ─┬─> VIN del ESP32
-                       │                                                      ├─> servo (con 470 µF)
-                       │                                                      └─> microSD / GPS (si son de 5 V)
-                       └─> 100 kΩ ─┬─ GPIO34
+Pila 9V ─ reed switch ─┬─> MP1584EN ajustado a 5.0 V ─┬─> pin 5V de la Heltec
+                       │                              ├─> servo DESACOPLE  (470 µF junto a los servos)
+                       │                              ├─> servo AUTOGIRO
+                       │                              └─> AMS1117-3.3 ─> GY-91, NEO-M8N, OpenLog
+                       └─> 100 kΩ ─┬─ GPIO6
                                    33 kΩ
                                    └─ GND
-ESP32 3V3 ─> BMP280, MPU6050, LoRa
 ```
 
-- Con 9.6 V (pila nueva) el GPIO34 recibe 2.38 V: dentro del rango del ADC.
-- Un step-down pierde menos energía que un regulador lineal (7805/AMS1117) bajando de 9 a 5 V.
-- Una pila de 9 V **de litio** pesa ~34 g (vs ~45 g alcalina) y dura mucho más con consumos
-  de 100–150 mA. Sigue siendo "pila cuadrada de 9 V", pero conviene confirmarlo con los jueces.
-- Si se usa otro divisor, cambiar `BATERIA_R_ARRIBA_KOHM` y `BATERIA_R_ABAJO_KOHM` en
-  `firmware/primaria/include/config.h`.
+- **Alimentar la Heltec por su pin 5V**, no por 3V3: la placa tiene su propio regulador y así no
+  se pelea con el AMS1117 cuando además se conecta el USB para programar.
+- **No alimentar sensores desde los pines "Ve"** de la Heltec: el firmware apaga Vext en vuelo
+  para ahorrar batería (corta la pantalla) y se quedarían sin energía.
+- Ajustar el MP1584EN a 5.0 V con el multímetro **antes** de conectar la placa (de fábrica
+  puede venir a más de 10 V).
+- Con 9.6 V (pila nueva) el GPIO6 recibe 2.38 V: dentro del rango del ADC. Si se usa otro
+  divisor, cambiar `BATERIA_R_ARRIBA_KOHM` y `BATERIA_R_ABAJO_KOHM` en
+  `firmware/primaria/include/config.h`. Sin divisor el firmware funciona igual y el panel dice
+  "sin medir" (no da falsas alarmas).
+
+## Carga secundaria — ESP32-C3 SuperMini (diagrama del PDR, diapositiva 12)
+
+| Módulo | Pin del módulo | Pin del C3 | Notas |
+|---|---|---|---|
+| **RFM95W** | 3.3V / GND | 3.3 V del MP1584EN / GND | Capacitor de 100 nF junto al módulo |
+| | SCK / MISO / MOSI | **GPIO4 / GPIO5 / GPIO6** | |
+| | NSS | **GPIO7** | Con 10 kΩ a 3.3 V (como en el PDR) |
+| | RESET | **GPIO3** | |
+| | DIO0 | **GPIO10** | Avisa cuando terminó de transmitir |
+| | ANT | antena 915 MHz (8.2 cm) | |
+| **GPS NEO-6M** | VCC / GND | 3.3 V / GND | |
+| | TX del GPS | **GPIO20** | |
+| | RX del GPS | **GPIO21** | |
+| Pila 9 V (opcional) | divisor 100 kΩ / 33 kΩ | **GPIO1** | Para reportar el voltaje en la baliza |
+| Buzzer (opcional) | + / − | **GPIO0** / GND | Baliza sonora de respaldo |
+| LED azul | — | GPIO8 (interno) | Parpadea con cada transmisión |
+
+El monitor serie del C3 va por su **USB nativo** (no tiene chip USB-serie): en PlatformIO ya
+está activado (`ARDUINO_USB_CDC_ON_BOOT=1`).
+
+## Receptor de tierra — Heltec WiFi LoRa 32 V3
+
+Solo la placa con la **antena SMA de 915 MHz** y el cable USB a la laptop. La pantalla muestra
+paquetes recibidos, RSSI y SNR (útil para apuntar la antena).
+
+## Diferencias encontradas en el PDR (revisar con electrónica)
+
+Estas inconsistencias están en el PDR entregado. El firmware ya está preparado para la opción
+correcta o para ambas, pero conviene corregirlas en el documento y en el armado:
+
+| # | Dónde (PDR) | Qué dice | Problema | Qué hace el firmware |
+|---|---|---|---|---|
+| 1 | Diap. 11, diagrama de la primaria | Servos en "GPIO25", señales en GPIO 14–17 y 21–25 | En el ESP32-S3 **no existen GPIO 22–25**; 14 es el radio, 17/18/21 son la pantalla. Varias etiquetas están repetidas | Usa la tabla de arriba (pines libres reales) |
+| 2 | Diap. 9 y 27 | Secundaria con "mini batería Li-Po"; "Baterías Li-Po (x2)" | La Guía de Misión solo permite **pila cuadrada de 9 V** (y la diap. 12 dice 9 V) | Supone pila de 9 V en ambas cargas |
+| 3 | Diap. 13 y 24 vs 10 | "BME280 + MPU9250" separados vs "GY-91" | El GY-91 trae **BMP280**; la diap. 21 además dice MPU6050 | Detecta solo BMP280 o BME280 y MPU9250/6500/6050 |
+| 4 | Diap. 27 | "GPS NEO-6M (x2)" | La primaria lleva **NEO-M8N** (diap. 6 y 10) | Funciona con los dos (ambos u-blox, 9600 baudios) |
+| 5 | Diap. 25 | Estación terrena con "RFM95W + ESP32" | La tabla de la diap. 12 dice **Heltec V3** | Receptor para Heltec V3 |
+| 6 | Diap. 8/11 vs 10 | OpenLog vs "Módulo MicroSD" | Son distintos (UART vs SPI) | OpenLog por defecto; `REGISTRO_TIPO` en `config.h` cambia a lector SPI |
+| 7 | Diap. 5, requisito 3 | "Diámetro máximo ≤ 600 cm" | Error de captura: el CanSat mide Ø 9–10 cm | — |
+| 8 | Diap. 26 | "Batería + TP4056" | El TP4056 carga Li-Po; no se usa con pila de 9 V | — |
+| 9 | Diap. 24 | "Voltaje de batería, 0.01 V" | El diagrama no trae divisor para medirlo | Agregar 100k/33k a GPIO6 (primaria) y GPIO1 (secundaria) |
+| 10 | Diap. 11 | 3.3 V del AMS1117 al pin 3V3 de la Heltec | Funciona, pero se pelea con el USB al programar | Recomendado: Heltec por su pin 5V |
 
 ## Antena
 
-La guía exige que la antena quede **dentro** del cilindro. Un cable de 17.3 cm (¼ de onda a
-433 MHz) enrollado en espiral o pegado por dentro de la pared funciona, pero hay que medir el
-alcance **ya montado** con la prueba P3. Evitar que la antena toque la pila o el cableado del servo.
+La guía exige que la antena quede **dentro** del cilindro. A 915 MHz el cuarto de onda mide
+**8.2 cm** (como en la diap. 7 del PDR): vertical, lejos de la pila y de los cables de los servos.
+Medir el alcance **ya montado** con la prueba P3 (requisito del PDR: ≥ 1 km).

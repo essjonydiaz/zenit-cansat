@@ -1,0 +1,88 @@
+# AGENTS.md — Guía para asistentes de IA (Claude Code, Copilot, Codex, Cursor…)
+
+Proyecto: software del CanSat **Zénit** (concurso CanSat 2026, PEU-UM, misión CASAT-FIT2026).
+Idioma del proyecto: **español** (código, comentarios, commits y respuestas).
+
+## 1. Ahorra tokens: lee el mapa antes que el código
+
+1. **`graphify-out/GRAPH_REPORT.md`** (≈10 KB): comunidades, nodos centrales y conexiones del
+   código. Léelo primero en vez de abrir archivos al azar.
+2. Para preguntas concretas usa el grafo, no `grep` por todo el repo:
+   ```bash
+   graphify query "¿dónde se decide el desacople?" --budget 800
+   graphify explain "Secuencia"
+   graphify path "procesarComando()" "iniciarSeparacion()"
+   ```
+3. Después abre **solo** los archivos que el grafo señala (las líneas vienen en `loc=`).
+4. Si cambiaste código, actualiza el mapa (sin costo de API): `graphify update .`
+   (si cambió mucho: `graphify extract . --code-only` y `graphify cluster-only .`).
+   El grafo cubre el código; la documentación está en `docs/` (tabla abajo).
+
+## 2. Qué es cada cosa
+
+| Ruta | Qué hay | Lenguaje |
+|---|---|---|
+| `firmware/primaria/` | Vuelo: Heltec WiFi LoRa 32 V3 (ESP32-S3), GY-91, NEO-M8N, OpenLog, 2 servos, OLED | C++ / PlatformIO |
+| `firmware/secundaria/` | Baliza: ESP32-C3 SuperMini + RFM95W + NEO-6M | C++ |
+| `firmware/receptor/` | Receptor de tierra: Heltec V3 por USB (puente radio ↔ PC) | C++ |
+| `firmware/pruebas/` | P1 autodiagnóstico, P2 GY-91, P3 alcance, P4 pila, P5 OpenLog, P6 servos | C++ |
+| `firmware/comun/ZenitComun` | **C++ puro** (sin Arduino): pines, radio, protocolo, filtros, máquina de estados, separación, Haversine, UBX, tiempo en el aire, simulador | C++ |
+| `firmware/comun/ZenitRadio` · `ZenitSensores` · `ZenitPantalla` | Drivers solo-ESP32 (RadioLib, GY-91, OLED) | C++ |
+| `estacion-terrena/` | Node.js: `server.js` + `src/` (protocolo, simulador, registro) + `public/` (panel web) | JavaScript |
+| `herramientas/analisis_vuelo.py` | Tabla y gráficas para el documento RAM | Python |
+| `docs/` | 01 arquitectura · 02 conexiones · 03 protocolo · 04 máquina de estados · 05 pruebas · 06 lanzamiento · 07 requisitos/riesgos · 08 git | Markdown |
+
+Valores de la misión: liberación a **450 m**, desacople + autogiro a **200 m**, descenso
+**8–12 m/s**, transmitir **≥ 10 s** tras aterrizar, **pila de 9 V**, **≤ 600 g**, 2 huevos de 65 g,
+LoRa **915 MHz**, alcance **≥ 1 km** (PDR).
+
+## 3. Comandos
+
+| Qué | Comando (desde la carpeta indicada) |
+|---|---|
+| Pruebas de la lógica (16) | `firmware/primaria`: `pio test -e native` |
+| Compilar | `pio run -d firmware/primaria -e primaria -e primaria_sim` · `pio run -d firmware/secundaria` · `pio run -d firmware/receptor` · `pio run -d firmware/pruebas` |
+| Estación terrena | `estacion-terrena`: `npm install` · `npm test` (8) · `npm run simular` → http://localhost:3000 |
+| Análisis | `python herramientas/analisis_vuelo.py herramientas/ejemplos/VUELO_SIMULADO.CSV` |
+
+GitHub Actions (`.github/workflows/ci.yml`) corre todo esto en cada push.
+
+## 4. Reglas que NO se pueden romper
+
+1. **Pines**: solo en `firmware/comun/ZenitComun/src/Pines.h` (+ tabla en `docs/02-conexiones.md`).
+   Heltec V3: GPIO 8–14 son del radio, 17/18/21 de la OLED, 19/20/43/44 del USB, **22–25 no
+   existen**, 26/33–38 no usar, 0/45/46 son de arranque. ESP32-C3: solo GPIO 0–10, 20, 21.
+2. **Radio**: los parámetros viven en `RadioConfig.h` y deben ser iguales en las 3 placas
+   (SX1262 y RFM95W solo se entienden así). Después de cambiarlos, recompilar las tres.
+3. **Protocolo**: `$TIPO,...*HH` (XOR). Si cambias un campo en C++ (`main.cpp`,
+   `Protocolo.cpp`) cámbialo también en `estacion-terrena/src/protocolo.js` y en
+   `docs/03-protocolo-telemetria.md`. La prueba `protocolo.test.js` usa tramas reales del
+   firmware (`test/datos/salida_firmware_sim.txt`).
+4. **Bits de `flags`**: el orden de `banderas()` en `firmware/primaria/src/main.cpp` y de
+   `BANDERAS` en `protocolo.js` debe ser idéntico.
+5. **C++11** (núcleo Arduino-ESP32 2.0.17 usa `-std=gnu++11`): nada de `auto` en parámetros,
+   variables `inline`, ni inicialización agregada de structs con valores por defecto.
+6. **Nada de punto flotante en constructores de objetos globales** en el ESP32-S3 (reinicio en
+   bucle por "Coprocessor exception"). Usa constructores `constexpr` (ver `Filtros.h`).
+7. `ZenitComun` no puede incluir `Arduino.h` ni librerías de hardware: se prueba en la PC.
+8. El `loop()` de la primaria corre a **50 Hz**: no meter `delay()` ni escrituras lentas; la
+   radio y el registro van por las colas de `Comunicaciones.cpp` (tarea en el núcleo 0).
+9. Uso del canal LoRa ≈ 30 %. No subir la frecuencia de tramas sin recalcular con
+   `aire::tiempoEnAireMs` y ajustar `test_tiempo_en_aire`.
+10. Seguridad de la misión: el desacople solo se arma después de pasar 250 m; el autogiro se
+    abre **siempre** 400 ms después del desacople. No quitar esas protecciones.
+
+## 5. Antes de dar algo por terminado
+
+- `pio test -e native` y `npm test` en verde; los entornos tocados compilan **sin advertencias**.
+- Si cambió el flujo de vuelo: subir `env:primaria_sim` (o el emulador) y revisar que salgan
+  `ASCENSO → LIBERACION → DESACOPLE → SEPARACION → AUTOGIRO → ATERRIZAJE → POST_ATERRIZAJE_OK`.
+- Actualizar el doc correspondiente de `docs/` y `graphify update .`.
+- Commits en español, en presente: "Agrega…", "Corrige…", "Ajusta…".
+
+## 6. Lo que todavía depende del hardware
+
+Alcance real a 1 km (antena dentro), interoperabilidad SX1262 ↔ RFM95W en campo, ángulos de
+los servos (P6), centros de la brújula (P2), velocidad del autogiro (P5), autonomía (P4) y el
+divisor de la pila (100k/33k a GPIO6) que no aparece en el PDR. Diferencias del PDR: tabla en
+`docs/02-conexiones.md`.

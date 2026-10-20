@@ -34,7 +34,7 @@ class Simulador extends EventEmitter {
     this._reiniciar();
     const pasoMs = 50;
     this.timer = setInterval(() => this._paso((pasoMs / 1000) * this.velocidad), pasoMs);
-    this._emitir('INFO,RECEPTOR_LISTO,lora=1,freq=433000000,sf=7,bw=250000,sync=0x5A,SIMULADO');
+    this._emitir('INFO,RECEPTOR_LISTO,lora=1,chip=SX1262,freq=915.0,sf=7,bw=250,sync=0x5A,err=0,SIMULADO');
   }
 
   detener() {
@@ -60,8 +60,9 @@ class Simulador extends EventEmitter {
       estado: 0, altMax: 0, gMax: 0, desacople: false, este: 0, esteSec: 0,
       hSec: 0, vSec: 0, secSuelta: false, tAterrizaje: null, postOk: false,
       tUltT: 0, tUltP: 0, tUltB: 0.4, tUltInfo: 0, yaw: 0, bat: 9.1,
+      tDesacople: null, separacionEv: false, autogiro: false,
     });
-    this._evento('ARRANQUE', 'baro=1(0x76) imu=1 lora=1 sd=1 /VUELO_000.CSV');
+    this._evento('ARRANQUE', 'baro=1(BMP280 0x76) imu=1(MPU9250) mag=1 lora=1 sd=1 OPENLOG');
     this._evento('CALIBRADO', 'p0=96300 bias=0.03/-0.02/0.10');
   }
 
@@ -112,6 +113,19 @@ class Simulador extends EventEmitter {
       default:
         break;
     }
+    // Secuencia de separación del firmware (Separacion.h): el IMU ve el jalón
+    // enseguida y el servo del autogiro abre 400 ms después del desacople.
+    if (this.tDesacople !== null) {
+      if (!this.separacionEv && this.t - this.tDesacople >= 0.02) {
+        this.separacionEv = true;
+        this._evento('SEPARACION', 'cambio=1.49 g');
+      }
+      if (!this.autogiro && this.t - this.tDesacople >= 0.4) {
+        this.autogiro = true;
+        if (this.fase === 'CAIDA') this._fase('AUTOGIRO');
+        this._evento('AUTOGIRO', `h=${this.h.toFixed(1)}`);
+      }
+    }
     if ((this.fase === 'CAIDA' || this.fase === 'AUTOGIRO') && this.h <= 0) {
       const gImpacto = Math.min((this.v * this.v) / (2 * 0.05) / G, 16);
       this.gMax = Math.max(this.gMax, gImpacto);
@@ -152,9 +166,10 @@ class Simulador extends EventEmitter {
     if (this.estado > 0) this.gMax = Math.max(this.gMax, fz);
     this.bat -= 0.00002 * dt;
 
-    if (this.t - this.tUltT >= 0.25) { this.tUltT = this.t; this._tramaT(fz); }
+    // Mismos periodos que el firmware: T 2 Hz, P 1 Hz, baliza B cada 2 s.
+    if (this.t - this.tUltT >= 0.5) { this.tUltT = this.t; this._tramaT(fz); }
     if (this.t - this.tUltP >= 1) { this.tUltP = this.t; this._tramaP(); }
-    if (this.t - this.tUltB >= 1) { this.tUltB = this.t; this._tramaB(); }
+    if (this.t - this.tUltB >= 2) { this.tUltB = this.t; this._tramaB(); }
     if (this.t - this.tUltInfo >= 5) {
       this.tUltInfo = this.t;
       this._emitir(`INFO,VIVO,lora=1,rx=${this.seq + this.secSeq},tx=0`);
@@ -166,7 +181,7 @@ class Simulador extends EventEmitter {
   _desacoplar(origen) {
     if (this.desacople) return;
     this.desacople = true;
-    if (this.fase === 'CAIDA') this._fase('AUTOGIRO');
+    this.tDesacople = this.t;
     this.secSuelta = true;
     this.hSec = this.h; this.vSec = this.v; this.esteSec = this.este;
     if (this.estado >= 1 && this.estado < 4) this.estado = 3;
@@ -198,7 +213,8 @@ class Simulador extends EventEmitter {
 
   _tramaT(fz) {
     const pres = this.p.presionTierra * Math.pow(1 - this.h / 44330, 5.25588);
-    const flags = 0b1111 | (1 << 4) | (1 << 5) | (this.desacople ? 1 << 6 : 0);
+    const flags = 0b1111 | (1 << 4) | (1 << 5) | (this.desacople ? 1 << 6 : 0)
+      | (this.autogiro ? 1 << 9 : 0) | (this.separacionEv ? 1 << 10 : 0) | (1 << 11);
     const giro = this.fase === 'AUTOGIRO' ? 600 : 0;
     const campos = [
       'T', ++this.seq, this._tms(), this.estado,

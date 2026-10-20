@@ -1,50 +1,47 @@
 // =============================================================================
 //  CanSat Zénit — Firmware de la CARGA SECUNDARIA (baliza de localización)
+//  ESP32-C3 SuperMini + RFM95W/SX1276 (915 MHz) + GPS NEO-6M
 //
 //  La secundaria cae en caída libre después del desacople. Su única tarea
 //  electrónica es decir DÓNDE está:
 //    - lee el GPS (NEO-6M) y
-//    - transmite cada segundo:  $B,seq,t_ms,lat,lon,sats,fix,bat*HH
+//    - transmite cada 2 s:  $B,seq,t_ms,lat,lon,sats,fix,bat*HH
 //  La primaria recibe esta trama y calcula distancia y dirección hacia la
 //  secundaria (Haversine). El receptor de tierra también la escucha.
+//  Respaldo si no hay GPS (árboles): LED y buzzer de búsqueda a corta distancia.
 //
-//  Si no cabe/pesa demasiado (7 cm de alto máximo), la alternativa es una
-//  baliza sin GPS: la primaria usaría solo la intensidad de señal (RSSI).
+//  Monitor serie: va por el USB nativo del C3 (USB CDC). Se ven las mismas
+//  tramas que salen por radio, con el prefijo "USB,".
 // =============================================================================
 #include <Arduino.h>
-#include <LoRa.h>
-#include <SPI.h>
 #include <TinyGPS++.h>
+#include <ZenitRadio.h>
 
 #include "ZenitComun.h"
 #include "config.h"
 
 static TinyGPSPlus gps;
+static zradio::Enlace enlace;
+static HardwareSerial& puertoGps = Serial1;
 static uint32_t secuencia = 0;
 static uint32_t tProximaBaliza = 0;
-static bool loraOk = false;
 
 static void buzzer(bool on) {
-  digitalWrite(pines::BUZZER, (on == (BUZZER_ACTIVO_ALTO == 1)) ? HIGH : LOW);
+  digitalWrite(c3::BUZZER, (on == (BUZZER_ACTIVO_ALTO == 1)) ? HIGH : LOW);
 }
+
+static void led(bool on) { digitalWrite(c3::LED, on ? LOW : HIGH); }  // activo en LOW
 
 static float leerBateria() {
+#if USAR_MEDICION_BATERIA
   uint32_t mv = 0;
-  for (int i = 0; i < 8; ++i) mv += analogReadMilliVolts(pines::BATERIA_ADC);
-  return (mv / 8000.0f) * (BATERIA_R_ARRIBA_KOHM + BATERIA_R_ABAJO_KOHM) / BATERIA_R_ABAJO_KOHM;
-}
-
-static bool iniciarLora() {
-  SPI.begin(pines::SPI_SCK, pines::SPI_MISO, pines::SPI_MOSI);
-  LoRa.setPins(pines::LORA_CS, pines::LORA_RST, pines::LORA_DIO0);
-  if (!LoRa.begin(radio::FRECUENCIA_HZ)) return false;
-  LoRa.setSpreadingFactor(radio::SPREADING_FACTOR);
-  LoRa.setSignalBandwidth(radio::ANCHO_BANDA_HZ);
-  LoRa.setCodingRate4(radio::CODING_RATE_4_DE);
-  LoRa.setTxPower(radio::POTENCIA_DBM);
-  LoRa.setSyncWord(radio::SYNC_WORD);
-  LoRa.enableCrc();
-  return true;
+  for (int i = 0; i < 8; ++i) mv += analogReadMilliVolts(c3::BATERIA_ADC);
+  const float v =
+      (mv / 8000.0f) * (BATERIA_R_ARRIBA_KOHM + BATERIA_R_ABAJO_KOHM) / BATERIA_R_ABAJO_KOHM;
+  return v >= BATERIA_MINIMA_REAL_V ? v : 0.0f;
+#else
+  return 0.0f;
+#endif
 }
 
 static void enviarBaliza() {
@@ -59,35 +56,45 @@ static void enviarBaliza() {
   if (protocolo::enmarcar(carga, trama, sizeof(trama)) == 0) return;
   Serial.print("USB,");
   Serial.println(trama);
-  if (loraOk) {
-    LoRa.beginPacket();
-    LoRa.print(trama);
-    LoRa.endPacket();
-  }
-  digitalWrite(pines::LED, !digitalRead(pines::LED));
+  led(true);
+  enlace.enviar(trama);  // ~60 ms en el aire
+  led(false);
 }
 
 void setup() {
   Serial.begin(115200);
-  pinMode(pines::LED, OUTPUT);
-  pinMode(pines::BUZZER, OUTPUT);
+  pinMode(c3::LED, OUTPUT);
+  pinMode(c3::BUZZER, OUTPUT);
+  led(false);
   buzzer(false);
-  analogSetPinAttenuation(pines::BATERIA_ADC, ADC_11db);
-  Serial2.begin(GPS_BAUDIOS, SERIAL_8N1, pines::GPS_RX, pines::GPS_TX);
-  loraOk = iniciarLora();
-  Serial.printf("INFO,ZENIT_SECUNDARIA,lora=%d\n", loraOk);
+#if USAR_MEDICION_BATERIA
+  analogSetPinAttenuation(c3::BATERIA_ADC, ADC_11db);
+#endif
+  puertoGps.begin(GPS_BAUDIOS, SERIAL_8N1, c3::GPS_RX, c3::GPS_TX);
+#if GPS_MODO_AEREO
+  uint8_t ubxMsg[ubx::TAM_CFG_NAV5];
+  puertoGps.write(ubxMsg, ubx::mensajeModeloDinamico(ubx::MODELO_AEREO_1G, ubxMsg, sizeof(ubxMsg)));
+#endif
+  enlace.iniciarRfm95(c3::LORA_SCK, c3::LORA_MISO, c3::LORA_MOSI, c3::LORA_NSS, c3::LORA_RST,
+                      c3::LORA_DIO0);
+  delay(500);  // dar tiempo a que abra el monitor serie USB
+  Serial.printf("INFO,ZENIT_SECUNDARIA,lora=%d,chip=%s,err=%d(%s),freq=%.1f\n", enlace.ok(),
+                enlace.chip(), enlace.error(), zradio::textoError(enlace.error()),
+                radio::FRECUENCIA_MHZ);
   // 2 pitidos = listo; 1 largo = falla la radio
-  for (int i = 0; i < (loraOk ? 2 : 1); ++i) {
+  for (int i = 0; i < (enlace.ok() ? 2 : 1); ++i) {
     buzzer(true);
-    delay(loraOk ? 80 : 800);
+    led(true);
+    delay(enlace.ok() ? 80 : 800);
     buzzer(false);
+    led(false);
     delay(80);
   }
   randomSeed(esp_random());
 }
 
 void loop() {
-  while (Serial2.available()) gps.encode(Serial2.read());
+  while (puertoGps.available()) gps.encode(puertoGps.read());
 
   const uint32_t ahora = millis();
   if ((int32_t)(ahora - tProximaBaliza) >= 0) {
@@ -96,7 +103,9 @@ void loop() {
                      random(-VARIACION_BALIZA_MS, VARIACION_BALIZA_MS + 1);
   }
 
-  // Buzzer de localización: 150 ms cada 2 s después de N minutos encendida.
-  const bool localizar = ahora > BUZZER_DESPUES_DE_MIN * 60000UL && (ahora % 2000) < 150;
+  // Baliza sonora/luminosa de búsqueda: 150 ms cada 2 s después de N minutos.
+  const bool localizar = ahora > BALIZA_SONORA_DESPUES_DE_MIN * 60000UL && (ahora % 2000) < 150;
   buzzer(localizar);
+  if (localizar) led(true);
+  else if ((ahora % 2000) >= 150 && (ahora % 2000) < 160) led(false);
 }

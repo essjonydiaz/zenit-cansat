@@ -1,26 +1,36 @@
 // =============================================================================
-//  CanSat Zénit — Firmware de la CARGA PRIMARIA (ESP32 DevKit V1)
+//  CanSat Zénit — Firmware de la CARGA PRIMARIA (Heltec WiFi LoRa 32 V3)
+//
+//  Hardware (PDR, etapa 3): Heltec V3 (ESP32-S3 + LoRa SX1262 915 MHz + OLED),
+//  GY-91 (MPU9250 + BMP280), GPS NEO-M8N, OpenLog con microSD, 2 servos SG90
+//  (desacople y autogiro), pila de 9 V -> MP1584EN (5 V) -> AMS1117 (3.3 V).
 //
 //  Qué hace, en cada ciclo de 20 ms (50 Hz):
-//    1. Lee BMP280 (presión, temperatura) y MPU6050 (aceleración, giro).
-//    2. Calcula orientación (Mahony), altitud y VELOCIDAD vertical
+//    1. Lee el GY-91: presión y temperatura (BMP280), aceleración, giro y
+//       campo magnético (MPU9250).
+//    2. Calcula orientación (Mahony + brújula), altitud y VELOCIDAD vertical
 //       (filtro complementario barómetro + acelerómetro) y altitud máxima.
-//    3. Corre la máquina de estados de la misión y, a 200 m de bajada,
-//       mueve el servo que suelta la carga secundaria y el autogiro.
+//    3. Corre la máquina de estados de la misión. A 200 m de bajada arranca la
+//       secuencia de separación: servo de desacople (suelta la secundaria),
+//       confirmación con el IMU y, 400 ms después, servo del autogiro.
 //    4. Guarda todo en la microSD (25 Hz) y transmite por LoRa:
-//       T = telemetría (4 Hz), P = posición/localización de la secundaria
+//       T = telemetría (2 Hz), P = posición/localización de la secundaria
 //       (1 Hz), E = eventos.
 //    5. Escucha la baliza de la secundaria y los comandos de tierra.
+//  En tierra muestra el estado en la pantalla OLED; en vuelo la apaga.
 //  Después de aterrizar sigue transmitiendo (mínimo exigido: 10 s) y el
 //  buzzer suena para encontrarlo.
 //
 //  Compilar/subir: PlatformIO -> entorno "primaria" (sensores reales)
-//                  o "primaria_sim" (vuelo simulado, solo con el ESP32).
+//                  o "primaria_sim" (vuelo simulado, solo con la placa).
 // =============================================================================
 #include <Arduino.h>
 #include <ESP32Servo.h>
 #include <TinyGPS++.h>
 #include <Wire.h>
+#include <ZenitPantalla.h>
+#include <ZenitRadio.h>
+#include <ZenitSensores.h>
 
 #include "Comunicaciones.h"
 #include "Sensores.h"
@@ -34,16 +44,28 @@ static Sensores sensores;
 static filtros::FiltroVertical filtro(FILTRO_OMEGA, FILTRO_ZETA);
 static filtros::Orientacion orientacion(MAHONY_KP);
 static mision::MaquinaEstados maquina;
-static Servo servo;
+static separacion::Parametros parametrosSeparacion() {
+  separacion::Parametros p;
+  p.retardoAutogiroMs = AUTOGIRO_RETARDO_MS;
+  p.cambioMinimoG = SEPARACION_CAMBIO_MIN_G;
+  return p;
+}
+static separacion::Secuencia secuencia(parametrosSeparacion());
+static Servo servoDesacople, servoAutogiro;
 static TinyGPSPlus gps;
+static zpantalla::Pantalla pantalla;
+static HardwareSerial& puertoGps = Serial1;
 
 // ------------------------------------------------------------- Estado -----
 static float presionTierra = 101325.0f;
 static float biasGx = 0, biasGy = 0, biasGz = 0;
-static uint32_t secuencia = 0;
+static uint32_t numSecuencia = 0;
 static uint32_t tUltimaMuestraUs = 0;
 static uint32_t tUltimaTelemetria = 0, tUltimaPosicion = 0, tUltimoRegistro = 0;
-static uint32_t tApagarServo = 0;
+#if USAR_PANTALLA
+static uint32_t tUltimaPantalla = 0;
+#endif
+static uint32_t tApagarDesacople = 0, tApagarAutogiro = 0;
 static uint32_t tBuzzerPrueba = 0;
 static bool eventoPostAterrizajeEnviado = false;
 
@@ -70,12 +92,13 @@ static DatosSensores datos;
 static float alturaBaro = 0, gTotal = 1, gMaxVuelo = 0;
 static float voltajeBateria = 0;
 static float distanciaSec = -1, rumboSec = -1;
+static float rumboBrujula = -1;
 
 // --------------------------------------------------------- Utilidades -----
 static inline float tiempoS() { return millis() / 1000.0f; }
 
 static void buzzer(bool encendido) {
-  digitalWrite(pines::BUZZER, (encendido == (BUZZER_ACTIVO_ALTO == 1)) ? HIGH : LOW);
+  digitalWrite(heltec::BUZZER, (encendido == (BUZZER_ACTIVO_ALTO == 1)) ? HIGH : LOW);
 }
 
 static void pitidos(int n, int msOn = 80, int msOff = 80) {
@@ -92,16 +115,19 @@ static float leerBateria() {
   return 9.1f - millis() / 3.6e6f;  // descarga simulada lenta
 #else
   uint32_t mv = 0;
-  for (int i = 0; i < 8; ++i) mv += analogReadMilliVolts(pines::BATERIA_ADC);
+  for (int i = 0; i < 8; ++i) mv += analogReadMilliVolts(heltec::BATERIA_ADC);
   const float vPin = (mv / 8.0f) / 1000.0f;
   return vPin * (BATERIA_R_ARRIBA_KOHM + BATERIA_R_ABAJO_KOHM) / BATERIA_R_ABAJO_KOHM;
 #endif
 }
 
+static bool bateriaMedida() { return voltajeBateria >= BATERIA_MINIMA_REAL_V; }
+
 static bool balizaVigente() {
   return baliza.alguna && (millis() - baliza.tRecibida) < BALIZA_VIGENTE_MS;
 }
 
+// Bits del campo "flags" de la trama T (docs/03-protocolo-telemetria.md).
 static uint16_t banderas() {
   const comms::Estado& c = comms::estado();
   uint16_t f = 0;
@@ -115,13 +141,18 @@ static uint16_t banderas() {
 #ifdef ZENIT_SIMULACION
   f |= 1 << 7;
 #endif
-  if (voltajeBateria > 0 && voltajeBateria < BATERIA_BAJA_V) f |= 1 << 8;
+  if (bateriaMedida() && voltajeBateria < BATERIA_BAJA_V) f |= 1 << 8;
+  if (secuencia.autogiroAbierto()) f |= 1 << 9;
+  if (secuencia.confirmada()) f |= 1 << 10;
+  if (sensores.magOk()) f |= 1 << 11;
+  if (!bateriaMedida()) f |= 1 << 12;
+  if (c.sdOk && !c.sdConfirmada) f |= 1 << 13;
   return f;
 }
 
 static void enviarEvento(const char* codigo, const char* detalle = "") {
   char carga[160];
-  snprintf(carga, sizeof(carga), "E,%lu,%lu,%s,%s", (unsigned long)++secuencia,
+  snprintf(carga, sizeof(carga), "E,%lu,%lu,%s,%s", (unsigned long)++numSecuencia,
            (unsigned long)millis(), codigo, detalle);
   comms::enviarTrama(carga);
   char linea[180];
@@ -130,22 +161,65 @@ static void enviarEvento(const char* codigo, const char* detalle = "") {
   comms::registrar(linea);
 }
 
-// ------------------------------------------------------------ Desacople ---
-static void ejecutarDesacople(const char* origen) {
-  servo.attach(pines::SERVO_DESACOPLE, 500, 2400);
-  servo.write(SERVO_ANGULO_ABIERTO);
-  tApagarServo = millis() + SERVO_TIEMPO_ACTIVO_MS;
+// -------------------------------------------------------------- Servos ----
+// La señal se desconecta después de SERVO_TIEMPO_ACTIVO_MS: el mecanismo se
+// queda donde está y el servo deja de gastar batería (y de zumbar).
+static void moverServo(Servo& s, int8_t pin, int angulo, uint32_t& tApagar) {
+  if (!s.attached()) s.attach(pin, 500, 2400);
+  s.write(angulo);
+  tApagar = millis() + SERVO_TIEMPO_ACTIVO_MS;
+}
+
+static void abrirDesacople() {
+  moverServo(servoDesacople, heltec::SERVO_DESACOPLE, DESACOPLE_ANGULO_ABIERTO, tApagarDesacople);
+  sensores.desacopleAbierto();
+}
+static void cerrarDesacople() {
+  moverServo(servoDesacople, heltec::SERVO_DESACOPLE, DESACOPLE_ANGULO_CERRADO, tApagarDesacople);
+}
+static void abrirAutogiro() {
+  moverServo(servoAutogiro, heltec::SERVO_AUTOGIRO, AUTOGIRO_ANGULO_ABIERTO, tApagarAutogiro);
   sensores.autogiroDesplegado();
+}
+static void cerrarServos() {
+  cerrarDesacople();
+  moverServo(servoAutogiro, heltec::SERVO_AUTOGIRO, AUTOGIRO_ANGULO_CERRADO, tApagarAutogiro);
+}
+
+// Arranca la secuencia de separación (automática a 200 m o por comando).
+static void iniciarSeparacion(const char* origen) {
   char detalle[64];
   snprintf(detalle, sizeof(detalle), "%s h=%.1f v=%.1f", origen, filtro.altura(),
            filtro.velocidad());
-  enviarEvento("DESACOPLE", detalle);
+  if (secuencia.iniciar(millis(), gTotal) & separacion::ABRIR_DESACOPLE) {
+    abrirDesacople();
+    enviarEvento("DESACOPLE", detalle);
+  } else {
+    // Ya se había hecho: por comando se vuelve a abrir todo (respaldo manual).
+    abrirDesacople();
+    abrirAutogiro();
+    enviarEvento("DESACOPLE", "REPETIDO");
+  }
 }
 
-static void cerrarServo() {
-  servo.attach(pines::SERVO_DESACOPLE, 500, 2400);
-  servo.write(SERVO_ANGULO_CERRADO);
-  tApagarServo = millis() + SERVO_TIEMPO_ACTIVO_MS;
+static void actualizarSeparacion() {
+  const uint8_t a = secuencia.actualizar(millis(), gTotal);
+  char detalle[48];
+  if (a & separacion::CONFIRMADA) {
+    snprintf(detalle, sizeof(detalle), "cambio=%.2f g", secuencia.cambioMaximoG());
+    enviarEvento("SEPARACION", detalle);
+  }
+  if (a & separacion::NO_CONFIRMADA) {
+    snprintf(detalle, sizeof(detalle), "cambio=%.2f g reintento", secuencia.cambioMaximoG());
+    enviarEvento("SEPARACION_NO_CONFIRMADA", detalle);
+  }
+  if (a & separacion::CERRAR_DESACOPLE) cerrarDesacople();
+  if (a & separacion::ABRIR_DESACOPLE) abrirDesacople();
+  if (a & separacion::ABRIR_AUTOGIRO) {
+    abrirAutogiro();
+    snprintf(detalle, sizeof(detalle), "h=%.1f", filtro.altura());
+    enviarEvento("AUTOGIRO", detalle);
+  }
 }
 
 // ---------------------------------------------------------- Calibración ---
@@ -154,7 +228,7 @@ static void cerrarServo() {
 static void calibrar() {
   double sumaP = 0;
   float sgx = 0, sgy = 0, sgz = 0, sax = 0, say = 0, saz = 0;
-  int nP = 0;
+  int nP = 0, nI = 0;
   DatosSensores d;
   for (int i = 0; i < MUESTRAS_CALIBRACION; ++i) {
     sensores.leer(d, PERIODO_MUESTREO_MS / 1000.0f);
@@ -162,16 +236,21 @@ static void calibrar() {
       sumaP += d.presionPa;
       nP++;
     }
-    sgx += d.gx; sgy += d.gy; sgz += d.gz;
-    sax += d.ax; say += d.ay; saz += d.az;
+    if (d.imuOk) {
+      sgx += d.gx; sgy += d.gy; sgz += d.gz;
+      sax += d.ax; say += d.ay; saz += d.az;
+      nI++;
+    }
     delay(PERIODO_MUESTREO_MS);
   }
-  const float n = MUESTRAS_CALIBRACION;
   if (nP > 0) presionTierra = sumaP / nP;
-  biasGx = sgx / n; biasGy = sgy / n; biasGz = sgz / n;
-  orientacion.iniciarDesdeAcel(sax / n, say / n, saz / n);
+  if (nI > 0) {
+    biasGx = sgx / nI; biasGy = sgy / nI; biasGz = sgz / nI;
+    orientacion.iniciarDesdeAcel(sax / nI, say / nI, saz / nI);
+  }
   filtro.reiniciar(0.0f, 0.0f);
   maquina.reiniciar();
+  secuencia.reiniciar();
   gMaxVuelo = 0;
   char detalle[80];
   snprintf(detalle, sizeof(detalle), "p0=%.0f bias=%.2f/%.2f/%.2f", presionTierra, biasGx,
@@ -193,14 +272,11 @@ static void procesarComando(const char* carga, size_t n) {
   const bool enTierra = maquina.estado() == Estado::PREVUELO;
   if (strcmp(orden, "DESACOPLAR") == 0) {
     // Respaldo manual: funciona en cualquier estado (útil si falla el automático).
-    if (!maquina.desacopleHecho()) {
-      maquina.desacopleManual(tiempoS());
-      ejecutarDesacople("MANUAL");
-    } else {
-      ejecutarDesacople("REPETIDO");
-    }
+    if (!maquina.desacopleHecho()) maquina.desacopleManual(tiempoS());
+    iniciarSeparacion("MANUAL");
   } else if (strcmp(orden, "CERRAR") == 0 && enTierra) {
-    cerrarServo();
+    cerrarServos();
+    secuencia.reiniciar();
     enviarEvento("CMD_OK", orden);
   } else if (strcmp(orden, "CALIBRAR") == 0 && enTierra) {
     calibrar();
@@ -261,7 +337,7 @@ static void procesarEntradas() {
 // ---------------------------------------------------------------- GPS -----
 static void actualizarGps() {
 #if USAR_GPS_PRIMARIA && !defined(ZENIT_SIMULACION)
-  while (Serial2.available()) gps.encode(Serial2.read());
+  while (puertoGps.available()) gps.encode(puertoGps.read());
   posPropia.fix = gps.location.isValid() && gps.location.age() < 3000;
   if (posPropia.fix) {
     posPropia.lat = gps.location.lat();
@@ -273,9 +349,9 @@ static void actualizarGps() {
 
 static void actualizarLocalizacionRelativa() {
 #ifdef ZENIT_SIMULACION
-  // En simulación la baliza también es simulada (1 vez por segundo).
+  // En simulación la baliza también es simulada (cada 2 s, como la real).
   static uint32_t tBalizaSim = 0;
-  if (millis() - tBalizaSim >= 1000) {
+  if (millis() - tBalizaSim >= 2000) {
     tBalizaSim = millis();
     baliza.lat = datos.latSec;
     baliza.lon = datos.lonSec;
@@ -297,24 +373,24 @@ static void actualizarLocalizacionRelativa() {
 
 // ------------------------------------------------------ Tramas de salida --
 static void enviarTelemetria() {
-  char carga[180];
+  char carga[200];
   snprintf(carga, sizeof(carga),
            "T,%lu,%lu,%u,%.2f,%.2f,%.2f,%.0f,%.1f,%.2f,%.2f,%.2f,%.0f,%.0f,%.0f,%.1f,%.1f,%.1f,%.2f,%.2f,%u",
-           (unsigned long)++secuencia, (unsigned long)millis(),
+           (unsigned long)++numSecuencia, (unsigned long)millis(),
            (unsigned)maquina.estado(), filtro.altura(), filtro.velocidad(),
            maquina.alturaMaxima(), datos.presionPa, datos.temperaturaC, datos.ax, datos.ay,
            datos.az, datos.gx - biasGx, datos.gy - biasGy, datos.gz - biasGz,
            orientacion.roll(), orientacion.pitch(), orientacion.yaw(), gMaxVuelo,
-           voltajeBateria, banderas());
+           bateriaMedida() ? voltajeBateria : 0.0f, banderas());
   comms::enviarTrama(carga);
 }
 
 static void enviarPosicion() {
   const float edadBaliza = baliza.alguna ? (millis() - baliza.tRecibida) / 1000.0f : -1;
-  char carga[180];
+  char carga[200];
   snprintf(carga, sizeof(carga),
            "P,%lu,%lu,%.6f,%.6f,%u,%d,%.6f,%.6f,%.1f,%.1f,%.1f,%d,%.2f",
-           (unsigned long)++secuencia, (unsigned long)millis(), posPropia.lat, posPropia.lon,
+           (unsigned long)++numSecuencia, (unsigned long)millis(), posPropia.lat, posPropia.lon,
            posPropia.sats, posPropia.fix ? 1 : 0, baliza.lat, baliza.lon, edadBaliza,
            distanciaSec, rumboSec, baliza.rssi, baliza.bateria);
   comms::enviarTrama(carga);
@@ -322,74 +398,136 @@ static void enviarPosicion() {
 
 static const char* ENCABEZADO_SD =
     "t_ms,estado,alt_baro,alt,vel,alt_max,pres,temp,ax,ay,az,gx,gy,gz,roll,pitch,yaw,"
-    "g,g_max,bat,lat,lon,sats,dist_sec,rumbo_sec,flags";
+    "g,g_max,bat,lat,lon,sats,dist_sec,rumbo_sec,flags,mx,my,mz,brujula";
 
 static void registrarMuestra() {
   char linea[comms::TAM_MENSAJE];
   snprintf(linea, sizeof(linea),
            "%lu,%u,%.2f,%.2f,%.2f,%.2f,%.0f,%.1f,%.3f,%.3f,%.3f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,"
-           "%.2f,%.2f,%.2f,%.6f,%.6f,%u,%.1f,%.1f,%u",
+           "%.2f,%.2f,%.2f,%.6f,%.6f,%u,%.1f,%.1f,%u,%.1f,%.1f,%.1f,%.0f",
            (unsigned long)millis(), (unsigned)maquina.estado(), alturaBaro, filtro.altura(),
            filtro.velocidad(), maquina.alturaMaxima(), datos.presionPa, datos.temperaturaC,
            datos.ax, datos.ay, datos.az, datos.gx - biasGx, datos.gy - biasGy,
            datos.gz - biasGz, orientacion.roll(), orientacion.pitch(), orientacion.yaw(),
            gTotal, gMaxVuelo, voltajeBateria, posPropia.lat, posPropia.lon, posPropia.sats,
-           distanciaSec, rumboSec, banderas());
+           distanciaSec, rumboSec, banderas(), datos.mx, datos.my, datos.mz, rumboBrujula);
   comms::registrar(linea);
 }
 
 // ------------------------------------------------------- Indicadores ------
+static void apagarServosInactivos(uint32_t ahora) {
+  if (tApagarDesacople && (int32_t)(ahora - tApagarDesacople) >= 0) {
+    servoDesacople.detach();
+    tApagarDesacople = 0;
+  }
+  if (tApagarAutogiro && (int32_t)(ahora - tApagarAutogiro) >= 0) {
+    servoAutogiro.detach();
+    tApagarAutogiro = 0;
+  }
+}
+
+static void actualizarPantalla(uint32_t ahora) {
+#if USAR_PANTALLA
+  const Estado e = maquina.estado();
+  const bool enTierra = e == Estado::PREVUELO || e == Estado::ATERRIZADO;
+  if (!enTierra) {
+    if (pantalla.encendida()) pantalla.apagar();  // en vuelo: ahorrar batería
+    return;
+  }
+  if (!pantalla.ok() || ahora - tUltimaPantalla < PERIODO_PANTALLA_MS) return;
+  tUltimaPantalla = ahora;
+  const comms::Estado& c = comms::estado();
+  pantalla.renglon(0, "ZENIT %s", mision::nombre(e));
+  pantalla.renglon(1, "LoRa:%s SD:%s Bat:%s", c.loraOk ? "OK" : "X",
+                   c.sdOk ? (c.sdConfirmada ? "OK" : "?") : "X",
+                   bateriaMedida() ? String(voltajeBateria, 1).c_str() : "--");
+  pantalla.renglon(2, "Alt:%.1fm Vel:%.1f", filtro.altura(), filtro.velocidad());
+  pantalla.renglon(3, "GPS:%s sat:%u Bal:%s", posPropia.fix ? "fix" : "--", posPropia.sats,
+                   balizaVigente() ? "OK" : "--");
+  if (distanciaSec >= 0) {
+    pantalla.renglon(4, "Sec: %.0fm %s", distanciaSec, geo::puntoCardinal(rumboSec));
+  } else {
+    pantalla.renglon(4, "BARO:%s IMU:%s MAG:%s", datos.baroOk ? "OK" : "X",
+                     datos.imuOk ? "OK" : "X", sensores.magOk() ? "OK" : "-");
+  }
+  pantalla.mostrar();
+#else
+  (void)ahora;
+#endif
+}
+
 static void actualizarIndicadores() {
   const uint32_t ahora = millis();
-  if (tApagarServo && (int32_t)(ahora - tApagarServo) >= 0) {
-    servo.detach();  // ahorra batería; el mecanismo queda en su posición
-    tApagarServo = 0;
-  }
+  apagarServosInactivos(ahora);
   // LED: parpadeo lento en tierra, rápido en vuelo, fijo al aterrizar.
   const Estado e = maquina.estado();
   const uint32_t periodo = e == Estado::PREVUELO ? 1000 : 200;
-  digitalWrite(pines::LED, e == Estado::ATERRIZADO ? HIGH : ((ahora / periodo) % 2));
+  digitalWrite(heltec::LED, e == Estado::ATERRIZADO ? HIGH : ((ahora / periodo) % 2));
   // Buzzer de localización después de aterrizar (o prueba por comando).
   const bool localizar = e == Estado::ATERRIZADO && (ahora % 1000) < 200;
   const bool prueba = tBuzzerPrueba && (int32_t)(tBuzzerPrueba - ahora) > 0;
   buzzer(localizar || prueba);
+  actualizarPantalla(ahora);
 }
 
 // ================================================================ setup ===
 void setup() {
   Serial.begin(115200);
-  pinMode(pines::LED, OUTPUT);
-  pinMode(pines::BUZZER, OUTPUT);
+  pinMode(heltec::LED, OUTPUT);
+  pinMode(heltec::BUZZER, OUTPUT);
   buzzer(false);
   delay(300);
   Serial.println("INFO,ZENIT_PRIMARIA,iniciando");
 
-  // El servo empieza CERRADO: sostiene a la carga secundaria.
+  // Los dos servos empiezan CERRADOS: sostienen a la secundaria y a las palas.
   ESP32PWM::allocateTimer(0);
-  servo.setPeriodHertz(50);
-  cerrarServo();
+  ESP32PWM::allocateTimer(1);
+  servoDesacople.setPeriodHertz(50);
+  servoAutogiro.setPeriodHertz(50);
+  cerrarServos();
 
-  Wire.begin(pines::I2C_SDA, pines::I2C_SCL, 400000);
+#if USAR_PANTALLA
+  pantalla.iniciar();
+  pantalla.renglon(0, "ZENIT primaria");
+  pantalla.renglon(1, "iniciando...");
+  pantalla.mostrar();
+#endif
+
+  Wire.begin(heltec::I2C_SDA, heltec::I2C_SCL, 400000);
   const bool baro = sensores.iniciar();
 #if USAR_GPS_PRIMARIA && !defined(ZENIT_SIMULACION)
-  Serial2.begin(GPS_BAUDIOS, SERIAL_8N1, pines::GPS_RX, pines::GPS_TX);
+  puertoGps.begin(GPS_BAUDIOS, SERIAL_8N1, heltec::GPS_RX, heltec::GPS_TX);
+#if GPS_MODO_AEREO
+  zsensores::configurarGpsAereo(puertoGps);
 #endif
-  analogSetPinAttenuation(pines::BATERIA_ADC, ADC_11db);
+#endif
+  analogSetPinAttenuation(heltec::BATERIA_ADC, ADC_11db);
+  voltajeBateria = leerBateria();
 
   comms::iniciar(ENCABEZADO_SD);
   const comms::Estado& c = comms::estado();
 
-  char detalle[96];
-  snprintf(detalle, sizeof(detalle), "baro=%d(0x%02X) imu=%d lora=%d sd=%d %s", baro,
-           sensores.direccionBaro(), sensores.imuOk(), c.loraOk, c.sdOk, c.archivo);
+  char detalle[140];
+  snprintf(detalle, sizeof(detalle),
+           "baro=%d(%s 0x%02X) imu=%d(%s) mag=%d lora=%d sd=%d%s %s", baro,
+           sensores.modeloBaro(), sensores.direccionBaro(), sensores.imuOk(),
+           sensores.modeloImu(), sensores.magOk(), c.loraOk, c.sdOk,
+           c.sdOk && !c.sdConfirmada ? "?" : "", c.archivo);
   enviarEvento("ARRANQUE", detalle);
+  if (!c.loraOk) {
+    snprintf(detalle, sizeof(detalle), "%d %s", c.errorLora,
+             c.errorLora == comms::ERROR_RADIO_SIN_RESPUESTA
+                 ? "el SX1262 no responde (revisar antena/placa)"
+                 : zradio::textoError(c.errorLora));
+    enviarEvento("LORA_ERROR", detalle);
+  }
 #ifdef ZENIT_SIMULACION
   enviarEvento("SIMULACION", "vuelo simulado activo");
 #endif
 
   calibrar();
   // 3 pitidos = listo. 1 pitido largo = falta algún sensor crítico.
-  if (baro && sensores.imuOk()) {
+  if (baro && sensores.imuOk() && c.loraOk) {
     pitidos(3);
   } else {
     pitidos(1, 800);
@@ -424,6 +562,12 @@ void loop() {
     orientacion.actualizar(gx * GRAD_A_RAD, gy * GRAD_A_RAD, gz * GRAD_A_RAD, datos.ax,
                            datos.ay, datos.az, dt);
   }
+  if (datos.magNuevo) {
+    float ux, uy, uz;
+    orientacion.arriba(ux, uy, uz);
+    rumboBrujula = filtros::rumboMagnetico(datos.mx, datos.my, datos.mz, ux, uy, uz);
+    orientacion.fusionarRumbo(rumboBrujula, PERIODO_MAG_MS / 1000.0f, MAG_TAU_S);
+  }
   gTotal = sqrtf(datos.ax * datos.ax + datos.ay * datos.ay + datos.az * datos.az);
   const float aVertical =
       orientacion.verticalDelMundo(datos.ax, datos.ay, datos.az) * filtros::G - filtros::G;
@@ -431,7 +575,7 @@ void loop() {
   filtro.actualizar(datos.baroOk ? alturaBaro : filtro.altura(), aVertical, dt,
                     USAR_ACEL_EN_FILTRO && datos.imuOk);
 
-  // 3) Máquina de estados de la misión
+  // 3) Máquina de estados de la misión y secuencia de separación
   if (maquina.estado() != Estado::PREVUELO && gTotal > gMaxVuelo) gMaxVuelo = gTotal;
   const uint8_t ev = maquina.actualizar(
       {tiempoS(), filtro.altura(), filtro.velocidad(), datos.imuOk ? gTotal : 1.0f});
@@ -441,7 +585,8 @@ void loop() {
     snprintf(detalle, sizeof(detalle), "h=%.1f", filtro.altura());
     enviarEvento("LIBERACION", detalle);
   }
-  if (ev & mision::EV_DESACOPLE) ejecutarDesacople("AUTO");
+  if (ev & mision::EV_DESACOPLE) iniciarSeparacion("AUTO");
+  actualizarSeparacion();
   if (ev & mision::EV_ATERRIZAJE) {
     snprintf(detalle, sizeof(detalle), "alt_max=%.1f g_max=%.1f", maquina.alturaMaxima(),
              gMaxVuelo);

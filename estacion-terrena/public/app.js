@@ -201,7 +201,7 @@ function procesarSinProteccion(msg) {
   }
 }
 
-const HITOS = ['ARRANQUE', 'CALIBRADO', 'ASCENSO', 'LIBERACION', 'DESACOPLE', 'ATERRIZAJE', 'POST_ATERRIZAJE_OK'];
+const HITOS = ['ARRANQUE', 'CALIBRADO', 'ASCENSO', 'LIBERACION', 'DESACOPLE', 'AUTOGIRO', 'ATERRIZAJE', 'POST_ATERRIZAJE_OK'];
 function procesarEvento(d, t, msg) {
   if (HITOS.includes(d.codigo) && S.hitos[d.codigo] === undefined) S.hitos[d.codigo] = t;
   switch (d.codigo) {
@@ -209,12 +209,22 @@ function procesarEvento(d, t, msg) {
     case 'DESACOPLE':
       if (!S.marcas.desacople) {
         const h = numeroEn(d.detalle, 'h');
-        S.marcas.desacople = { t, h, v: numeroEn(d.detalle, 'v'), origen: (d.detalle || '').split(' ')[0] };
+        S.marcas.desacople = { t, h, v: numeroEn(d.detalle, 'v'), origen: (d.detalle || '').split(' ')[0], pc: ahora() };
         if (h !== null && Math.abs(h - 200) > 20) {
           alerta('des-altura', 'aviso', `Desacople a ${fmt(h)} m`, 'La misión pide 200 m. Revisa el barómetro o la calibración en tierra.', true);
         }
       }
       resolverComando('DESACOPLAR', d.detalle);
+      break;
+    case 'SEPARACION': S.marcas.separacion = { t, ok: true }; break;
+    case 'SEPARACION_NO_CONFIRMADA':
+      S.marcas.separacion = { t, ok: false };
+      alerta('sep-noconf', 'aviso', 'Separación no confirmada por el IMU',
+        'El servo abrió pero no se sintió el jalón; el firmware reintentó. Confirma con la baliza de la secundaria (distancia creciendo).', true);
+      break;
+    case 'AUTOGIRO': S.marcas.autogiro = { t, h: numeroEn(d.detalle, 'h') }; break;
+    case 'LORA_ERROR':
+      alerta('lora-error', 'critico', 'La primaria no pudo iniciar su radio', `${d.detalle}. Llegó por USB: revisa la antena y reinicia la placa.`, true);
       break;
     case 'ATERRIZAJE': S.marcas.aterrizaje = { t }; break;
     case 'POST_ATERRIZAJE_OK': S.postOk = true; break;
@@ -279,7 +289,7 @@ function diagnosticar() {
   } else if (S.origenUltimo === 'USB' && hace(S.tAnyPc) < 5) {
     c.rec = { estado: 'ok', sub: 'USB directo', ayuda: 'Hay una placa de vuelo conectada directo por USB (sin receptor LoRa).' };
   } else if (S.receptor.lora === 0) {
-    c.rec = { estado: 'critico', sub: 'Sin módulo LoRa', ayuda: 'El receptor arrancó pero no detecta su SX1278. Revisa NSS=5, RST=14, DIO0=26, SPI 18/19/23 y 3.3 V.' };
+    c.rec = { estado: 'critico', sub: 'Sin módulo LoRa', ayuda: 'El receptor (Heltec V3) arrancó pero su radio SX1262 no responde. Conecta la antena SMA de 915 MHz, reinicia la placa (RST) y revisa que sea el firmware env:receptor.' };
   } else if (hace(S.receptor.pc) > 8 && hace(S.tAnyPc) > 8) {
     c.rec = { estado: 'aviso', sub: 'Sin latido', ayuda: 'El puerto está abierto pero el receptor no manda "INFO,VIVO". ¿Está cargado el firmware del receptor? Presiona EN (reset) en la placa.' };
   } else {
@@ -290,7 +300,7 @@ function diagnosticar() {
   if (c.rec.estado === 'critico' || c.rec.estado === 'gris') {
     c.rad = { estado: 'gris', sub: 'Sin datos', ayuda: 'Primero hay que recuperar el receptor.' };
   } else if (!S.tPriPc) {
-    c.rad = { estado: 'gris', sub: 'Esperando paquetes', ayuda: 'Todavía no llega nada de la primaria. ¿Está encendida? Mismo RadioConfig.h (433 MHz, sync 0x5A) en ambas placas.' };
+    c.rad = { estado: 'gris', sub: 'Esperando paquetes', ayuda: 'Todavía no llega nada de la primaria. ¿Está encendida? Mismo RadioConfig.h (915 MHz, SF7, 250 kHz, sync 0x5A) en las tres placas.' };
   } else if (hace(S.tPriPc) > 3) {
     const seg = Math.round(hace(S.tPriPc));
     c.rad = { estado: enVuelo() ? 'critico' : 'aviso', sub: `Sin paquetes hace ${seg} s`, ayuda: '¿Primaria apagada, fuera de alcance, antena desconectada o frecuencia/palabra de sincronía distinta?' };
@@ -335,7 +345,7 @@ function diagnosticar() {
 function evaluarAlertas(c) {
   condicion('ws', !wsAbierto, 'critico', 'Sin conexión con el servidor', 'Revisa la terminal donde corre npm start.');
   condicion('fuente', wsAbierto && !fuente.conectado && Boolean(fuente.error), 'critico', 'Receptor desconectado', `${fuente.error || ''} · Revisa el cable USB, el puerto COM o el driver.`);
-  condicion('rx-lora', c.rec.sub === 'Sin módulo LoRa', 'critico', 'El receptor no detecta su módulo LoRa', 'Revisa las conexiones del SX1278 del receptor.');
+  condicion('rx-lora', c.rec.sub === 'Sin módulo LoRa', 'critico', 'El receptor no detecta su módulo LoRa', 'Conecta la antena SMA de 915 MHz al Heltec V3 del receptor y reinícialo.');
   condicion('sin-tele', enVuelo() && hace(S.tPriPc) > 3 && fuente.conectado, 'critico',
     `Sin telemetría de la primaria hace ${Math.round(hace(S.tPriPc))} s`, 'Revisa: ¿primaria apagada, fuera de alcance o frecuencia distinta?');
   const T = S.T;
@@ -343,8 +353,15 @@ function evaluarAlertas(c) {
   condicion('no-desacople', sinDesacople, 'critico', '¡No se desacopló a 200 m!', 'Considera el desacople manual (botón rojo, doble clic).');
   const b = T && T.banderas;
   condicion('s-baro', b && !b.baro, 'critico', 'Barómetro (BMP280) sin respuesta', 'Sin barómetro no hay altitud ni desacople automático.');
-  condicion('s-imu', b && !b.imu, 'critico', 'IMU (MPU6050) sin respuesta', 'Sin IMU no hay orientación ni aceleración.');
+  condicion('s-imu', b && !b.imu, 'critico', 'IMU (MPU9250 del GY-91) sin respuesta', 'Sin IMU no hay orientación ni aceleración.');
   condicion('s-sd', b && !b.sd, 'aviso', 'microSD no detectada', 'No se guardará el respaldo del vuelo en la tarjeta.');
+  condicion('s-sd-conf', b && b.sd && b.sd_sin_confirmar, 'aviso', 'OpenLog sin confirmar',
+    'Se escribe al OpenLog pero no respondió. Revisa el cable TXO -> GPIO5, la microSD (FAT32) y config.txt a 115200.');
+  condicion('bat-sin-medir', b && b.bateria_sin_medir && !b.simulacion, 'aviso', 'Voltaje de la pila sin medir',
+    'Falta el divisor 100k/33k hacia GPIO6. Mide la pila con multímetro antes del vuelo (mínimo 8.5 V).');
+  const sinAutogiro = S.marcas.desacople && !S.marcas.autogiro && hace(S.marcas.desacople.pc) > 2;
+  condicion('no-autogiro', sinAutogiro && enVuelo(), 'critico', 'El autogiro no reportó despliegue',
+    'Pasaron 2 s del desacople sin evento AUTOGIRO. Revisa la velocidad: debe bajar a 8–12 m/s.');
   condicion('s-gps', b && !b.gps, 'aviso', 'GPS de la primaria sin posición', 'No se podrá calcular la distancia a la secundaria.');
   condicion('bat', T && T.bat > 0 && T.bat < 7.5, 'aviso', `Batería baja: ${fmt(T && T.bat, 2)} V`, 'Cambia la pila de 9 V antes del vuelo.');
   const pp = perdidasPct(S.enlace.primaria);
@@ -427,7 +444,9 @@ function dibujarSalud(c) {
 function dibujarBateria() {
   const v = S.T ? S.T.bat : null;
   const nivel = $('pilaNivel');
+  const sinMedir = S.T && S.T.banderas && S.T.banderas.bateria_sin_medir && !S.T.banderas.simulacion;
   if (v === null) { nivel.style.width = '0'; $('batValor').textContent = '—'; }
+  else if (sinMedir) { nivel.style.width = '0'; $('batValor').textContent = 'sin medir'; }
   else {
     // Pila de 9 V: ~9.6 V nueva, ~7 V agotada para el regulador
     nivel.style.width = `${clamp((v - 7) / (9.6 - 7), 0.04, 1) * 100}%`;
@@ -857,7 +876,7 @@ function itemsPrevuelo(c) {
   it('LoRa', b && b.lora);
   it('GPS primaria', b && b.gps);
   it('Baliza secundaria con GPS', edadSecundaria() < 5 && S.B && S.B.fix === 1, S.B ? `${S.B.sats} sat` : '');
-  it('Batería ≥ 8.5 V', T && T.bat >= 8.5, T ? `${fmt(T.bat, 2)} V` : '');
+  it('Batería ≥ 8.5 V', T && T.bat >= 8.5, T ? (T.bat > 0 ? `${fmt(T.bat, 2)} V` : 'sin divisor') : '');
   it('Altitud calibrada (±3 m)', T && Math.abs(T.alt) <= 3, T ? `${fmt(T.alt)} m` : '');
   it('Firmware de vuelo (no simulación)', b && (!b.simulacion || fuente.modo !== 'serie'), b && b.simulacion ? 'primaria_sim' : '');
   return items;
@@ -949,14 +968,14 @@ function dibujarSecundaria() {
 }
 
 // ---------------------------------------------------- eventos / consola --
-const NOMBRE_HITO = { ARRANQUE: 'Arranque', CALIBRADO: 'Calibrado', ASCENSO: 'Ascenso', LIBERACION: 'Liberación', DESACOPLE: 'Desacople', ATERRIZAJE: 'Aterrizaje', POST_ATERRIZAJE_OK: 'Post-aterrizaje' };
+const NOMBRE_HITO = { ARRANQUE: 'Arranque', CALIBRADO: 'Calibrado', ASCENSO: 'Ascenso', LIBERACION: 'Liberación', DESACOPLE: 'Desacople', AUTOGIRO: 'Autogiro', ATERRIZAJE: 'Aterrizaje', POST_ATERRIZAJE_OK: 'Post-aterrizaje' };
 function dibujarEventos() {
   const cont = $('lineaTiempo');
   const t0 = S.hitos.ARRANQUE !== undefined ? S.hitos.ARRANQUE : 0;
   let ultimo = -1;
   HITOS.forEach((h, i) => { if (S.hitos[h] !== undefined) ultimo = i; });
   const pos = (i) => 5 + (i / (HITOS.length - 1)) * 90;  // margen para que las etiquetas no se corten
-  const clases = { LIBERACION: 'lib', DESACOPLE: 'des', ATERRIZAJE: 'ate', POST_ATERRIZAJE_OK: 'ate' };
+  const clases = { LIBERACION: 'lib', DESACOPLE: 'des', AUTOGIRO: 'des', ATERRIZAJE: 'ate', POST_ATERRIZAJE_OK: 'ate' };
   cont.innerHTML = `<div class="base" style="left:${pos(0)}%;right:${100 - pos(HITOS.length - 1)}%"></div><div class="avance" style="left:${pos(0)}%;width:${ultimo < 0 ? 0 : pos(ultimo) - pos(0)}%"></div>` +
     HITOS.map((h, i) => {
       const ocurrido = S.hitos[h] !== undefined;

@@ -6,11 +6,12 @@ analisis_vuelo.py — Resultados de la misión para el documento RAM
 Acepta cualquiera de las dos fuentes de datos:
   * la sesión de la estación terrena:  estacion-terrena/logs/sesion_XXXX_telemetria.csv
     (lee también ..._eventos.csv y ..._posicion.csv si existen)
-  * el archivo de la microSD de la primaria:  VUELO_000.CSV  (más muestras: 25 Hz)
+  * el archivo de la microSD de la primaria (25 Hz): LOG00001.TXT del OpenLog
+    (o VUELO_000.CSV si se usa el lector microSD SPI)
 
 Uso:
   python herramientas/analisis_vuelo.py estacion-terrena/logs/sesion_20261015_101500_telemetria.csv
-  python herramientas/analisis_vuelo.py E:/VUELO_000.CSV --salida resultados_vuelo
+  python herramientas/analisis_vuelo.py E:/LOG00001.TXT --salida resultados_vuelo
 
 Genera en la carpeta de salida:
   resumen.md       tabla de resultados lista para copiar al RAM
@@ -20,6 +21,7 @@ Genera en la carpeta de salida:
 from __future__ import annotations
 
 import argparse
+import io
 import json
 import math
 import sys
@@ -37,7 +39,8 @@ TINTA, TINTA_SUAVE, REJILLA = "#121826", "#5b6475", "#e3e7ee"
 def leer_datos(ruta: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame | None, str]:
     """Devuelve (telemetría, eventos, posiciones, tipo_de_fuente)."""
     texto = ruta.read_text(encoding="utf-8", errors="replace")
-    primera = texto.splitlines()[0] if texto else ""
+    lineas = [l for l in texto.splitlines() if l.strip()]
+    primera = lineas[0] if lineas else ""
 
     if primera.startswith("pc_iso"):  # sesión de la estación terrena
         tel = pd.read_csv(ruta)
@@ -49,11 +52,16 @@ def leer_datos(ruta: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame | N
 
     if primera.startswith("t_ms"):  # archivo de la microSD
         filas_ev = []
-        for linea in texto.splitlines():
+        for linea in lineas:
             if linea.startswith("# EVENTO,"):
                 partes = linea.split(",", 3)
                 filas_ev.append({"t_ms": int(partes[1]), "codigo": partes[2], "detalle": partes[3] if len(partes) > 3 else ""})
-        tel = pd.read_csv(ruta, comment="#")
+        # El OpenLog agrega al mismo archivo si solo se reinicia la placa: se
+        # quitan los encabezados repetidos y las líneas cortadas por un apagón.
+        n_campos = primera.count(",")
+        datos = [primera] + [l for l in lineas[1:]
+                             if not l.startswith(("t_ms", "#")) and l.count(",") == n_campos]
+        tel = pd.read_csv(io.StringIO("\n".join(datos)))
         eventos = pd.DataFrame(filas_ev, columns=["t_ms", "codigo", "detalle"])
         pos = None
         if "dist_sec" in tel.columns:
@@ -152,7 +160,7 @@ def analizar(tel: pd.DataFrame, eventos: pd.DataFrame, pos: pd.DataFrame | None)
         r["aceleracion_maxima_g"] = round(float(tel["g_max"].max()), 2)
     elif "g" in tel.columns:
         r["aceleracion_maxima_g"] = round(float(tel["g"].max()), 2)
-    r["nota_aceleracion"] = "El MPU6050 satura en 16 g: un valor de 16.0 significa 16 g o más."
+    r["nota_aceleracion"] = "El MPU9250 (GY-91) satura en 16 g: un valor de 16.0 significa 16 g o más."
     r["temperatura_min_c"] = round(float(tel["temp"].min()), 1)
     r["temperatura_max_c"] = round(float(tel["temp"].max()), 1)
     r["presion_min_hpa"] = round(float(tel["pres"].min()) / 100, 1)
@@ -299,7 +307,7 @@ def escribir_resumen(r: dict, fuente: Path, tipo: str, salida: Path) -> None:
 
 def main() -> None:
     p = argparse.ArgumentParser(description="Análisis del vuelo del CanSat Zénit para el documento RAM.")
-    p.add_argument("archivo", type=Path, help="CSV de telemetría de la estación terrena o VUELO_XXX.CSV de la microSD")
+    p.add_argument("archivo", type=Path, help="CSV de telemetría de la estación terrena o LOGxxxxx.TXT (OpenLog) de la microSD")
     p.add_argument("--salida", type=Path, default=None, help="carpeta de resultados (por defecto: junto al archivo)")
     p.add_argument("--vuelo", type=int, default=None, help="número de vuelo si hay varios en el archivo (0 = primero)")
     a = p.parse_args()

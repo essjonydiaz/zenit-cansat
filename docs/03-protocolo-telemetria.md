@@ -13,7 +13,7 @@ GPS). Una trama con el checksum mal se descarta. Implementado en C++
 
 ## Tramas
 
-### `T` — Telemetría de la primaria (4 por segundo)
+### `T` — Telemetría de la primaria (2 por segundo)
 
 | # | Campo | Unidad | Ejemplo |
 |---|---|---|---|
@@ -29,8 +29,8 @@ GPS). Una trama con el checksum mal se descarta. Implementado en C++
 | 12–14 | gx, gy, gz | °/s | 1, -2, 0 |
 | 15–17 | roll, pitch, yaw | ° | 0.4, -1.1, 12.0 |
 | 18 | g_max | g máx. desde el despegue (satura en 16) | 1.06 |
-| 19 | bat | V | 9.10 |
-| 20 | flags | bits: 0 baro · 1 imu · 2 sd · 3 lora · 4 gps · 5 baliza vigente · 6 desacoplado · 7 simulación · 8 batería baja | 63 |
+| 19 | bat | V (0 = sin divisor, no se pudo medir) | 9.10 |
+| 20 | flags | bits: 0 baro · 1 imu · 2 sd · 3 lora · 4 gps · 5 baliza vigente · 6 desacoplado · 7 simulación · 8 batería baja · 9 autogiro desplegado · 10 separación confirmada por el IMU · 11 magnetómetro · 12 batería sin medir · 13 OpenLog sin confirmar | 3647 |
 
 ### `P` — Posición y localización de la secundaria (1 por segundo)
 
@@ -38,7 +38,7 @@ GPS). Una trama con el checksum mal se descarta. Implementado en C++
 
 `dist_sec` (m) y `rumbo_sec` (°, 0 = Norte, 90 = Este) valen `-1` si falta el GPS de alguna carga.
 
-### `B` — Baliza de la secundaria (1 por segundo ± 200 ms)
+### `B` — Baliza de la secundaria (cada 2 s ± 300 ms, como pide el PDR)
 
 `B,seq,t_ms,lat,lon,sats,fix,bat`
 
@@ -48,11 +48,15 @@ GPS). Una trama con el checksum mal se descarta. Implementado en C++
 
 | Código | Cuándo |
 |---|---|
-| `ARRANQUE` | Al encender: qué sensores respondieron y archivo de la microSD |
+| `ARRANQUE` | Al encender: qué sensores respondieron (modelo y dirección), magnetómetro, radio y OpenLog (`sd=1?` = sin confirmar) |
+| `LORA_ERROR` | La radio no inició: código de RadioLib y pista (solo llega por USB) |
 | `CALIBRADO` | Presión de tierra y desvío del giroscopio medidos |
 | `ASCENSO` | Pasó 15 m subiendo |
 | `LIBERACION` | El dron lo soltó (caída libre detectada) |
-| `DESACOPLE` | Servo movido. Detalle: `AUTO`/`MANUAL`, altura y velocidad |
+| `DESACOPLE` | Servo de desacople abierto. Detalle: `AUTO`/`MANUAL`, altura y velocidad |
+| `SEPARACION` | El IMU sintió el jalón de la separación (detalle: cambio en g) |
+| `SEPARACION_NO_CONFIRMADA` | No se sintió: el firmware cerró y reabrió el desacople una vez |
+| `AUTOGIRO` | Servo del autogiro abierto (400 ms después del desacople), con la altura |
 | `ATERRIZAJE` | Quieto en el suelo 3 s. Detalle: altura y aceleración máximas |
 | `POST_ATERRIZAJE_OK` | Ya transmitió 10 s después de aterrizar |
 | `PONG`, `CMD_OK`, `CMD_RECHAZADO` | Respuestas a comandos |
@@ -79,6 +83,16 @@ La PC manda `TX,<trama>` y el receptor la transmite.
 
 ## Radio
 
-433 MHz · SF7 · 250 kHz · CR 4/5 · 17 dBm · CRC activado · palabra de sincronía `0x5A`.
-Una trama `T` (~110 bytes) tarda ≈ 90 ms en el aire. En `RadioConfig.h` se cambian los
-parámetros **para las tres placas a la vez** (hay que recompilar las tres).
+915 MHz · SF7 · 250 kHz · CR 4/5 · preámbulo 8 · 20 dBm · CRC activado · palabra de
+sincronía `0x5A` (en el SX1262 RadioLib la escribe como `0x54A4`, que es la misma).
+
+| Trama | Tamaño típico | Tiempo en el aire | Cada | Uso del canal |
+|---|---|---|---|---|
+| T | ~110 bytes | ~92 ms | 0.5 s | 18 % |
+| P | ~90 bytes | ~77 ms | 1 s | 8 % |
+| B | ~60 bytes | ~60 ms | 2 s | 3 % |
+
+Total ≈ 30 % del canal: queda tiempo para escuchar comandos y para que la baliza no choque
+siempre con la primaria. Lo comprueba la prueba `test_tiempo_en_aire` (`aire::tiempoEnAireMs`).
+En `RadioConfig.h` se cambian los parámetros **para las tres placas a la vez** (hay que
+recompilar las tres).

@@ -7,12 +7,33 @@ stateDiagram-v2
   [*] --> PREVUELO : encender + calibrar
   PREVUELO --> ASCENSO : altitud > 15 m durante 1 s
   ASCENSO --> CAIDA_LIBRE : aceleración menor a 0.35 g o v menor a −6 m/s durante 0.4 s
-  CAIDA_LIBRE --> DESCENSO_AUTOGIRO : armado, bajando y h ≤ 200 m (3 lecturas) → mueve el servo
+  CAIDA_LIBRE --> DESCENSO_AUTOGIRO : armado, bajando y h ≤ 200 m (3 lecturas) → secuencia de separación
   ASCENSO --> DESCENSO_AUTOGIRO : respaldo: mismo criterio si no se detectó la liberación
   CAIDA_LIBRE --> ATERRIZADO : quieto (|v| < 0.7 m/s) y h < 30 m durante 3 s
   DESCENSO_AUTOGIRO --> ATERRIZADO : quieto y h < 30 m durante 3 s
   ATERRIZADO --> [*] : sigue transmitiendo + buzzer
 ```
+
+## Secuencia de separación (2 servos)
+
+Archivo: [`Separacion.cpp`](../firmware/comun/ZenitComun/src/Separacion.cpp). Sigue el diagrama de
+flujo del PDR (diapositivas 21–22):
+
+```mermaid
+flowchart TD
+  A["h ≤ 200 m (máquina de estados)"] --> B["t=0: servo DESACOPLE abre<br/>evento DESACOPLE"]
+  B --> C{"¿|a| cambió ≥ 0.6 g<br/>antes de 350 ms?"}
+  C -- sí --> D["evento SEPARACION"]
+  C -- no --> E["evento SEPARACION_NO_CONFIRMADA<br/>cierra 300 ms y reabre el desacople"]
+  D --> F["t=400 ms: servo AUTOGIRO abre<br/>evento AUTOGIRO"]
+  E --> F
+  F --> G["cada carga transmite por su cuenta"]
+```
+
+- El autogiro se abre **siempre**, se confirme o no la separación.
+- La ventana de confirmación termina **antes** del autogiro: el frenón de las palas también
+  cambia la aceleración y se confundiría con la separación (hay una prueba para esto).
+- Tiempos y umbral en `config.h`: `AUTOGIRO_RETARDO_MS`, `SEPARACION_CAMBIO_MIN_G`.
 
 ## Protecciones del desacople
 
@@ -46,4 +67,5 @@ Todos en `mision::Parametros` (`MaquinaEstados.h`). Los de la guía (200 m) tamb
 ## Cómo probar cambios
 
 1. `pio test -e native` en `firmware/primaria` (incluye un vuelo simulado completo).
-2. Subir `env:primaria_sim` a un ESP32 y ver los eventos en la estación terrena.
+2. Subir `env:primaria_sim` a la Heltec y ver los eventos en la estación terrena
+   (DESACOPLE → SEPARACION → AUTOGIRO deben salir en ese orden).

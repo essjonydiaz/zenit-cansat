@@ -1,0 +1,8 @@
+{
+  "name": "ZenitRadio",
+  "version": "2.0.0",
+  "description": "Enlace LoRa del CanSat Zénit sobre RadioLib (SX1262 del Heltec V3 y RFM95W/SX1276). Solo para placas ESP32 (Arduino).",
+  "frameworks": "arduino",
+  "platforms": "espressif32",
+  "build": { "libArchive": false }
+}

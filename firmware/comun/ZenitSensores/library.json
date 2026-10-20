@@ -1,0 +1,8 @@
+{
+  "name": "ZenitSensores",
+  "version": "2.0.0",
+  "description": "Drivers del GY-91 (MPU9250/MPU6500 + AK8963 + BMP280/BME280) y configuración de GPS u-blox. Solo para placas ESP32 (Arduino).",
+  "frameworks": "arduino",
+  "platforms": "espressif32",
+  "build": { "libArchive": false }
+}
