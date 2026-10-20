@@ -1,0 +1,8 @@
+# Lo que se regenera en cada PC (no se sube)
+cache/
+.graphify_root
+.graphify_python
+.graphify_detect.json
+20*/
+memory/
+.graphify_labels.pending.json
