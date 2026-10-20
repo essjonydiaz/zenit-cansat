@@ -24,7 +24,7 @@ GPS). Una trama con el checksum mal se descarta. Implementado en C++
 | 5 | vel | m/s (+ sube, − baja) | -18.42 |
 | 6 | alt_max | m | 450.13 |
 | 7 | pres | Pa | 91355 |
-| 8 | temp | °C | 25.2 |
+| 8 | temp | °C (resolución 0.01, como pide el PDR) | 25.21 |
 | 9–11 | ax, ay, az | g | 0.01, -0.02, 0.35 |
 | 12–14 | gx, gy, gz | °/s | 1, -2, 0 |
 | 15–17 | roll, pitch, yaw | ° | 0.4, -1.1, 12.0 |
@@ -59,6 +59,7 @@ GPS). Una trama con el checksum mal se descarta. Implementado en C++
 | `AUTOGIRO` | Servo del autogiro abierto (400 ms después del desacople), con la altura |
 | `ATERRIZAJE` | Quieto en el suelo 3 s. Detalle: altura y aceleración máximas |
 | `POST_ATERRIZAJE_OK` | Ya transmitió 10 s después de aterrizar |
+| `AHORRO` | 60 s después de aterrizar: modo de bajo consumo (T y P cada 2 s, pantalla apagada, CPU a 80 MHz) |
 | `PONG`, `CMD_OK`, `CMD_RECHAZADO` | Respuestas a comandos |
 
 ### `C` — Comandos desde tierra

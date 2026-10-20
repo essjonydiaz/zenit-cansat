@@ -240,10 +240,10 @@
     "semantic_hash": "ca0f6db70341940d759de6cfa33344ed"
   },
   "firmware/primaria/include/config.h": {
-    "mtime": 1792468401.614248,
-    "seen": 1792468956.418245,
-    "ast_hash": "4883598f87a48f8596f9c24117eb476e",
-    "semantic_hash": "4883598f87a48f8596f9c24117eb476e"
+    "mtime": 1792469803.879863,
+    "seen": 1792470058.3801782,
+    "ast_hash": "e2b7f69d2424041057711b001dfbfe9c",
+    "semantic_hash": ""
   },
   "firmware/primaria/src/Comunicaciones.cpp": {
     "mtime": 1792468401.614248,
@@ -270,10 +270,10 @@
     "semantic_hash": "308e78c0b26bd7c5ec86f458fbacd57e"
   },
   "firmware/primaria/src/main.cpp": {
-    "mtime": 1792468401.614248,
-    "seen": 1792468956.4182518,
-    "ast_hash": "c94489a1bc254860e5e5fb8074fec4c0",
-    "semantic_hash": "c94489a1bc254860e5e5fb8074fec4c0"
+    "mtime": 1792469803.8805306,
+    "seen": 1792470058.3801851,
+    "ast_hash": "e14dd30f2e599bae8a0086a083b9f6f9",
+    "semantic_hash": ""
   },
   "firmware/primaria/test/test_logica/test_main.cpp": {
     "mtime": 1792468401.614248,
@@ -366,9 +366,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792468936.0771534,
-    "seen": 1792469155.710769,
-    "ast_hash": "613d1588cd447250a73c22e0196f59b4",
+    "mtime": 1792469436.1536074,
+    "seen": 1792470058.3802094,
+    "ast_hash": "0ec3d258415f3263fa91f40b5a4f4083",
     "semantic_hash": ""
   },
   "docs/01-arquitectura.md": {
@@ -384,9 +384,9 @@
     "semantic_hash": ""
   },
   "docs/03-protocolo-telemetria.md": {
-    "mtime": 1792468852.695244,
-    "seen": 1792469155.710772,
-    "ast_hash": "15f9fb2e56fe40df62c08f26a5d8c173",
+    "mtime": 1792470052.362763,
+    "seen": 1792470058.3802133,
+    "ast_hash": "edfdfd9467977a3e8435b19fac966a2c",
     "semantic_hash": ""
   },
   "docs/04-maquina-de-estados.md": {
@@ -402,15 +402,15 @@
     "semantic_hash": ""
   },
   "docs/06-dia-de-lanzamiento.md": {
-    "mtime": 1792468909.3666296,
-    "seen": 1792469155.7107751,
-    "ast_hash": "40074e953599e98fe9710f89c84ee597",
+    "mtime": 1792470052.3637,
+    "seen": 1792470058.380218,
+    "ast_hash": "9d7af345f66ade91611a4a81d04490ef",
     "semantic_hash": ""
   },
   "docs/07-requisitos-y-riesgos.md": {
-    "mtime": 1792468909.367104,
-    "seen": 1792469155.7107763,
-    "ast_hash": "286c3692667a1fe8389503f32f670c7d",
+    "mtime": 1792470052.3633504,
+    "seen": 1792470058.3802195,
+    "ast_hash": "8ee17ea46c85806a78a950aa3a02b853",
     "semantic_hash": ""
   },
   "docs/08-git-y-github.md": {
@@ -465,6 +465,12 @@
     "mtime": 1792466082.061789,
     "seen": 1792469155.7107863,
     "ast_hash": "094c2d914bce7a76827ee212ce341e0d",
+    "semantic_hash": ""
+  },
+  "docs/09-guia-primera-prueba.md": {
+    "mtime": 1792469439.217584,
+    "seen": 1792470058.3802228,
+    "ast_hash": "be73a8883276eebde657453bc4ceb73e",
     "semantic_hash": ""
   }
 }

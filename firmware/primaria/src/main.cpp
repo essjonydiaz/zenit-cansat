@@ -68,6 +68,7 @@ static uint32_t tUltimaPantalla = 0;
 static uint32_t tApagarDesacople = 0, tApagarAutogiro = 0;
 static uint32_t tBuzzerPrueba = 0;
 static bool eventoPostAterrizajeEnviado = false;
+static bool enAhorro = false;
 
 struct Posicion {
   double lat = 0, lon = 0;
@@ -119,6 +120,12 @@ static float leerBateria() {
   const float vPin = (mv / 8.0f) / 1000.0f;
   return vPin * (BATERIA_R_ARRIBA_KOHM + BATERIA_R_ABAJO_KOHM) / BATERIA_R_ABAJO_KOHM;
 #endif
+}
+
+// Bajo consumo: ya aterrizó hace más de AHORRO_TRAS_ATERRIZAR_S.
+static bool modoAhorro() {
+  return maquina.estado() == Estado::ATERRIZADO &&
+         tiempoS() - maquina.tAterrizaje() >= AHORRO_TRAS_ATERRIZAR_S;
 }
 
 static bool bateriaMedida() { return voltajeBateria >= BATERIA_MINIMA_REAL_V; }
@@ -375,7 +382,7 @@ static void actualizarLocalizacionRelativa() {
 static void enviarTelemetria() {
   char carga[200];
   snprintf(carga, sizeof(carga),
-           "T,%lu,%lu,%u,%.2f,%.2f,%.2f,%.0f,%.1f,%.2f,%.2f,%.2f,%.0f,%.0f,%.0f,%.1f,%.1f,%.1f,%.2f,%.2f,%u",
+           "T,%lu,%lu,%u,%.2f,%.2f,%.2f,%.0f,%.2f,%.2f,%.2f,%.2f,%.0f,%.0f,%.0f,%.1f,%.1f,%.1f,%.2f,%.2f,%u",
            (unsigned long)++numSecuencia, (unsigned long)millis(),
            (unsigned)maquina.estado(), filtro.altura(), filtro.velocidad(),
            maquina.alturaMaxima(), datos.presionPa, datos.temperaturaC, datos.ax, datos.ay,
@@ -403,7 +410,7 @@ static const char* ENCABEZADO_SD =
 static void registrarMuestra() {
   char linea[comms::TAM_MENSAJE];
   snprintf(linea, sizeof(linea),
-           "%lu,%u,%.2f,%.2f,%.2f,%.2f,%.0f,%.1f,%.3f,%.3f,%.3f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,"
+           "%lu,%u,%.2f,%.2f,%.2f,%.2f,%.0f,%.2f,%.3f,%.3f,%.3f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,"
            "%.2f,%.2f,%.2f,%.6f,%.6f,%u,%.1f,%.1f,%u,%.1f,%.1f,%.1f,%.0f",
            (unsigned long)millis(), (unsigned)maquina.estado(), alturaBaro, filtro.altura(),
            filtro.velocidad(), maquina.alturaMaxima(), datos.presionPa, datos.temperaturaC,
@@ -429,7 +436,9 @@ static void apagarServosInactivos(uint32_t ahora) {
 static void actualizarPantalla(uint32_t ahora) {
 #if USAR_PANTALLA
   const Estado e = maquina.estado();
-  const bool enTierra = e == Estado::PREVUELO || e == Estado::ATERRIZADO;
+  // Se muestra en la mesa y el primer minuto tras aterrizar (para la
+  // recuperación); en vuelo y en modo de ahorro se apaga.
+  const bool enTierra = e == Estado::PREVUELO || (e == Estado::ATERRIZADO && !modoAhorro());
   if (!enTierra) {
     if (pantalla.encendida()) pantalla.apagar();  // en vuelo: ahorrar batería
     return;
@@ -604,12 +613,19 @@ void loop() {
     tUltimoRegistro = ahora;
     registrarMuestra();
   }
-  if (ahora - tUltimaTelemetria >= PERIODO_TELEMETRIA_MS) {
+  if (!enAhorro && modoAhorro()) {
+    enAhorro = true;
+    setCpuFrequencyMhz(80);  // el UART y el SPI siguen funcionando igual a 80 MHz
+    enviarEvento("AHORRO", "T y P cada 2 s, pantalla apagada");
+  }
+  const uint32_t periodoT = enAhorro ? PERIODO_TELEMETRIA_AHORRO_MS : PERIODO_TELEMETRIA_MS;
+  const uint32_t periodoP = enAhorro ? PERIODO_POSICION_AHORRO_MS : PERIODO_POSICION_MS;
+  if (ahora - tUltimaTelemetria >= periodoT) {
     tUltimaTelemetria = ahora;
     voltajeBateria = leerBateria();
     enviarTelemetria();
   }
-  if (ahora - tUltimaPosicion >= PERIODO_POSICION_MS) {
+  if (ahora - tUltimaPosicion >= periodoP) {
     tUltimaPosicion = ahora;
     actualizarLocalizacionRelativa();
     enviarPosicion();

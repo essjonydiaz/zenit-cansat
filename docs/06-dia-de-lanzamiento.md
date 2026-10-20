@@ -52,6 +52,7 @@ El **líder** engancha el CanSat al dron; el resto opera la estación terrena.
 ## Después de aterrizar
 
 - [ ] No apagar nada ni cerrar el panel hasta ver `POST_ATERRIZAJE_OK`.
+- [ ] Un minuto después aparece `AHORRO`: es normal que la telemetría llegue cada 2 s (ahorra pila mientras lo buscan).
 - [ ] Recuperar ambas cargas (buzzer + brújula de la secundaria).
 - [ ] Entregar los 2 huevos a los jueces.
 - [ ] Anotar: estado de los huevos, distancia al centro del blanco de 3 m.

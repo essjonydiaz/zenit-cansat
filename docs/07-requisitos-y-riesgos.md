@@ -50,6 +50,7 @@
 | 10 | Muchos GY-91 baratos traen MPU6500 (sin magnetómetro) | Sin brújula: el yaw deriva | El firmware lo detecta (`mag=0` en `ARRANQUE`) y sigue funcionando; la dirección a la secundaria usa GPS, no la brújula |
 | 11 | OpenLog a 9600 baudios de fábrica | Se pierden líneas a 25 Hz | `documentos/openlog/config.txt` (115200) en la microSD · prueba P4b |
 | 12 | SX1262 (Heltec) y RFM95W (secundaria) son chips distintos | Que no se escuchen | Mismos parámetros en `RadioConfig.h`; verificar en P3 con la baliza encendida |
+| 13 | Pila agotada antes de la recuperación (riesgo 5 del PDR) | No se encuentra el CanSat | Modo de bajo consumo 60 s después de aterrizar (`AHORRO_TRAS_ATERRIZAR_S`): T y P cada 2 s, pantalla y servos apagados, CPU a 80 MHz · P4 |
 | 8 | Deriva del barómetro por el sol/viento en la mesa | Altitud desplazada unos metros | Calibrar (encender o comando *Calibrar*) justo antes de entregar al dron |
 | 9 | Pila de 9 V alcalina con 100–150 mA dura poco | Se apaga en la espera | Interruptor apagado hasta el turno · P4 · considerar pila de 9 V de litio |
 

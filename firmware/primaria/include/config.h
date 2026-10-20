@@ -20,6 +20,12 @@
 #define PERIODO_REGISTRO_MS   40   // 25 Hz: línea en la microSD
 #define PERIODO_MAG_MS        100  // 10 Hz: magnetómetro
 #define MUESTRAS_CALIBRACION  100  // lecturas para presión de tierra y bias del giroscopio
+// Modo de bajo consumo tras aterrizar (riesgo 5 del PDR: que la pila dure hasta
+// que llegue el equipo de recuperación). Pasado este tiempo en el suelo: T y P
+// cada 2 s (como pide el PDR para la posición), pantalla apagada y CPU a 80 MHz.
+#define AHORRO_TRAS_ATERRIZAR_S      60
+#define PERIODO_TELEMETRIA_AHORRO_MS 2000
+#define PERIODO_POSICION_AHORRO_MS   2000
 // Uso del canal LoRa con estos periodos (SF7, 250 kHz): T (~110 bytes) ~92 ms
 // cada 0.5 s, P (~90 bytes) ~77 ms cada 1 s y la baliza (~60 bytes) ~60 ms
 // cada 2 s -> ~30 % del tiempo (lo comprueba test_tiempo_en_aire). Queda
