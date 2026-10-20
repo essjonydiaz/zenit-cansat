@@ -50,6 +50,9 @@ Hardware tal como quedó en el **PDR (etapa 3)**. Pines y diferencias encontrada
 5. **[Python 3](https://www.python.org/downloads/)** (para el análisis; marcar *Add to PATH*).
 6. **[Git](https://git-scm.com/download/win)**.
 
+> **Guía paso a paso** para dejar la PC lista y hacer la primera prueba con el hardware:
+> [docs/09-guia-primera-prueba.md](docs/09-guia-primera-prueba.md).
+
 ### 2. Abrir el proyecto
 
 `Archivo → Abrir área de trabajo desde archivo…` → **`zenit.code-workspace`**.
