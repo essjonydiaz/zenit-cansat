@@ -189,8 +189,19 @@ Cada 10 s imprime una lista como esta (también la resume en la pantalla de la p
   [PASA ] Pila 9 V                  pin=2.30 V -> pila ~9.27 V
 ```
 
-Cada **FALLA** dice qué revisar (pines, voltaje, dirección I2C). Arregla una por una hasta que
-todo diga PASA. Notas:
+Si algo falla, al final aparece la lista **QUE ARREGLAR (en este orden)** con la
+instrucción concreta para cada pieza, por ejemplo:
+
+```
+  ---------------- QUE ARREGLAR (en este orden) ----------------
+  1) GPS NEO-M8N: no llega nada. 1) el GPS debe tener su LED encendido/parpadeando (si no: VCC y
+     GND). 2) el TX del GPS va a GPIO47 (si esta en GPIO48 estan invertidos).
+  2) Pila 9 V: no hay divisor: soldar 100k de la pila a GPIO6 y 33k de GPIO6 a GND.
+```
+
+Esa lista es lo que le pasas a electrónica. Se arregla una cosa a la vez y la prueba se
+repite sola cada 10 s hasta que todo diga PASA. La pantalla de la placa muestra el resumen.
+Los servos no se prueban aquí (para no soltar nada por accidente): eso es el Paso 6. Notas:
 - *Magnetómetro: no hay* con un GY-91 que trae **MPU6500** es normal (no trae brújula); todo lo
   demás funciona.
 - *Pila 9 V sin divisor*: faltan las resistencias 100k/33k hacia GPIO6 (no está en el PDR).
