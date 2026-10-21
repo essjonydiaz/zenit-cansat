@@ -73,7 +73,7 @@ Pila 9V -- interruptor --+--> MP1584EN ajustado a 5.0 V --+--> pin 5V de la Helt
 
 La secundaria transmite su posición cada 2 segundos. El C3 se programa por su USB-C.
 
-## 4. Electrónica (Araceli, Diego)
+## 4. Electrónica
 
 1. Ajustar el regulador MP1584EN a 5.0 V con el multímetro antes de conectar la Heltec. De
    fábrica puede entregar más de 10 V y quemar la placa. El de la secundaria va a 3.3 V.
@@ -108,7 +108,7 @@ La secundaria transmite su posición cada 2 segundos. El C3 se programa por su U
 baud,escape,esc#,mode,verb,echo,ignoreRX
 ```
 
-## 5. Mecánica (Diego, Esli)
+## 5. Mecánica
 
 Cómo funciona la separación en el software, para que los mecanismos coincidan:
 
