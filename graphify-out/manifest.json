@@ -438,9 +438,9 @@
     "semantic_hash": ""
   },
   "estacion-terrena/public/index.html": {
-    "mtime": 1793064828.5549505,
-    "seen": 1793066129.5385845,
-    "ast_hash": "0d7c91c2956073e9e09082b350e52f73",
+    "mtime": 1793067510.6345499,
+    "seen": 1793067686.6589015,
+    "ast_hash": "7be19798ed0f93f0df24370c378a341a",
     "semantic_hash": ""
   },
   "estacion-terrena/test/datos/salida_firmware_sim.txt": {
@@ -474,9 +474,9 @@
     "semantic_hash": ""
   },
   "estacion-terrena/public/intro.js": {
-    "mtime": 1793067017.8280551,
-    "seen": 1793067134.9481535,
-    "ast_hash": "84972e33fea57078d30d9391804c2c6c",
+    "mtime": 1793067487.9659162,
+    "seen": 1793067686.6589015,
+    "ast_hash": "c2213c54b40bb8508f03580cbfc82806",
     "semantic_hash": ""
   },
   "estacion-terrena/public/prototipo.js": {
@@ -540,9 +540,9 @@
     "semantic_hash": ""
   },
   "estacion-terrena/public/prototipo.html": {
-    "mtime": 1793067234.8937385,
-    "seen": 1793067279.6450436,
-    "ast_hash": "8a5695df1bed3a63fff32ec372b051c6",
+    "mtime": 1793067510.6727798,
+    "seen": 1793067686.6589015,
+    "ast_hash": "ea1fc029c43c9ed603c568ea8f21117e",
     "semantic_hash": ""
   },
   "docs/decisiones/0003-modelo-3d-procedural-ilustrativo.md": {

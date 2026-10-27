@@ -1,6 +1,11 @@
 // =============================================================================
 //  Intro con el logo de Zénit (panel y página del prototipo)
 //
+//  El logo se recorta en capas (todas usan logo-zenit.jpeg; el negro desaparece
+//  con mix-blend-mode: screen) y se cuenta como un despegue: horizonte → aro →
+//  sube la lata con su escape → destello → el huevo despega con su estela → nombre.
+//  Las capas y los tiempos están en base.css (sección INTRO).
+//
 //  <script src="intro.js" data-duracion="2900" data-una-vez="sesion"></script>
 //    data-duracion  ms antes de levantarse sola
 //    data-una-vez   "sesion": en el panel solo sale la primera vez por pestaña,
@@ -27,9 +32,13 @@
   capa.innerHTML = `
     <canvas class="intro-estrellas" aria-hidden="true"></canvas>
     <div class="intro-escena">
-      <div class="intro-emblema" aria-hidden="true"></div>
-      <p class="intro-nombre" aria-label="Zénit">${[...'ZÉNIT'].map((l, i) => `<span style="--i:${i}"${l === 'N' ? ' class="n"' : ''}>${l}</span>`).join('')}</p>
-      <div class="intro-pais"><i></i>MÉXICO<i></i></div>
+      <div class="intro-logo" role="img" aria-label="Zénit México">
+        <i class="c c-horizonte"></i><i class="c c-aro"></i>
+        <i class="c c-escape"></i><i class="c c-lata"></i>
+        <i class="intro-destello"></i>
+        <i class="c c-estela"></i><i class="c c-huevo"></i>
+        <i class="c c-nombre"></i><i class="c c-pais"></i>
+      </div>
     </div>`;
   document.documentElement.classList.add('con-intro');
   document.body.prepend(capa);

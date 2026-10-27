@@ -1,7 +1,7 @@
 # Graph Report - zenit-cansat  (2026-10-26)
 
 ## Corpus Check
-- 85 files · ~62,694 words
+- 85 files · ~62,760 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 17 file(s) not represented in the graph (top: (none) 4, .properties 4, .ini 4)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a044d64f`
+- Built from commit: `23216a1c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
