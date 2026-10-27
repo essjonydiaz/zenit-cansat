@@ -155,7 +155,17 @@ caídas de prueba. Si baja muy lento, se acortan las aspas; si baja muy rápido,
 primaria se quitan las 3 tuercas de abajo del piso y se baja el piso. Practiquen esto: debe
 salir en menos de 10 minutos.
 
-## 8. Lo que falta comprobar con piezas reales
+## 8. El modelo en la página web
+
+La estación terrena (portada «Prototipo» y panel) muestra **este mismo diseño**. Si cambian una
+medida:
+
+1. `python cansat_completo.py` (vuelve a generar las piezas).
+2. `python exportar_web.py` (junta las piezas en `estacion-terrena/public/modelos/cansat.glb`).
+3. Recargar la página. Los colores y los movimientos (aspas, separación) están en
+   `estacion-terrena/public/cansat3d.js`.
+
+## 9. Lo que falta comprobar con piezas reales
 
 - Que el SG90 jale el pasador y gire el anillo sin atorarse (prueba P6, 20 de 20).
 - Que las aspas abran solas con la liga (caídas de prueba).

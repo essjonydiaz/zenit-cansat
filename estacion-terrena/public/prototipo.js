@@ -458,7 +458,7 @@ async function iniciar() {
   const soporte = new THREE.Group();
   soporte.add(cansat.grupo);
   escena.add(soporte);
-  function escalaCanSat() { soporte.userData.base = (L.H * (L.tel ? 0.42 : 0.6)) / 21.5; }
+  function escalaCanSat() { soporte.userData.base = (L.H * (L.tel ? 0.42 : 0.6)) / cansat.medidas.ALTO; }
 
   // Estrellas y el arco azul del horizonte (como en el logo)
   const nEst = 1400;
