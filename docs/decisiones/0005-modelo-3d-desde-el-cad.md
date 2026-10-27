@@ -16,8 +16,10 @@ medidas, aspas por fuera y componentes en otro lugar.
 - `cansat3d.js` lo carga con `GLTFLoader` y conserva la misma interfaz:
   `crearCanSat()` → `{ grupo, piezas, actualizar(), medidas }`, más `listo` (promesa).
   Pone los colores, agrupa las piezas, abre las aspas en su bisagra real y separa la secundaria.
-- En la vista explotada, los componentes se muestran con detalle (`componentes3d.js`: pila con
-  etiqueta, Heltec con pantalla, servos, GPS, huevos en su espuma), cada uno donde va en el CAD.
+- Los componentes comprados son cajas en el CAD; `componentes3d.js` los dibuja con detalle
+  (Heltec con pantalla y pines, pila con etiqueta, servos con brazo, GPS con antena cerámica,
+  radios con blindaje) **a la medida exacta de su caja y en su lugar**. Los huevos y la espuma
+  EVA son los del CAD.
 - Medidas nuevas: Ø 9.6 cm, alto 22.9 cm (primaria 15.9, secundaria 7).
 
 ## Consecuencias

@@ -7,8 +7,9 @@
 //  exportar_web.py y se copia el .glb aquí; este archivo solo pone colores,
 //  agrupa las piezas y las mueve.
 //
-//  En la vista explotada, los componentes (Heltec, pilas, servos, GPS, huevos)
-//  se muestran con detalle (componentes3d.js), cada uno donde va en el CAD.
+//  Los componentes comprados (Heltec, pilas, servos, GPS, radios) son cajas en
+//  el CAD; aquí se dibujan con detalle (componentes3d.js) a esa misma medida y
+//  en ese mismo lugar.
 //
 //  Unidades: 1 = 1 cm. Origen en el centro del cilindro completo, eje Y hacia
 //  arriba. Ø 9.6 cm, alto 22.9 cm (primaria 15.9 cm arriba, secundaria 7 cm).
@@ -21,7 +22,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
-import { crearDetalles } from './componentes3d.js';
+import { crearComponente, hayDetalle, materialEspuma } from './componentes3d.js';
 
 const MODELO = new URL('modelos/cansat.glb', import.meta.url).href;
 const LOGO = new URL('logo-zenit.jpeg', import.meta.url).href;
@@ -105,7 +106,7 @@ function materiales(calidad) {
     metal: new THREE.MeshStandardMaterial({ color: 0xb9bfc8, metalness: 1, roughness: 0.3 }),
     cobre: new THREE.MeshStandardMaterial({ color: 0xd28a4c, metalness: 1, roughness: 0.28 }),
     goma: new THREE.MeshStandardMaterial({ color: 0x0f0f11, roughness: 0.75 }),
-    espuma: new THREE.MeshStandardMaterial({ color: 0xe3c24a, roughness: 1 }),
+    espuma: materialEspuma(calidad),
   };
 }
 
@@ -171,19 +172,11 @@ export function crearCanSat({ calidad = 'alta' } = {}) {
     const obj = new THREE.Group();
     obj.name = d.nombre;
     (d.carga === 'sec' ? secundaria : primaria).add(obj);
-    return { id: d.id, nombre: d.nombre, detalle: d.detalle, obj, base: v(0, 0, 0), explota: d.explota.clone(), def: d, cad: [] };
-  });
-  // Versión con detalle de cada componente (se ve al abrir el CanSat)
-  const detalles = crearDetalles({ calidad });
-  piezas.forEach((p) => {
-    const det = detalles.piezas[p.id];
-    if (!det) return;
-    det.visible = false;
-    p.obj.add(det);
-    p.conDetalle = det;
+    return { id: d.id, nombre: d.nombre, detalle: d.detalle, obj, base: v(0, 0, 0), explota: d.explota.clone(), def: d };
   });
   const rotor = piezas.find((p) => p.id === 'autogiro').obj;
   const aspas = [];                                // { pivote, eje, grados }
+  const brazos = {};                               // servo_autogiro / servo_desacople
 
   const logo = calcomaniaLogo(MEDIDAS.R + 0.012);
   primaria.add(logo);
@@ -207,6 +200,15 @@ export function crearCanSat({ calidad = 'alta' } = {}) {
       p.base.copy(centro);
 
       propias.forEach((m) => {
+        if (hayDetalle(m.name)) {
+          // componente comprado: versión con detalle del tamaño de su caja
+          const det = crearComponente(m.name, m.geometry.boundingBox, { calidad });
+          det.obj.name = m.name;
+          det.obj.position.copy(m.geometry.boundingBox.getCenter(v(0, 0, 0))).sub(centro);
+          p.obj.add(det.obj);
+          if (det.brazo) brazos[m.name] = det.brazo;
+          return;
+        }
         const geo = toCreasedNormals(m.geometry, THREE.MathUtils.degToRad(32));
         const malla = new THREE.Mesh(geo, materialDe(M, m.name));
         malla.name = m.name;
@@ -220,12 +222,10 @@ export function crearCanSat({ calidad = 'alta' } = {}) {
           malla.position.copy(punto).negate();
           pivote.add(malla);
           p.obj.add(pivote);
-          p.cad.push(pivote);
           aspas.push({ pivote, eje: v(...b.eje).normalize(), grados: b.grados });
         } else {
           malla.position.copy(centro).negate();
           p.obj.add(malla);
-          p.cad.push(malla);
         }
       });
     });
@@ -241,13 +241,6 @@ export function crearCanSat({ calidad = 'alta' } = {}) {
     Object.assign(estado, o);
     const ex = suave(Math.min(1, Math.max(0, estado.explosion)));
     piezas.forEach((p) => { p.obj.position.copy(p.base).addScaledVector(p.explota, ex); });
-    // Al abrirse, los componentes del CAD (cajas) cambian a su versión con detalle
-    const abierto = ex > 0.02;
-    piezas.forEach((p) => {
-      if (!p.conDetalle) return;
-      p.conDetalle.visible = abierto;
-      p.cad.forEach((m) => { m.visible = !abierto; });
-    });
     // La secundaria se aleja hacia abajo y un poco de lado
     const s = estado.separacion;
     secundaria.position.set(s * 4, -s * s * 34 - ex * 4, s * 2.5);
@@ -258,8 +251,9 @@ export function crearCanSat({ calidad = 'alta' } = {}) {
     const d = Math.max(suave(Math.min(1, Math.max(0, estado.despliegue))), ex * 0.55);
     aspas.forEach((a) => { a.pivote.quaternion.setFromAxisAngle(a.eje, THREE.MathUtils.degToRad(a.grados) * d); });
     rotor.rotation.y = estado.giro;
-    detalles.brazos.autogiro.rotation.y = d * 1.4;
-    detalles.brazos.desacople.rotation.y = Math.min(1, s * 4) * 1.4;
+    const brazo = (n, t) => { if (brazos[n]) brazos[n].rotation.z = brazos[n].userData.base + t * 1.4; };
+    brazo('servo_autogiro', d);
+    brazo('servo_desacople', Math.min(1, s * 4));
     // Carcasas: opacas (PLA) y se desvanecen para ver por dentro
     const c = Math.min(1, Math.max(0, estado.cubierta));
     cubiertas.forEach((m) => {
