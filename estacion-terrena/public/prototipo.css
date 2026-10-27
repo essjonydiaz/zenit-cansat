@@ -143,43 +143,6 @@ html.sin-3d .texto > * { opacity: 1; transform: none; filter: none; }
 .ticker div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ticker .t { color: var(--azul-brillo); }
 
-/* Galería de renders conceptuales */
-.tramo.galeria { display: block; min-height: 0; padding-top: 16vh; padding-bottom: 12vh; }
-.galeria-cabeza { position: static; max-width: 40rem; margin-bottom: 4vh; }
-.galeria-rejilla {
-  display: grid; gap: 14px;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  grid-template-rows: auto auto;
-}
-.foto {
-  margin: 0; position: relative; overflow: hidden;
-  border-radius: 22px; border: 1px solid var(--borde);
-  background: #000;
-  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.9);
-  opacity: 0; transform: translateY(40px) scale(0.97);
-  transition: opacity 1s var(--suave-salida), transform 1.2s var(--suave-salida);
-}
-.tramo.visible .foto { opacity: 1; transform: none; }
-.tramo.visible .foto:nth-child(2) { transition-delay: 0.12s; }
-.tramo.visible .foto:nth-child(3) { transition-delay: 0.24s; }
-.foto-alta { grid-row: span 2; }
-.foto img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 1.4s var(--suave-salida); }
-.foto:hover img { transform: scale(1.04); }
-.foto figcaption {
-  position: absolute; left: 16px; bottom: 14px;
-  padding: 7px 14px; border-radius: 999px;
-  font-size: 13px; font-weight: 600; color: #fff;
-  background: rgba(8, 12, 22, 0.6); border: 1px solid rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(10px);
-}
-@media (prefers-reduced-motion: reduce) { .foto { opacity: 1; transform: none; transition: none; } .foto img { transition: none; } }
-html.sin-3d .foto { opacity: 1; transform: none; }
-@media (max-width: 760px) {
-  .galeria-rejilla { grid-template-columns: minmax(0, 1fr); }
-  .foto-alta { grid-row: auto; }
-  .galeria-cabeza { background: none; }
-}
-
 .acciones { display: flex; gap: 12px; align-items: center; justify-content: center; margin: 1.8em 0 1.2em; flex-wrap: wrap; }
 .historia .pildora {
   display: inline-flex; align-items: center; justify-content: center;

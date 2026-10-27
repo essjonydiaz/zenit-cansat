@@ -468,9 +468,9 @@
     "semantic_hash": ""
   },
   "estacion-terrena/public/cansat3d.js": {
-    "mtime": 1793067240.802061,
-    "seen": 1793067279.6450436,
-    "ast_hash": "43adea397b33303748e298104e62d4e8",
+    "mtime": 1793069781.7942352,
+    "seen": 1793069826.4660213,
+    "ast_hash": "eb9847fc9a9eb4f993d65226b2700463",
     "semantic_hash": ""
   },
   "estacion-terrena/public/intro.js": {
@@ -480,9 +480,9 @@
     "semantic_hash": ""
   },
   "estacion-terrena/public/prototipo.js": {
-    "mtime": 1793069101.4592774,
-    "seen": 1793069118.290619,
-    "ast_hash": "e819a2256c462224e66075319b1b6623",
+    "mtime": 1793069369.0460744,
+    "seen": 1793069826.4660213,
+    "ast_hash": "b600bc0c154a563ea513ac851b82551b",
     "semantic_hash": ""
   },
   "estacion-terrena/public/visor3d.js": {
@@ -498,9 +498,9 @@
     "semantic_hash": ""
   },
   "DESIGN.md": {
-    "mtime": 1793069111.4735627,
-    "seen": 1793069118.290619,
-    "ast_hash": "8e8d3496ccba8c182faebc67ecfd7804",
+    "mtime": 1793069372.309074,
+    "seen": 1793069826.4660213,
+    "ast_hash": "ab80995467fb446d5d9081ead441fa10",
     "semantic_hash": ""
   },
   "GRAPHIFY.md": {
@@ -540,9 +540,9 @@
     "semantic_hash": ""
   },
   "estacion-terrena/public/prototipo.html": {
-    "mtime": 1793069062.0301278,
-    "seen": 1793069118.290619,
-    "ast_hash": "873ceddb9bf22e35a72926d2d6e1309e",
+    "mtime": 1793069368.9725423,
+    "seen": 1793069826.4660213,
+    "ast_hash": "7b4b49a9cf35d14004c712a9c59b99d4",
     "semantic_hash": ""
   },
   "docs/decisiones/0003-modelo-3d-procedural-ilustrativo.md": {

@@ -1,17 +1,17 @@
 # Graph Report - zenit-cansat  (2026-10-26)
 
 ## Corpus Check
-- 85 files · ~63,547 words
+- 85 files · ~64,876 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 17 file(s) not represented in the graph (top: (none) 4, .properties 4, .ini 4)
 
 ## Summary
-- 953 nodes · 1491 edges · 54 communities (48 shown, 6 thin omitted)
+- 967 nodes · 1530 edges · 52 communities (46 shown, 6 thin omitted)
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 86 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `fb19274a`
+- Built from commit: `7ed398db`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -66,22 +66,20 @@
 - DESIGN.md — Zénit
 - test_vuelo_simulado_completo
 - PRODUCT.md — Zénit
-- Geo.cpp
 - sonidoDespegue
 - Parametros
-- usarFuente
 
 ## God Nodes (most connected - your core abstractions)
-1. `Simulador` - 23 edges
-2. `Orientacion` - 23 edges
-3. `SimuladorVuelo` - 23 edges
-4. `DatosSensores` - 22 edges
-5. `Lectura` - 19 edges
-6. `iniciar()` - 18 edges
-7. `MaquinaEstados` - 18 edges
-8. `Imu` - 18 edges
-9. `dibujarTodo()` - 17 edges
-10. `Secuencia` - 17 edges
+1. `crearCanSat()` - 23 edges
+2. `Simulador` - 23 edges
+3. `Orientacion` - 23 edges
+4. `SimuladorVuelo` - 23 edges
+5. `DatosSensores` - 22 edges
+6. `Lectura` - 19 edges
+7. `iniciar()` - 18 edges
+8. `MaquinaEstados` - 18 edges
+9. `Imu` - 18 edges
+10. `dibujarTodo()` - 17 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Consecuencias` --references--> `crearCanSat()`  [INFERRED]
@@ -98,7 +96,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (54 total, 6 thin omitted)
+## Communities (52 total, 6 thin omitted)
 
 ### Community 0 - "Panel web: dibujo, alertas y diagnóstico (app.js)"
 Cohesion: 0.07
@@ -134,11 +132,11 @@ Nodes (9): Enlace, radio_, spi_, Module, Paquete, rssi, snr, texto (+1 more)
 
 ### Community 8 - "Servidor de la estación terrena (server.js)"
 Cohesion: 0.09
-Nodes (18): app, CARPETA_LOGS, express, fs, historial, http, infoFuente, ORDENES_PERMITIDAS (+10 more)
+Nodes (22): alRecibirLinea(), app, avisarEstado(), CARPETA_LOGS, difundir(), express, fs, historial (+14 more)
 
 ### Community 9 - "Análisis de vuelo para el RAM (Python)"
-Cohesion: 0.16
-Nodes (9): analizar(), cumple(), elegir_vuelo(), escribir_resumen(), graficar(), leer_datos(), main(), numero_en() (+1 more)
+Cohesion: 0.10
+Nodes (13): distanciaMetros(), grad(), rad(), rumboGrados(), analizar(), cumple(), elegir_vuelo(), escribir_resumen() (+5 more)
 
 ### Community 10 - "Protocolo de tramas en JavaScript"
 Cohesion: 0.15
@@ -165,8 +163,8 @@ Cohesion: 0.12
 Nodes (17): Lectura, alturaReal, ax, ay, az, fase, gx, gy (+9 more)
 
 ### Community 16 - "cansat3d.js"
-Cohesion: 0.08
-Nodes (41): caja(), crearCanSat(), actualizar(), en(), huevo(), lerp(), materiales(), pila9v() (+33 more)
+Cohesion: 0.07
+Nodes (54): aroAcero(), cable(), caja(), crearCanSat(), actualizar(), en(), Helice, huevo() (+46 more)
 
 ### Community 17 - "package.json"
 Cohesion: 0.06
@@ -201,7 +199,7 @@ Cohesion: 0.23
 Nodes (6): checksum(), enmarcar(), validar(), valorHex(), checksum(), mensajeModeloDinamico()
 
 ### Community 26 - "Reproducción de sesiones"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (4): { EventEmitter }, fs, readline, Reproduccion
 
 ### Community 27 - "6. Día del lanzamiento — checklist"
@@ -276,10 +274,6 @@ Nodes (9): Colors, Components, DESIGN.md — Zénit, Do's and Don'ts, Elevation 
 Cohesion: 0.29
 Nodes (7): Lo que no se negocia, Marca, PRODUCT.md — Zénit, Quién lo usa y dónde, Qué es, Superficies, Voz
 
-### Community 50 - "Geo.cpp"
-Cohesion: 0.43
-Nodes (4): distanciaMetros(), grad(), rad(), rumboGrados()
-
 ### Community 51 - "sonidoDespegue"
 Cohesion: 0.25
 Nodes (3): cerrar(), medir(), sonidoDespegue()
@@ -288,28 +282,24 @@ Nodes (3): cerrar(), medir(), sonidoDespegue()
 Cohesion: 0.40
 Nodes (5): Parametros, cambioMinimoG, duracionReintentoMs, retardoAutogiroMs, ventanaConfirmacionMs
 
-### Community 53 - "usarFuente"
-Cohesion: 0.83
-Nodes (4): alRecibirLinea(), avisarEstado(), difundir(), usarFuente()
-
 ## Knowledge Gaps
 - **192 isolated node(s):** `@fontsource-variable/archivo`, `@fontsource-variable/jetbrains-mono`, `chart.js`, `k1_`, `k2_` (+187 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 491 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 492 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Consecuencias` connect `decisiones/README.md` to `cansat3d.js`?**
-  _High betweenness centrality (0.322) - this node is a cross-community bridge._
+- **Why does `crearCanSat()` connect `cansat3d.js` to `decisiones/README.md`?**
+  _High betweenness centrality (0.335) - this node is a cross-community bridge._
 - **Are the 4 inferred relationships involving `SimuladorVuelo` (e.g. with `Modos de compilación` and `test_frenon_del_autogiro_no_confirma_separacion()`) actually correct?**
   _`SimuladorVuelo` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `@fontsource-variable/archivo`, `@fontsource-variable/jetbrains-mono`, `chart.js` to the rest of the system?**
   _192 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Panel web: dibujo, alertas y diagnóstico (app.js)` be split into smaller, more focused modules?**
   _Cohesion score 0.07082494969818913 - nodes in this community are weakly interconnected._
-- **Why does `crearCanSat()` connect `cansat3d.js` to `decisiones/README.md`?**
-  _High betweenness centrality (0.321) - this node is a cross-community bridge._
+- **Why does `Consecuencias` connect `decisiones/README.md` to `cansat3d.js`?**
+  _High betweenness centrality (0.335) - this node is a cross-community bridge._
 - **Should `Drivers GY-91 y GPS (ZenitSensores)` be split into smaller, more focused modules?**
   _Cohesion score 0.06509803921568627 - nodes in this community are weakly interconnected._
 - **Should `Firmware de vuelo de la primaria (main.cpp)` be split into smaller, more focused modules?**

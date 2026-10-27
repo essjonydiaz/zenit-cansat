@@ -238,9 +238,6 @@ La profundidad viene del **vidrio**, no de sombras duras:
   está armado.
 - **Pieza de vidrio (portada):** ver `prototipo.js`. Se levanta 50·S y se ladea hasta 0.24 rad
   bajo el cursor (resorte k 170, c 19), con brillo lavanda tenue y más iridiscencia.
-- **Galería "Así se verá"** (prototipo): renders conceptuales en `public/img/prototipo/`
-  (JPG ≤ 250 KB), radio 22 px, etiqueta en píldora de vidrio, entrada escalonada al llegar.
-  Son referencias visuales, no planos: la página lo dice.
 - **Sonido:** solo en la intro de `/prototipo.html` (`data-sonido="si"`), sintetizado con
   Web Audio: retumbe al subir la lata, golpe y "whoosh" al despegar el huevo, brillo al
   aparecer el nombre. Si el navegador bloquea el audio, arranca con el primer clic o tecla
