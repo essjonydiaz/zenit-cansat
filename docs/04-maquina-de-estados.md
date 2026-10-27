@@ -69,3 +69,18 @@ Todos en `mision::Parametros` (`MaquinaEstados.h`). Los de la guía (200 m) tamb
 1. `pio test -e native` en `firmware/primaria` (incluye un vuelo simulado completo).
 2. Subir `env:primaria_sim` a la Heltec y ver los eventos en la estación terrena
    (DESACOPLE → SEPARACION → AUTOGIRO deben salir en ese orden).
+
+## Modo prueba (techo)
+
+`env:primaria_prueba` (`MODO_PRUEBA_CAIDA=1` en `config.h`) cambia solo estos parámetros:
+
+| Parámetro | Vuelo | Prueba |
+|---|---|---|
+| alturaDeteccionAscenso | 15 m | 3 m |
+| alturaArmado | 250 m | 4 m |
+| Desacople | h ≤ 200 m | 1.5 m abajo de la altura máxima (`caidaDesacople`) |
+| alturaMaxAterrizaje | 30 m | 2.5 m (esperar en el techo no es aterrizar) |
+
+El evento ARRANQUE termina en `PRUEBA` y la estación terrena muestra un aviso.
+Pruebas: `test_modo_prueba_techo` y `test_sin_modo_prueba_el_techo_no_desacopla`.
+

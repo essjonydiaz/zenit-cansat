@@ -13,6 +13,22 @@
 #define ALTURA_ARMADO_M           250.0f  // debe superarse antes de poder desacoplar
 #define TRANSMISION_POST_ATERRIZAJE_S 10  // mínimo exigido (seguimos transmitiendo después)
 
+// ---------------------------------------------------------- Modo prueba ----
+// Para soltarlo desde un techo (2–3 pisos = 6–10 m). Se activa subiendo
+// env:primaria_prueba (no hay que tocar este archivo). NUNCA para el concurso:
+// el evento ARRANQUE dice "PRUEBA" y la estación terrena muestra un aviso.
+//   1. Encender abajo, en el suelo (ahí queda el 0 m).
+//   2. Subirlo al techo: al pasar de 3 m entra en ASCENSO; al pasar de 4 m se arma.
+//   3. Puede esperar en el techo lo que sea (arriba de 2.5 m no cuenta como aterrizado).
+//   4. Soltarlo: al caer 1.5 m desacopla y 0.4 s después abre el autogiro.
+#ifndef MODO_PRUEBA_CAIDA
+#define MODO_PRUEBA_CAIDA 0
+#endif
+#define PRUEBA_ALTURA_ASCENSO_M   3.0f
+#define PRUEBA_ALTURA_ARMADO_M    4.0f
+#define PRUEBA_CAIDA_DESACOPLE_M  1.5f
+#define PRUEBA_ALTURA_ATERRIZAJE_M 2.5f  // en el techo NO cuenta como aterrizado
+
 // -------------------------------------------------------------- Muestreo ----
 #define PERIODO_MUESTREO_MS   20   // 50 Hz: sensores + filtros + máquina de estados
 #define PERIODO_TELEMETRIA_MS 500  // 2 Hz: trama T por radio (el PDR pide >= 1 Hz)

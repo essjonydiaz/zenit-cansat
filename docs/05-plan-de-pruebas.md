@@ -19,6 +19,29 @@ la tabla del final: eso va directo al PDR y al CDR.
 | **P9** Ensayo general | CanSat final pesado y medido + `env:primaria` + estación terrena + checklist [06](06-dia-de-lanzamiento.md) | ≤ 600 g con 2 huevos de 65 g · Ø 9–10 cm · alto 20–23 cm · todos los requisitos del panel en ✓ con un vuelo simulado |
 | **GPS** Fijación y precisión (PDR prioridad 1) | Primaria y secundaria juntas a cielo abierto 5 min; luego separarlas una distancia medida con cinta (p. ej. 30 m) | Ambas con fix en < 2 min · distancia en el panel ±5 m de la real (requisito 7 del PDR) |
 
+## Prueba desde el techo (modo prueba)
+
+Sirve para probar todo el sistema sin dron: detección de la caída, desacople, servos,
+registro, aterrizaje e impacto del huevo. Un edificio de 2–3 pisos (6–10 m) basta.
+
+1. Subir a la primaria `env:primaria_prueba` (en `firmware/primaria`). Al arrancar dice
+   `INFO,MODO_PRUEBA` y la estación terrena muestra el aviso amarillo "Primaria en MODO PRUEBA".
+2. **Encenderla abajo, en el suelo**: ahí queda el 0 m. Encender también la secundaria.
+3. Laptop con la estación terrena abajo (`npm start` + receptor). Empezar a grabar la pantalla
+   (Win + Alt + R o OBS) y, con un celular, la caída.
+4. Subir el CanSat por la escalera. Al pasar de 3 m el panel marca **ASCENSO**; al pasar de 4 m
+   se arma el desacople. Puede esperar arriba lo que sea: a más de 2.5 m no cuenta como aterrizado.
+5. Antes de soltarlo, alguien dice "¡ya!" frente a la cámara y a la laptop (para sincronizar el video).
+6. Soltarlo (sin aventarlo). Debe salir: LIBERACIÓN → DESACOPLE (≈1.5 m abajo del techo) →
+   AUTOGIRO (0.4 s después) → ATERRIZAJE → POST-ATERRIZAJE.
+7. Revisar: huevo, servos, que la secundaria se soltó, y el archivo del OpenLog
+   (`herramientas/analisis_vuelo.py`).
+8. **Para el concurso subir `env:primaria`.** Con el firmware normal, la misma caída NO desacopla
+   (hay una prueba automática para eso).
+
+Desde 8 m el CanSat llega al suelo a ~12 m/s en ~1.3 s: el autogiro no alcanza a estabilizarse,
+así que la velocidad de 8–12 m/s con autogiro (P5) necesita más altura (dron con permiso).
+
 ## Pruebas de software (automáticas)
 
 | Qué | Comando | Cuándo |

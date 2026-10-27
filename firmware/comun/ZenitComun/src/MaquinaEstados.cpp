@@ -41,7 +41,7 @@ uint8_t MaquinaEstados::actualizar(const Entrada& e) {
   // --- Desacople: se evalúa en cualquier estado de vuelo ---
   const bool enVuelo = estado_ == Estado::ASCENSO || estado_ == Estado::CAIDA_LIBRE;
   if (!desacopleHecho_ && enVuelo && armado()) {
-    if (e.altura <= p_.alturaDesacople && e.velocidad <= p_.velocidadMinDesacople) {
+    if (e.altura <= alturaDesacopleEfectiva() && e.velocidad <= p_.velocidadMinDesacople) {
       if (++cuentaDesacople_ >= p_.lecturasDesacople) {
         desacopleHecho_ = true;
         tDesacople_ = e.t;
@@ -72,7 +72,7 @@ uint8_t MaquinaEstados::actualizar(const Entrada& e) {
     case Estado::ASCENSO: {
       // Liberación del dron: caída libre (casi 0 g) o bajada rápida sostenida.
       const bool caida = e.gTotal < p_.gCaidaLibre || e.velocidad < p_.velocidadLiberacion;
-      if (caida && e.altura > p_.alturaDesacople) {
+      if (caida && e.altura > alturaDesacopleEfectiva()) {
         if (tInicioCondicion_ < 0) tInicioCondicion_ = e.t;
         if (e.t - tInicioCondicion_ >= p_.tiempoConfirmacionLiberacion) {
           estado_ = Estado::CAIDA_LIBRE;

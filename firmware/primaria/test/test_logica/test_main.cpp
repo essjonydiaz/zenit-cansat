@@ -95,6 +95,59 @@ void test_pausa_del_dron_no_es_aterrizaje() {
   TEST_ASSERT_TRUE(m.estado() == mision::Estado::ASCENSO);
 }
 
+// Modo prueba: se enciende en el suelo, lo suben 8 m por la escalera, lo
+// sueltan desde el techo y cae libre. Debe desacoplar ~1.5 m abajo del techo.
+void test_modo_prueba_techo() {
+  mision::Parametros p;
+  p.alturaDeteccionAscenso = 3.0f;
+  p.alturaArmado = 4.0f;
+  p.caidaDesacople = 1.5f;
+  p.alturaMaxAterrizaje = 2.5f;
+  mision::MaquinaEstados m;
+  m.configurar(p);
+  TEST_ASSERT_TRUE(m.modoPrueba());
+  const float dt = 0.02f;
+  float t = 0, h = 0, v = 0;
+  uint8_t todos = 0;
+  float hDesacople = -1;
+  for (int i = 0; i < 100; ++i, t += dt) todos |= m.actualizar({t, 0.0f, 0.0f, 1.0f});   // 2 s en el suelo
+  for (; h < 8.0f; t += dt) { h += 0.5f * dt; todos |= m.actualizar({t, h, 0.5f, 1.0f}); }  // escalera
+  TEST_ASSERT_TRUE(todos & mision::EV_ASCENSO);
+  for (int i = 0; i < 250; ++i, t += dt) {           // 5 s en el techo, se mueve un poco
+    const float bajada = (i > 100 && i < 150) ? -0.6f : 0.0f;   // baja medio escalón
+    h += bajada * dt;
+    const uint8_t ev = m.actualizar({t, h, bajada, 1.0f});
+    TEST_ASSERT_FALSE(ev & mision::EV_DESACOPLE);    // caminar NO desacopla
+    TEST_ASSERT_FALSE(ev & mision::EV_ATERRIZAJE);   // esperar en el techo NO es aterrizar
+  }
+  const float techo = h;
+  while (h > 0) {                                    // caída libre
+    v -= 9.81f * dt; h += v * dt;
+    const uint8_t ev = m.actualizar({t, h > 0 ? h : 0.0f, v, 0.05f});
+    if (ev & mision::EV_DESACOPLE) hDesacople = h;
+    todos |= ev; t += dt;
+  }
+  for (int i = 0; i < 250; ++i, t += dt) todos |= m.actualizar({t, 0.0f, 0.0f, 1.0f});   // en el pasto
+  TEST_ASSERT_TRUE(todos & mision::EV_LIBERACION);
+  TEST_ASSERT_TRUE(todos & mision::EV_DESACOPLE);
+  TEST_ASSERT_FLOAT_WITHIN(0.6f, techo - 1.5f, hDesacople);
+  TEST_ASSERT_TRUE(m.estado() == mision::Estado::ATERRIZADO);
+}
+
+// Con los parámetros normales, la misma prueba del techo NO desacopla.
+void test_sin_modo_prueba_el_techo_no_desacopla() {
+  mision::MaquinaEstados m;
+  TEST_ASSERT_FALSE(m.modoPrueba());
+  const float dt = 0.02f;
+  float t = 0, h = 8.0f, v = 0;
+  for (int i = 0; i < 100; ++i, t += dt) m.actualizar({t, h, 0.0f, 1.0f});
+  while (h > 0) {
+    v -= 9.81f * dt; h += v * dt;
+    TEST_ASSERT_FALSE(m.actualizar({t, h > 0 ? h : 0.0f, v, 0.05f}) & mision::EV_DESACOPLE);
+    t += dt;
+  }
+}
+
 // Vuelo completo simulado: sensores sintéticos -> filtros -> máquina de estados.
 void test_vuelo_simulado_completo() {
   sim::SimuladorVuelo s;
@@ -262,6 +315,8 @@ int main(int, char**) {
   RUN_TEST(test_filtro_sigue_bajada_constante);
   RUN_TEST(test_no_desacopla_si_no_se_armo);
   RUN_TEST(test_pausa_del_dron_no_es_aterrizaje);
+  RUN_TEST(test_modo_prueba_techo);
+  RUN_TEST(test_sin_modo_prueba_el_techo_no_desacopla);
   RUN_TEST(test_vuelo_simulado_completo);
   RUN_TEST(test_separacion_confirmada);
   RUN_TEST(test_separacion_sin_jalon_reintenta_y_abre_autogiro);

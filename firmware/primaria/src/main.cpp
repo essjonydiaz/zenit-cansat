@@ -51,6 +51,19 @@ static separacion::Parametros parametrosSeparacion() {
   return p;
 }
 static separacion::Secuencia secuencia(parametrosSeparacion());
+// Parámetros de la misión (o del modo prueba de techo). Se aplican en setup().
+static mision::Parametros parametrosMision() {
+  mision::Parametros p;
+  p.alturaDesacople = ALTURA_DESACOPLE_M;
+  p.alturaArmado = ALTURA_ARMADO_M;
+#if MODO_PRUEBA_CAIDA
+  p.alturaDeteccionAscenso = PRUEBA_ALTURA_ASCENSO_M;
+  p.alturaArmado = PRUEBA_ALTURA_ARMADO_M;
+  p.caidaDesacople = PRUEBA_CAIDA_DESACOPLE_M;
+  p.alturaMaxAterrizaje = PRUEBA_ALTURA_ATERRIZAJE_M;
+#endif
+  return p;
+}
 static Servo servoDesacople, servoAutogiro;
 static TinyGPSPlus gps;
 static zpantalla::Pantalla pantalla;
@@ -487,6 +500,10 @@ void setup() {
   buzzer(false);
   delay(300);
   Serial.println("INFO,ZENIT_PRIMARIA,iniciando");
+  maquina.configurar(parametrosMision());
+#if MODO_PRUEBA_CAIDA
+  Serial.println("INFO,MODO_PRUEBA,desacopla al caer 1.5 m (solo para pruebas desde un techo)");
+#endif
 
   // Los dos servos empiezan CERRADOS: sostienen a la secundaria y a las palas.
   ESP32PWM::allocateTimer(0);
@@ -518,10 +535,11 @@ void setup() {
 
   char detalle[140];
   snprintf(detalle, sizeof(detalle),
-           "baro=%d(%s 0x%02X) imu=%d(%s) mag=%d lora=%d sd=%d%s %s", baro,
+           "baro=%d(%s 0x%02X) imu=%d(%s) mag=%d lora=%d sd=%d%s %s%s", baro,
            sensores.modeloBaro(), sensores.direccionBaro(), sensores.imuOk(),
            sensores.modeloImu(), sensores.magOk(), c.loraOk, c.sdOk,
-           c.sdOk && !c.sdConfirmada ? "?" : "", c.archivo);
+           c.sdOk && !c.sdConfirmada ? "?" : "", c.archivo,
+           maquina.modoPrueba() ? " PRUEBA" : "");
   enviarEvento("ARRANQUE", detalle);
   if (!c.loraOk) {
     snprintf(detalle, sizeof(detalle), "%d %s", c.errorLora,

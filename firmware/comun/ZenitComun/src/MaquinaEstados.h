@@ -16,6 +16,9 @@
 //   - Exige velocidad de bajada y varias lecturas seguidas bajo 200 m.
 //   - Respaldo: si por alguna razón no se detectó la liberación pero ya está
 //     armado y bajando, también dispara.
+//  Modo prueba (caidaDesacople > 0): para soltarlo desde un techo de 6–10 m.
+//  Desacopla al caer caidaDesacople metros desde la altura máxima, en vez de
+//  esperar a los 200 m. Se activa con env:primaria_prueba (config.h).
 //  La lógica es C++ puro: se prueba en la PC (test/test_logica) y con el
 //  simulador de vuelo.
 // =============================================================================
@@ -51,6 +54,7 @@ struct Parametros {
   float gCaidaLibre = 0.35f;               // |a| < 0.35 g => caída libre
   float alturaArmado = 250.0f;             // m: debe superarse para armar
   float alturaDesacople = 200.0f;          // m: requisito de la misión
+  float caidaDesacople = 0.0f;             // m: > 0 = modo prueba (cae esto desde la máxima)
   float velocidadMinDesacople = -3.0f;     // m/s: debe ir bajando
   uint8_t lecturasDesacople = 3;           // lecturas seguidas bajo 200 m
   float alturaMaxAterrizaje = 30.0f;       // m (margen por deriva del barómetro)
@@ -72,6 +76,13 @@ class MaquinaEstados {
   // Desacople manual (comando desde tierra): marca el desacople como hecho.
   void desacopleManual(float t);
   void reiniciar();
+  // Cambia los parámetros (se llama en setup(); reinicia el estado).
+  void configurar(const Parametros& p) { p_ = p; reiniciar(); }
+  // Altura a la que se desacopla: fija (200 m) o relativa en modo prueba.
+  float alturaDesacopleEfectiva() const {
+    return p_.caidaDesacople > 0.0f ? alturaMax_ - p_.caidaDesacople : p_.alturaDesacople;
+  }
+  bool modoPrueba() const { return p_.caidaDesacople > 0.0f; }
 
   Estado estado() const { return estado_; }
   float alturaMaxima() const { return alturaMax_; }
