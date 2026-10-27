@@ -265,7 +265,7 @@ def disco_huevo_base():
         x, y = ang_xy(34.0, a)
         d = d.union(gancho(x, y, z1))
     for a in ANG_ASPAS:  # paso para el diente del anillo (en su lugar y al girar para soltar)
-        d = d.cut(cuna(41.0, R + 1, a - 9.0, a + GIRO_ANILLO + 9.0, z0 - 1, z1 + 1))
+        d = d.cut(cuna(41.0, R + 1, a - 9.0, a + GIRO_ANILLO + 16.0, z0 - 1, z1 + 1))   # margen si el servo gira de más
     for a in (0.0, 120.0, 240.0):  # topes de hule (3 puntos contra la pared)
         x, y = ang_xy(RI - 1.0, a + 60)
         d = d.union(cil(1.0, z0, z1, x, y))

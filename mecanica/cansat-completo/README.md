@@ -157,10 +157,12 @@ caídas de prueba. Si baja muy lento, se acortan las aspas; si baja muy rápido,
    con el brazo del anillo. El servo debe girar el anillo **15° antihorario** (visto desde arriba)
    para soltar.
 2. Pasar los espaciadores de la base, el disco del huevo, la espuma y los espaciadores del huevo.
-3. **Electrónica:** armar aparte las 3 placas con sus separadores entre el disco base y la tapa,
+3. Deslizar la **carcasa** desde arriba hasta asentarla en el piso (antes de la electrónica: la
+   ceja de la tapa no deja pasar el tubo).
+4. **Electrónica:** armar aparte las 3 placas con sus separadores entre el disco base y la tapa,
    con una arandela de hule en cada torre del disco y otra arriba de cada separador corto. Apretar
-   sin aplastar el hule. Meterla en las varillas.
-4. Deslizar la **carcasa** desde arriba hasta asentarla en el piso.
+   sin aplastar el hule. Poner el o-ring y bajar el módulo por dentro del tubo, por las varillas,
+   hasta que la ceja de la tapa asiente en el borde del tubo. El o-ring roza los 3 canales: es normal.
 5. **Rotor:** el balero entra en la torre de la tapa. El perno del rotor entra en el balero y se
    fija por abajo con el tornillo M3 y la rondana.
 6. **Aspas:** pegar el imán de Ø 8 × 1 en el hueco de la punta de cada aspa, **con el polo que
