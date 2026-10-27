@@ -48,6 +48,8 @@ const CARPETA_LOGS = path.join(__dirname, 'logs');
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+// Segunda edición del panel (para compararla con la primera en /).
+app.get('/v2', (req, res) => res.sendFile(path.join(__dirname, 'public', 'v2.html')));
 // Chart.js servido localmente: en la cancha NO hay internet.
 app.use('/vendor', express.static(path.join(__dirname, 'node_modules', 'chart.js', 'dist')));
 // Lo mismo para el modelo 3D (three.js) y las tipografías del panel.

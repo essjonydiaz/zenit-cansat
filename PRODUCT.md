@@ -17,6 +17,7 @@ por LoRa 915 MHz y sigue transmitiendo **≥ 10 s** después de aterrizar.
 | Superficie | Ruta | Modo | Éxito para quien la usa |
 |---|---|---|---|
 | Panel de la estación terrena | `/` (`estacion-terrena/public/index.html`) | Operar | Saber en 2 segundos si todo va bien y, si no, **qué cable o pieza revisar** |
+| Panel, 2.ª edición | `/v2` (`v2.html` + `v2.js` sobre `app.js`) | Operar | Lo mismo, con la fase en grande, un solo reloj (T+ desde el arranque) y el enlace LoRa a la vista |
 | Prototipo 3D | `/prototipo.html` | Persuadir · Experiencia | Entender la misión y el aparato sin leer los docs; querer ver el vuelo en vivo |
 
 ## Quién lo usa y dónde

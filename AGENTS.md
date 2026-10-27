@@ -29,7 +29,7 @@ Idioma del proyecto: **español** (código, comentarios, commits y respuestas).
 | `firmware/comun/ZenitComun` | **C++ puro** (sin Arduino): pines, radio, protocolo, filtros, máquina de estados, separación, Haversine, UBX, tiempo en el aire, simulador | C++ |
 | `firmware/comun/ZenitRadio` · `ZenitSensores` · `ZenitPantalla` | Drivers solo-ESP32 (RadioLib, GY-91, OLED) | C++ |
 | `estacion-terrena/` | Node.js: `server.js` + `src/` (protocolo, simulador, registro) + `public/` (panel web) | JavaScript |
-| `estacion-terrena/public/` | Panel: `index.html` · `app.js` · `estilos.css`. Compartido: `base.css` (tokens + intro) · `intro.js` (logo al inicio) · `cansat3d.js` (modelo 3D). `visor3d.js` (orientación en vivo). Prototipo: `prototipo.html/.css/.js` | HTML/CSS/JS + three.js |
+| `estacion-terrena/public/` | Panel: `index.html` · `app.js` · `estilos.css`. Segunda edición en `/v2`: `v2.html` · `v2.css` · `v2.js` (se carga después de `app.js` y solo agrega o corrige encima; misma lógica y mismos IDs). Compartido: `base.css` (tokens + intro) · `intro.js` (logo al inicio) · `cansat3d.js` (modelo 3D). `visor3d.js` (orientación en vivo). Prototipo: `prototipo.html/.css/.js` | HTML/CSS/JS + three.js |
 | `herramientas/analisis_vuelo.py` | Tabla y gráficas para el documento RAM | Python |
 | `docs/` | 01 arquitectura · 02 conexiones · 03 protocolo · 04 máquina de estados · 05 pruebas · 06 lanzamiento · 07 requisitos/riesgos · 08 git · 09 primera prueba · 10 pendientes | Markdown |
 | `docs/decisiones/` | ADR: el *por qué* de cada decisión (recursos locales, sistema visual, modelo 3D) | Markdown |
@@ -45,7 +45,7 @@ LoRa **915 MHz**, alcance **≥ 1 km** (PDR).
 |---|---|
 | Pruebas de la lógica (16) | `firmware/primaria`: `pio test -e native` |
 | Compilar | `pio run -d firmware/primaria -e primaria -e primaria_sim` · `pio run -d firmware/secundaria` · `pio run -d firmware/receptor` · `pio run -d firmware/pruebas` |
-| Estación terrena | `estacion-terrena`: `npm install` · `npm test` (8) · `npm run simular` → http://localhost:3000 (panel) y http://localhost:3000/prototipo.html (recorrido 3D) |
+| Estación terrena | `estacion-terrena`: `npm install` · `npm test` (8) · `npm run simular` → http://localhost:3000 (panel) y http://localhost:3000/prototipo.html (recorrido 3D) y http://localhost:3000/v2 (segunda edición del panel) |
 | Análisis | `python herramientas/analisis_vuelo.py herramientas/ejemplos/VUELO_SIMULADO.CSV` |
 
 GitHub Actions (`.github/workflows/ci.yml`) corre todo esto en cada push.
