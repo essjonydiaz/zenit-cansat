@@ -10,18 +10,18 @@ Total de choques: 0
   carcasa_primaria                   51.9 g
   carcasa_secundaria                 43.5 g
   tapa_electronica                   19.3 g
-  rotor                              16.3 g
   piso_primaria                      16.3 g
+  rotor                              15.9 g
   aspa                               14.9 g
-  disco_electronica_base             14.7 g
+  disco_electronica_base             14.5 g
   bandeja_secundaria                 13.9 g
   tapa_secundaria                    12.8 g
-  disco_huevo_base                    8.7 g
-  espaciador_huevo                    4.3 g
-  separadores de placas (12)          3.5 g
+  disco_huevo_base                    7.3 g
+  espaciador_huevo                    4.4 g
+  separadores de placas (12)          3.3 g
   anillo_retencion                    2.0 g
   espaciador_base                     1.6 g
-  PIEZAS IMPRESAS                   223.7 g
+  PIEZAS IMPRESAS                   221.6 g
   Huevos (2, según la guía)         130.0 g
   Pilas 9 V alcalinas (2)            92.0 g
   Servos SG90 (2)                    18.0 g
@@ -32,8 +32,8 @@ Total de choques: 0
   ESP32-C3 + RFM95W + NEO-6M         15.0 g
   Balero 688ZZ                        4.0 g
   Varillas M3 de acero (3) + tornillería   26.0 g
-  Cables, conectores y o-ring        18.0 g
+  Cables, conectores, o-ring y hules   20.0 g
   Espuma EVA y ligas                 12.0 g
   Pasador de acero y alambres         4.0 g
-  COMPRADOS                         376.0 g
-  TOTAL                             599.7 g   (límite 600 g)
+  COMPRADOS                         378.0 g
+  TOTAL                             599.6 g   (límite 600 g)

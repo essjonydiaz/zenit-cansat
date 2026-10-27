@@ -1,7 +1,9 @@
-import markdown, os, re, asyncio
+import markdown, os, re, asyncio, sys
 from playwright.async_api import async_playwright
 A=os.path.dirname(os.path.abspath(__file__))
-md=open(os.path.join(A,'README.md'),encoding='utf-8').read()
+ENTRA, SALE, PIE = (sys.argv[1:4] if len(sys.argv) > 3 else ('README.md', 'Zenit_CanSat_diseno_completo.pdf', 'Diseño completo v1'))
+md=open(os.path.join(A,ENTRA),encoding='utf-8').read()
+md=re.sub(r'^(\s*)- \[ \] ', r'\1- ☐ ', md, flags=re.M)
 html=markdown.markdown(md, extensions=['tables'])
 html=re.sub(r'src="(salida/[^"]+)"', lambda m: f'src="file://{A}/{m.group(1)}"', html)
 css='''@page{size:Letter;margin:15mm 14mm}
@@ -20,8 +22,8 @@ async def m():
     async with async_playwright() as p:
         b=await p.chromium.launch(); pg=await b.new_page()
         await pg.goto('file:///tmp/claude-0/guia.html'); await pg.wait_for_timeout(800)
-        await pg.pdf(path=os.path.join(A,'salida','Zenit_CanSat_diseno_completo.pdf'), format='Letter', print_background=True,
+        await pg.pdf(path=os.path.join(A,'salida',SALE), format='Letter', print_background=True,
                      display_header_footer=True, header_template='<span></span>',
-                     footer_template='<div style="font-size:7pt;width:100%;text-align:center;color:#666">Zénit · CanSat 2026 · Diseño completo v1 · <span class="pageNumber"></span>/<span class="totalPages"></span></div>')
+                     footer_template='<div style="font-size:7pt;width:100%;text-align:center;color:#666">Zénit · CanSat 2026 · '+PIE+' · <span class="pageNumber"></span>/<span class="totalPages"></span></div>')
         await b.close()
 asyncio.run(m()); print('ok')

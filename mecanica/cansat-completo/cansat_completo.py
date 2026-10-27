@@ -43,9 +43,10 @@ Z_PISO1 = ZU + 2.0                     # cara de arriba de la ceja del piso
 Z_PISO2 = ZU + 4.0                     # cara de arriba del piso
 Z_PASADOR = ZU + 9.0                   # altura del pasador de desacople
 Z_ANILLO = (ZU + 22.0, ZU + 24.5)      # anillo de retención de aspas
-Z_HUEVO_BASE = (ZU + 26.5, ZU + 29.5)  # disco de abajo del módulo del huevo
+Z_HUEVO_BASE = (ZU + 26.5, ZU + 29.0)  # disco de abajo del módulo del huevo
 Z_ELEC_BASE = (ZU + 90.0, ZU + 95.0)   # disco de arriba del huevo = base de la electrónica
 ESP_PLACAS = (6.0, 16.0, 18.0, 6.0)    # base→P1, P1→P2, P2→P3, P3→tapa
+HULE = (8.0, 2.0)                      # arandela de hule bajo P1 y sobre P3 (Ø, grosor)
 PLACA = (60.0, 40.0, 1.6)
 AGUJERO_MARGEN = 2.5
 Z_TUBO_ARRIBA = ZU + 148.8             # borde de arriba del tubo
@@ -254,7 +255,8 @@ def disco_electronica_base():
     d = anillo(38.0, RI - 0.5, z0, z1).union(cil(38.0, z1 - 3.0, z1))
     zc = (z0 + z1) / 2
     d = d.cut(anillo(RI - 0.5 - 1.2, RI + 1, zc - 1.1, zc + 1.1))      # ranura del o-ring
-    d = d.union(cq.Workplane('XY').workplane(offset=z1).pushPoints(placa_pts()).circle(3.6).extrude(ESP_PLACAS[0]))
+    # torres más bajas: arriba de cada una va una arandela de hule y luego la placa 1
+    d = d.union(cq.Workplane('XY').workplane(offset=z1).pushPoints(placa_pts()).circle(3.6).extrude(ESP_PLACAS[0] - HULE[1]))
     for (x, y) in placa_pts():
         d = d.cut(cil(M3 / 2, z0 - 1, z1 + ESP_PLACAS[0] + 1, x, y)).cut(hexagono(z1 - 3.1, z1 - 3.0 + HEX_ALTO, x, y))
     for a in ANG_COLUMNA:
@@ -307,8 +309,8 @@ def tapa_electronica():
 def rotor():
     r = anillo(R - 1.2, R, Z_ROTOR0, Z_TOP).union(cil(R, Z_TOP - 1.8, Z_TOP))
     r = r.union(cil(10.0, Z_ROTOR_PLATO, Z_TOP))                                # centro grueso para el orificio
-    for k in range(6):                                                           # costillas bajo el plato
-        r = r.union(rot(caja(36.0, 1.6, Z_TOP - 1.8 - Z_ROTOR_PLATO, (28.0, 0, (Z_ROTOR_PLATO + Z_TOP - 1.8) / 2)), k * 60 + 30))
+    for k in range(3):                                                           # costillas bajo el plato
+        r = r.union(rot(caja(36.0, 1.6, Z_TOP - 1.8 - Z_ROTOR_PLATO, (28.0, 0, (Z_ROTOR_PLATO + Z_TOP - 1.8) / 2)), k * 120 + 30))
     r = r.cut(cil(ORIFICIO_DRON[0] / 2, Z_TOP - ORIFICIO_DRON[1], Z_TOP + 1))   # orificio para el dron
     perno = cil(BALERO[1] / 2 - 0.05, Z_TAPA[1] + 3.7 - BALERO[2] + 0.1, Z_ROTOR_PLATO)
     r = r.union(perno).cut(cil(1.25, Z_TAPA[1] - 1, Z_ROTOR_PLATO - 2))
@@ -391,6 +393,9 @@ def componentes():
     comp['antena_lora'] = cil(0.6, z_placas()[1] + 12.0 - 82.0, z_placas()[1] + 12.0, 0, -(RI - 2.6))
     comp['oring'] = cq.Solid.makeTorus(RI - 0.5 - 1.2 + 1.0, 1.0, pnt=cq.Vector(0, 0, sum(Z_ELEC_BASE) / 2))
     comp['oring'] = cq.Workplane('XY').add(comp['oring'])
+    for j, (x, y) in enumerate(placa_pts()):   # sándwich de hule de la electrónica
+        comp[f'hule_abajo_{j}'] = anillo(M3 / 2, HULE[0] / 2, zs[0] - HULE[1], zs[0]).translate((x, y, 0))
+        comp[f'hule_arriba_{j}'] = anillo(M3 / 2, HULE[0] / 2, Z_TAPA[0] - HULE[1], Z_TAPA[0]).translate((x, y, 0))
     comp['espuma_huevo1_abajo'] = cil(30.0, Z_HUEVO_BASE[1], HUEVO1_C[2] - HUEVO[1] / 2 - 0.3)
     comp['espuma_huevo1_arriba'] = cil(30.0, HUEVO1_C[2] + HUEVO[1] / 2 + 0.3, Z_ELEC_BASE[1] - 3.0)
     comp['espuma_huevo2_abajo'] = cil(16.0, 6.4, HUEVO2_C[2] - HUEVO[1] / 2 - 0.3, HUEVO2_C[0], 0)
@@ -409,7 +414,7 @@ MASA_COMPRADOS = {  # g (valores típicos; pesar los reales)
     'Huevos (2, según la guía)': 130, 'Pilas 9 V alcalinas (2)': 92, 'Servos SG90 (2)': 18,
     'Heltec WiFi LoRa 32 V3': 15, 'Placas perforadas 4×6 (3)': 18, 'GY-91 + OpenLog + reguladores': 10,
     'NEO-M8N + antena': 14, 'ESP32-C3 + RFM95W + NEO-6M': 15, 'Balero 688ZZ': 4,
-    'Varillas M3 de acero (3) + tornillería': 26, 'Cables, conectores y o-ring': 18, 'Espuma EVA y ligas': 12,
+    'Varillas M3 de acero (3) + tornillería': 26, 'Cables, conectores, o-ring y hules': 20, 'Espuma EVA y ligas': 12,
     'Pasador de acero y alambres': 4,
 }
 
@@ -434,7 +439,7 @@ def piezas_impresas():
         p[f'espaciador_base_{i}'] = (espaciador(Z_PISO2, Z_HUEVO_BASE[0], x, y), 1.0)
         p[f'espaciador_huevo_{i}'] = (espaciador(Z_HUEVO_BASE[1], Z_ELEC_BASE[0], x, y), 1.0)
     zs = z_placas()
-    tramos = [(zs[0] + PLACA[2], zs[1]), (zs[1] + PLACA[2], zs[2]), (zs[2] + PLACA[2], Z_TAPA[0])]
+    tramos = [(zs[0] + PLACA[2], zs[1]), (zs[1] + PLACA[2], zs[2]), (zs[2] + PLACA[2], Z_TAPA[0] - HULE[1])]
     for i, (z0, z1) in enumerate(tramos):
         for j, (x, y) in enumerate(placa_pts()):
             p[f'separador_placas_{i}_{j}'] = (separador_placa(z0, z1, x, y), 1.0)

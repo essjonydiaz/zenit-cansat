@@ -39,7 +39,9 @@ La revisión automática del archivo no encontró **ningún choque** entre pieza
 4. **Huevo de la primaria:** acostado en una hamaca de ligas entre 6 ganchos abajo y 6 arriba,
    con una cama y un techo de espuma EVA.
 5. **Electrónica:** las 3 placas de 4 × 6 cm (la Heltec en la placa 2) entre el disco base (con
-   o-ring) y la tapa. La antena LoRa baja pegada a la pared, al frente.
+   o-ring) y la tapa, con 4 arandelas de hule abajo y 4 arriba que absorben el golpe del
+   aterrizaje. La antena LoRa baja pegada a la pared, al frente. Detalle en
+   `Zenit_proteccion_electronica.pdf`.
 6. **Tapa de la electrónica:** recibe el balero 688 y la antena GPS de 25 mm. Su ceja de Ø 96
    aprieta el tubo contra el piso.
 7. **Rotor del autogiro:** tapa que gira sobre el balero, con el orificio para el dron y las
@@ -94,6 +96,8 @@ PLA o PETG, capa de 0.2 mm, 3 perímetros, 15–20 % de relleno. Tiempo total ap
 | 10 cm | Varilla o clavo de acero de 3 mm | Pasador del desacople |
 | 50 cm | Alambre de acero de 1 mm (cuerda de piano) | Varillas de los servos y ejes de las bisagras (1.5 mm) |
 | 1 | O-ring 88 × 2 mm | Centra la electrónica en el tubo |
+| 8 | Arandelas de hule o silicón Ø 8 × 3 × 2 mm | Amortiguan las 3 placas |
+| 4 | Tuercas M3 con seguro de nylon | Para que las placas no se aflojen |
 | 1 bolsa | Ligas chicas | Hamaca de los huevos y resorte de cada aspa |
 | 1 hoja | Espuma EVA de 5 mm | Cama y techo de cada huevo |
 | 2 | Pilas de 9 V (**de litio** si se puede: ~12 g menos cada una) | Energía |
@@ -103,11 +107,11 @@ PLA o PETG, capa de 0.2 mm, 3 perímetros, 15–20 % de relleno. Tiempo total ap
 
 | Grupo | Peso |
 |---|---|
-| Piezas impresas | 224 g |
+| Piezas impresas | 222 g |
 | Huevos (2 × 65 g, como manda la guía) | 130 g |
 | Pilas de 9 V alcalinas (2) | 92 g |
 | Electrónica (Heltec, placas, sensores, GPS, secundaria) | 72 g |
-| Servos, balero, varillas, tornillos, cables, espuma y ligas | 82 g |
+| Servos, balero, varillas, tornillos, cables, hules, espuma y ligas | 84 g |
 | **Total** | **~600 g** (límite 600 g) |
 
 Queda **justo**. Para tener margen:
@@ -137,8 +141,9 @@ caídas de prueba. Si baja muy lento, se acortan las aspas; si baja muy rápido,
    pila con un cincho y los 2 servos en sus cunas. Montar el anillo de retención en sus guías y
    unir con alambre el brazo del servo del autogiro con el brazo del anillo.
 2. Pasar los espaciadores de la base, el disco del huevo, la espuma y los espaciadores del huevo.
-3. **Electrónica:** armar aparte las 3 placas con sus separadores entre el disco base y la tapa.
-   Meterla en las varillas.
+3. **Electrónica:** armar aparte las 3 placas con sus separadores entre el disco base y la tapa,
+   con una arandela de hule en cada torre del disco y otra arriba de cada separador corto. Apretar
+   sin aplastar el hule. Meterla en las varillas.
 4. Deslizar la **carcasa** desde arriba hasta asentarla en el piso.
 5. **Rotor:** el balero entra en la torre de la tapa. El perno del rotor entra en el balero y se
    fija por abajo con el tornillo M3 y la rondana.

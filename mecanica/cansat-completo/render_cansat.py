@@ -34,6 +34,7 @@ def material_de(n):
     if n.startswith(('carcasa', 'rotor')): return MAT['carcasa']
     if 'tapa_secundaria' in n: return MAT['azul']
     if n.startswith(('piso', 'disco', 'tapa_electronica', 'bandeja', 'anillo', 'espaciador', 'separador')): return MAT['interior']
+    if n.startswith('hule'): return MAT['goma']
     for k, m in (('huevo_', 'huevo'), ('pila', 'pila'), ('servo', 'servo'), ('placa', 'pcb'), ('heltec', 'negro'), ('gy91', 'morado'),
                  ('openlog', 'rojo'), ('neo', 'pcb'), ('antena_gps', 'ceramica'), ('balero', 'metal'), ('antena_lora', 'cobre'),
                  ('oring', 'goma'), ('espuma', 'espuma'), ('esp32', 'negro'), ('rfm', 'pcb'), ('varilla', 'metal'), ('pasador', 'metal')):
@@ -54,6 +55,9 @@ for f in archivos:
     if vista == 'corte' and pref in ('imp', 'com') and os.path.exists(os.path.join(V, f'corte__{n}.stl')): continue
     if vista == 'corte' and n == 'aspa_3': continue
     if vista in ('cerrado', 'desplegado') and pref == 'com': continue   # por dentro no se ve
+    if vista == 'electronica' and not n.startswith(('disco_electronica_base', 'separador_placas', 'placa_', 'heltec', 'gy91',
+                                                    'openlog', 'neo_m8n', 'tapa_electronica', 'antena_gps', 'balero', 'hule',
+                                                    'varilla_placas', 'oring')): continue
     usar.append((pref, n, f))
 
 objs = []
@@ -105,7 +109,7 @@ except Exception: pass
 w.node_tree.nodes['Background'].inputs[0].default_value = (*lin('#0b1324'), 1); w.node_tree.nodes['Background'].inputs[1].default_value = 0.5
 tgt = bpy.data.objects.new('t', None); sc.collection.objects.link(tgt)
 conf = {'cerrado': (0.115, 0.62, 0.22, 50), 'corte': (0.12, 0.60, 0.18, 50), 'explosivo': (0.13, 1.2, 0.12, 50),
-        'desplegado': (0.11, 0.95, 0.30, 50)}[vista]
+        'desplegado': (0.11, 0.95, 0.30, 50), 'electronica': (0.192, 0.36, 0.22, 50)}[vista]
 tgt.location = (0.02 if vista == 'explosivo' else 0, 0, conf[0])
 cam = bpy.data.objects.new('cam', bpy.data.cameras.new('cam')); sc.collection.objects.link(cam); sc.camera = cam
 cam.data.lens = conf[3]
@@ -116,7 +120,7 @@ for nombre, loc, e, col in (('k', (0.5, -0.5, 0.7), 60, '#fff3e6'), ('f', (-0.6,
     L = bpy.data.lights.new(nombre, 'AREA'); L.energy = e; L.size = 0.5; L.color = lin(col)
     o = bpy.data.objects.new(nombre, L); o.location = loc; sc.collection.objects.link(o)
     t = o.constraints.new('TRACK_TO'); t.target = tgt; t.track_axis = 'TRACK_NEGATIVE_Z'; t.up_axis = 'UP_Y'
-bpy.ops.mesh.primitive_plane_add(size=6, location=(0, 0, -0.16 if vista in ('explosivo', 'desplegado') else 0))
+bpy.ops.mesh.primitive_plane_add(size=6, location=(0, 0, 0.158 if vista == 'electronica' else (-0.16 if vista in ('explosivo', 'desplegado') else 0)))
 piso = bpy.context.active_object; piso.data.materials.append(mat('Piso', '#0e1628', 0.6))
 sc.render.engine = 'CYCLES'; sc.cycles.samples = 64; sc.cycles.use_denoising = True
 sc.render.resolution_x, sc.render.resolution_y = (1600, 1200) if vista != 'explosivo' else (1400, 1600)
