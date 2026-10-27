@@ -24,10 +24,12 @@ Cuando aparezca `Abrir en el navegador: http://localhost:3000`, abre la página 
 
 | Página | Dirección |
 |---|---|
-| Panel (1.ª edición) | `http://localhost:3000` |
+| Panel, 3.ª edición «modo misión» (3D, **la predeterminada**) | `http://localhost:3000` (o `/v3`) |
+| Panel, 1.ª edición (clásica) | `http://localhost:3000/v1` |
 | Panel, 2.ª edición | `http://localhost:3000/v2` |
-| Panel, 3.ª edición «modo misión» (3D) | `http://localhost:3000/v3` |
 | Recorrido 3D del prototipo | `http://localhost:3000/prototipo.html` |
+
+Dentro del panel, el selector **«Edición 1 · 2 · 3»** del encabezado cambia de una edición a otra.
 
 **Para apagarlo:** presiona `Ctrl+C` en la terminal donde lo prendiste.
 
@@ -65,5 +67,5 @@ Y entonces la dirección es `http://localhost:3001/v3`
 | `npm error enoent … package.json` | Corriste `npm` en la raíz del repositorio | `cd estacion-terrena` y repite |
 | «El puerto 3000 está ocupado» | Ya hay otro servidor prendido | Apágalo (sección de arriba) o usa `--http 3001` |
 
-La prueba `estacion-terrena/test/rutas.test.js` (dentro de `npm test`) revisa que `/v2`, `/v3` y
-`/prototipo.html` respondan. Si agregas otra edición del panel, súmala a esa prueba.
+La prueba `estacion-terrena/test/rutas.test.js` (dentro de `npm test`) revisa que `/v1`, `/v2`, `/v3` y
+`/prototipo.html` respondan, y que `/` abra la 3.ª edición. Si agregas otra edición del panel, súmala a esa prueba.

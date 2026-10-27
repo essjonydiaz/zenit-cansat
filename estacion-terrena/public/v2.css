@@ -14,7 +14,6 @@
 .estatus { grid-area: estatus; }
 
 /* El encabezado queda más ligero: el lema y los datos del enlace se fueron al pie. */
-.enlace-edicion { font-size: 12px; padding: 5px 12px; white-space: nowrap; color: var(--suave); }
 .pie-meta, .pie-lema { letter-spacing: 0.06em; }
 .pie-lema { font-weight: 700; letter-spacing: 0.16em; font-size: 11px; }
 

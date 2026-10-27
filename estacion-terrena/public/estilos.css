@@ -88,7 +88,7 @@ select option { background: #0c1424; color: #eef3ff; }
 .separador { width: 1px; height: 36px; background: var(--borde); }
 .titulo { min-width: 0; }
 .titulo h1 { margin: 0; font: 650 16px/1.2 var(--f-display); font-stretch: 112%; white-space: nowrap; }
-.lema { font-size: 10.5px; letter-spacing: 0.2em; color: var(--suave); text-transform: uppercase; white-space: nowrap; }
+.lema { display: block; font-size: 10.5px; letter-spacing: 0.2em; color: var(--suave); text-transform: uppercase; white-space: nowrap; }
 .controles { display: flex; flex-wrap: nowrap; gap: 6px; align-items: center; }
 .controles select { width: 196px; font-size: 12px; }
 .controles .btn { padding: 5px 12px; font-size: 12px; white-space: nowrap; }
@@ -113,6 +113,12 @@ select option { background: #0c1424; color: #eef3ff; }
 .tema { display: flex; border: 1px solid var(--borde); border-radius: 999px; padding: 3px; gap: 2px; }
 .tema-btn { width: 30px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 999px; background: transparent; color: var(--tenue); cursor: pointer; transition: background-color 0.2s, color 0.2s; }
 .tema-btn.activo { background: var(--azul); color: #fff; }
+/* Selector de edición del panel: 1 clásica · 2 · 3 modo misión (la predeterminada, en /) */
+.ediciones { display: flex; align-items: center; border: 1px solid var(--borde); border-radius: 999px; padding: 3px; gap: 2px; }
+.ediciones-etiqueta { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tenue); padding: 0 4px 0 8px; }
+.ediciones a { min-width: 28px; height: 28px; display: grid; place-items: center; border-radius: 999px; font-size: 12px; font-weight: 700; color: var(--suave); text-decoration: none; transition: background-color 0.2s, color 0.2s; }
+.ediciones a:hover { color: var(--texto); background: color-mix(in srgb, var(--azul) 18%, transparent); }
+.ediciones a[aria-current="page"] { background: var(--azul); color: #fff; }
 
 /* -------------------------------------------------------------- banner -- */
 .banner {
@@ -532,6 +538,7 @@ h2.mini { margin: 0 0 8px; font: 650 11px/1 var(--f-display); font-stretch: 118%
 }
 @media (max-width: 760px) {
   .encabezado { position: static; margin: 10px 10px 0; }
+  .ediciones-etiqueta { display: none; }
   .reloj-caja { min-width: 100px; padding: 0 8px; }
   .reloj { font-size: 16px; }
   .campana { font-size: 11px; padding: 6px 8px; }

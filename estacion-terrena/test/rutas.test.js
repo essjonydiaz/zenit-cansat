@@ -33,9 +33,11 @@ test('las ediciones del panel responden, también con un punto al final', { time
   assert.ok(inicio, `El servidor no inició: ${errores}`);
   assert.equal(inicio.status, 200);
 
-  for (const ruta of ['/v2', '/v3', '/prototipo.html', '/v3.', '/v2,']) {
+  for (const ruta of ['/v1', '/v2', '/v3', '/prototipo.html', '/v3.', '/v2,']) {
     const r = await fetch(`${base}${ruta}`);
     assert.equal(r.status, 200, `${ruta} respondió ${r.status}`);
     assert.match(await r.text(), /<!doctype html>/i, `${ruta} no devolvió una página`);
   }
+  // La edición predeterminada en / es la 3.ª, «modo misión».
+  assert.match(await inicio.text(), /Modo misión/, '/ no abre la edición 3');
 });

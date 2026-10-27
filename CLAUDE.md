@@ -14,5 +14,6 @@ Copilot, Codex y Cursor). Léelas antes de empezar:
   protocolo): `/graphify . --update` (equivale a `graphify update .`).
 - **Interfaz:** antes de tocar `estacion-terrena/public/` lee [PRODUCT.md](PRODUCT.md) y
   [DESIGN.md](DESIGN.md). La carpeta `.claude/` es local de cada quien y no se sube.
-- Para ver la interfaz: `cd estacion-terrena && npm run simular` → http://localhost:3000 y
-  http://localhost:3000/prototipo.html.
+- Para ver la interfaz: `cd estacion-terrena && npm run simular` → `http://localhost:3000`
+  (3.ª edición, la predeterminada), `/v1`, `/v2` y `/prototipo.html`. Si agregas una ruta, el
+  servidor que ya estaba prendido no la conoce: reinícialo (ver `docs/11-servidor-local.md`).

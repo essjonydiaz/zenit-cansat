@@ -1,17 +1,17 @@
 # Graph Report - zenit-cansat  (2026-10-26)
 
 ## Corpus Check
-- 90 files · ~75,627 words
+- 90 files · ~75,852 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 19 file(s) not represented in the graph (top: .css 5, (none) 4, .properties 4)
 
 ## Summary
-- 1005 nodes · 1589 edges · 63 communities (53 shown, 10 thin omitted)
+- 1006 nodes · 1590 edges · 63 communities (53 shown, 10 thin omitted)
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 88 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0fa52439`
+- Built from commit: `69c9f11f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -22,7 +22,7 @@
 - MaquinaEstados
 - Filtros.cpp
 - Radio + OpenLog en tarea aparte (Comunicaciones)
-- Parametros
+- Sensores
 - Enlace LoRa RadioLib (ZenitRadio)
 - Servidor de la estación terrena (server.js)
 - Análisis de vuelo para el RAM (Python)
@@ -44,7 +44,6 @@
 - ZenitPantalla.cpp
 - Reproducción de sesiones
 - 6. Día del lanzamiento — checklist
-- ZenitComun.h
 - Tramas
 - Fases del simulador
 - decisiones/README.md
@@ -69,14 +68,14 @@
 - v2.js
 - sonidoDespegue
 - Parametros
-- MaquinaEstados.h
+- receptor/src/main.cpp
 - SimuladorVuelo.cpp
 - Accion
 - v3.js
 - 11. Prender y apagar el servidor de la estación terrena
-- Estado
+- secundaria/src/main.cpp
 - Evento
-- Entrada
+- Ubx.cpp
 - 5. Plan de pruebas (CoDR P1–P9 + plan del PDR)
 
 ## God Nodes (most connected - your core abstractions)
@@ -117,24 +116,24 @@ Cohesion: 0.07
 Nodes (26): Barometro, dir_, configurarGpsAereo(), escanearI2c(), Imu, ajusteMag_, bus_, dir_ (+18 more)
 
 ### Community 2 - "Firmware de vuelo de la primaria (main.cpp)"
-Cohesion: 0.05
-Nodes (54): abrirAutogiro(), abrirDesacople(), actualizarGps(), actualizarIndicadores(), actualizarLocalizacionRelativa(), actualizarPantalla(), actualizarSeparacion(), apagarServosInactivos() (+46 more)
+Cohesion: 0.09
+Nodes (45): abrirAutogiro(), abrirDesacople(), actualizarGps(), actualizarIndicadores(), actualizarLocalizacionRelativa(), actualizarPantalla(), actualizarSeparacion(), apagarServosInactivos() (+37 more)
 
 ### Community 3 - "MaquinaEstados"
-Cohesion: 0.18
-Nodes (8): MaquinaEstados, alturaMax_, cuentaDesacople_, p_, tInicioCondicion_, tInicioQuieto_, test_no_desacopla_si_no_se_armo(), test_pausa_del_dron_no_es_aterrizaje()
+Cohesion: 0.05
+Nodes (34): Entrada, altura, gTotal, t, velocidad, Estado, ASCENSO, ATERRIZADO (+26 more)
 
 ### Community 4 - "Filtros.cpp"
-Cohesion: 0.21
+Cohesion: 0.20
 Nodes (3): diferenciaAngular(), invSqrt(), test_yaw_converge_a_la_brujula()
 
 ### Community 5 - "Radio + OpenLog en tarea aparte (Comunicaciones)"
 Cohesion: 0.08
 Nodes (25): encolar(), enviarTrama(), escribirLinea(), Estado, archivo, crcMalos, descartadas, errorLora (+17 more)
 
-### Community 6 - "Parametros"
-Cohesion: 0.15
-Nodes (13): Parametros, alturaArmado, alturaDesacople, alturaDeteccionAscenso, alturaMaxAterrizaje, gCaidaLibre, lecturasDesacople, tiempoConfirmacionAscenso (+5 more)
+### Community 6 - "Sensores"
+Cohesion: 0.14
+Nodes (5): Sensores, autogiro_, dirBaro_, tJalon_, tUltimoMag_
 
 ### Community 7 - "Enlace LoRa RadioLib (ZenitRadio)"
 Cohesion: 0.10
@@ -149,7 +148,7 @@ Cohesion: 0.10
 Nodes (13): distanciaMetros(), grad(), rad(), rumboGrados(), analizar(), cumple(), elegir_vuelo(), escribir_resumen() (+5 more)
 
 ### Community 10 - "Protocolo de tramas en JavaScript"
-Cohesion: 0.16
+Cohesion: 0.15
 Nodes (18): BANDERAS, checksum(), decodificarBanderas(), enmarcar(), ESTADOS, FUENTE, parsearCarga(), procesarLinea() (+10 more)
 
 ### Community 11 - "Secuencia"
@@ -157,8 +156,8 @@ Cohesion: 0.17
 Nodes (7): Secuencia, autogiro_, cambioMax_, gRef_, p_, reintentando_, t0_
 
 ### Community 12 - "Datos de sensores de la primaria"
-Cohesion: 0.06
-Nodes (26): DatosSensores, ax, ay, az, baroOk, gpsSimulado, gx, gy (+18 more)
+Cohesion: 0.10
+Nodes (21): DatosSensores, ax, ay, az, baroOk, gpsSimulado, gx, gy (+13 more)
 
 ### Community 13 - "Parte B — Primera prueba con el hardware (en este orden)"
 Cohesion: 0.11
@@ -209,7 +208,7 @@ Cohesion: 0.36
 Nodes (4): checksum(), enmarcar(), validar(), valorHex()
 
 ### Community 26 - "Reproducción de sesiones"
-Cohesion: 0.17
+Cohesion: 0.18
 Nodes (4): { EventEmitter }, fs, readline, Reproduccion
 
 ### Community 27 - "6. Día del lanzamiento — checklist"
@@ -257,7 +256,7 @@ Cohesion: 0.13
 Nodes (14): 10. Pendientes del equipo antes de la primera prueba, 1. Componentes del sistema, 2. Conexiones de la carga primaria (Heltec WiFi LoRa 32 V3), 3. Conexiones de la carga secundaria (ESP32-C3 SuperMini), 4. Electrónica, 5. Mecánica, 6. Todo el equipo: primera prueba en la mesa, 7. Pruebas de campo después de la primera prueba (+6 more)
 
 ### Community 41 - "FiltroVertical"
-Cohesion: 0.21
+Cohesion: 0.19
 Nodes (7): FiltroVertical, h_, iniciado_, k1_, k2_, v_, test_filtro_sigue_bajada_constante()
 
 ### Community 42 - "AGENTS.md — Guía para asistentes de IA (Claude Code, Copilot, Codex, Cursor…)"
@@ -292,6 +291,10 @@ Nodes (3): cerrar(), medir(), sonidoDespegue()
 Cohesion: 0.40
 Nodes (5): Parametros, cambioMinimoG, duracionReintentoMs, retardoAutogiroMs, ventanaConfirmacionMs
 
+### Community 53 - "receptor/src/main.cpp"
+Cohesion: 0.18
+Nodes (3): actualizarPantalla(), loop(), procesarLineaPc()
+
 ### Community 55 - "Accion"
 Cohesion: 0.29
 Nodes (7): Accion, ABRIR_AUTOGIRO, ABRIR_DESACOPLE, CERRAR_DESACOPLE, CONFIRMADA, NINGUNA, NO_CONFIRMADA
@@ -304,17 +307,13 @@ Nodes (4): anunciar(), dibujarHud(), revisarAnuncios(), siguiente()
 Cohesion: 0.33
 Nodes (5): 11. Prender y apagar el servidor de la estación terrena, Apagar un servidor que quedó prendido, «Cannot GET /v3» (o cualquier página que no abre), Prender el servidor, Usar otro puerto sin apagar nada
 
-### Community 59 - "Estado"
-Cohesion: 0.33
-Nodes (6): Estado, ASCENSO, ATERRIZADO, CAIDA_LIBRE, DESCENSO_AUTOGIRO, PREVUELO
+### Community 59 - "secundaria/src/main.cpp"
+Cohesion: 0.42
+Nodes (6): buzzer(), enviarBaliza(), led(), leerBateria(), loop(), setup()
 
 ### Community 60 - "Evento"
 Cohesion: 0.33
 Nodes (6): Evento, EV_ASCENSO, EV_ATERRIZAJE, EV_DESACOPLE, EV_LIBERACION, EV_NINGUNO
-
-### Community 61 - "Entrada"
-Cohesion: 0.40
-Nodes (5): Entrada, altura, gTotal, t, velocidad
 
 ### Community 62 - "5. Plan de pruebas (CoDR P1–P9 + plan del PDR)"
 Cohesion: 0.67
@@ -322,14 +321,14 @@ Nodes (3): 5. Plan de pruebas (CoDR P1–P9 + plan del PDR), Bitácora, Pruebas 
 
 ## Knowledge Gaps
 - **192 isolated node(s):** `@fontsource-variable/archivo`, `@fontsource-variable/jetbrains-mono`, `chart.js`, `k1_`, `k2_` (+187 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 512 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 513 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Consecuencias` connect `decisiones/README.md` to `cansat3d.js`?**
-  _High betweenness centrality (0.366) - this node is a cross-community bridge._
+  _High betweenness centrality (0.372) - this node is a cross-community bridge._
 - **Are the 4 inferred relationships involving `SimuladorVuelo` (e.g. with `Modos de compilación` and `test_frenon_del_autogiro_no_confirma_separacion()`) actually correct?**
   _`SimuladorVuelo` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `@fontsource-variable/archivo`, `@fontsource-variable/jetbrains-mono`, `chart.js` to the rest of the system?**
@@ -337,8 +336,8 @@ _Questions this graph is uniquely positioned to answer:_
 - **Should `Panel web: dibujo, alertas y diagnóstico (app.js)` be split into smaller, more focused modules?**
   _Cohesion score 0.06963470319634703 - nodes in this community are weakly interconnected._
 - **Why does `crearCanSat()` connect `cansat3d.js` to `decisiones/README.md`?**
-  _High betweenness centrality (0.363) - this node is a cross-community bridge._
+  _High betweenness centrality (0.369) - this node is a cross-community bridge._
 - **Should `Drivers GY-91 y GPS (ZenitSensores)` be split into smaller, more focused modules?**
   _Cohesion score 0.06509803921568627 - nodes in this community are weakly interconnected._
 - **Should `Firmware de vuelo de la primaria (main.cpp)` be split into smaller, more focused modules?**
-  _Cohesion score 0.05441400304414003 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08953900709219859 - nodes in this community are weakly interconnected._

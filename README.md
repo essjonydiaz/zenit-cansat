@@ -86,7 +86,8 @@ npm run simular
 ```
 Abrir **http://localhost:3000** → se ve un vuelo completo: ascenso, liberación, desacople a
 200 m, autogiro, aterrizaje, con el CanSat en 3D siguiendo la orientación. Se pueden probar
-los botones de comandos.
+los botones de comandos. Esa es la 3.ª edición del panel («modo misión»); con el selector
+«Edición 1 · 2 · 3» del encabezado se cambia a las otras (`/v1`, `/v2`) para compararlas.
 
 Para presentar el proyecto: **http://localhost:3000/prototipo.html**, un recorrido 3D con
 scroll (portada de vidrio que se rompe, vista por dentro, desacople y autogiro). Todo

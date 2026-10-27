@@ -7,8 +7,6 @@
 /* El encabezado (pegajoso desde estilos.css) flota sobre la escena.
    --v3-encabezado lo mide v3.js: a menos de 1450 px se parte en dos renglones. */
 .v3 .meta, .v3 .lema-final { display: none; }
-.v3 .lema { display: block; }          /* bloque, para que el «…» recorte y no se encime */
-.v3 .enlace-edicion { font-size: 12px; padding: 5px 12px; white-space: nowrap; }
 
 /* ------------------------------------------------------------ escenario -- */
 .escenario {

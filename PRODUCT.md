@@ -16,9 +16,9 @@ por LoRa 915 MHz y sigue transmitiendo **≥ 10 s** después de aterrizar.
 
 | Superficie | Ruta | Modo | Éxito para quien la usa |
 |---|---|---|---|
-| Panel de la estación terrena | `/` (`estacion-terrena/public/index.html`) | Operar | Saber en 2 segundos si todo va bien y, si no, **qué cable o pieza revisar** |
+| Panel de la estación terrena, 1.ª edición (clásica) | `/v1` (`estacion-terrena/public/index.html`) | Operar | Saber en 2 segundos si todo va bien y, si no, **qué cable o pieza revisar** |
 | Panel, 2.ª edición | `/v2` (`v2.html` + `v2.js` sobre `app.js`) | Operar | Lo mismo, con la fase en grande, un solo reloj (T+ desde el arranque) y el enlace LoRa a la vista |
-| Panel, 3.ª edición «modo misión» | `/v3` (`v3.html` + `v3.js` + `mision3d.js` sobre `app.js`) | Mostrar en vivo | En la pantalla grande o el proyector: el equipo y los jueces siguen el vuelo en 3D con los datos reales (altura, orientación, desacople, autogiro) y el HUD encima; abajo sigue el panel completo |
+| Panel, 3.ª edición «modo misión» (**predeterminada**) | `/` y `/v3` (`v3.html` + `v3.js` + `mision3d.js` sobre `app.js`) | Operar · Mostrar en vivo | El vuelo en 3D con los datos reales (altura, orientación, desacople, autogiro) y el HUD encima, para el equipo y los jueces; abajo sigue el panel completo. Las tres ediciones se cambian con el selector «Edición 1 · 2 · 3» del encabezado |
 | Prototipo 3D | `/prototipo.html` | Persuadir · Experiencia | Entender la misión y el aparato sin leer los docs; querer ver el vuelo en vivo |
 
 ## Quién lo usa y dónde

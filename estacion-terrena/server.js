@@ -54,10 +54,14 @@ app.use((req, res, next) => {
   if (limpia && limpia !== req.path) return res.redirect(302, limpia);
   next();
 });
+// Ediciones del panel. La 3.ª («modo misión») es la predeterminada en /; las
+// otras siguen a la mano para compararlas (selector «Edición 1 · 2 · 3»).
+const edicion = (archivo) => (req, res) => res.sendFile(path.join(__dirname, 'public', archivo));
+app.get('/', edicion('v3.html'));
+app.get('/v1', edicion('index.html'));
+app.get('/v2', edicion('v2.html'));
+app.get('/v3', edicion('v3.html'));
 app.use(express.static(path.join(__dirname, 'public')));
-// Segunda y tercera edición del panel (para compararlas con la primera en /).
-app.get('/v2', (req, res) => res.sendFile(path.join(__dirname, 'public', 'v2.html')));
-app.get('/v3', (req, res) => res.sendFile(path.join(__dirname, 'public', 'v3.html')));
 // Chart.js servido localmente: en la cancha NO hay internet.
 app.use('/vendor', express.static(path.join(__dirname, 'node_modules', 'chart.js', 'dist')));
 // Lo mismo para el modelo 3D (three.js) y las tipografías del panel.
