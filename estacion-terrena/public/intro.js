@@ -8,7 +8,8 @@
 //
 //  <script src="intro.js" data-duracion="2900" data-una-vez="sesion"></script>
 //    data-duracion  ms antes de levantarse sola
-//    data-una-vez   "sesion": en el panel solo sale la primera vez por pestaña,
+//    data-una-vez   "sesion": en el panel solo sale la primera vez por pestaña
+//                   (o siempre que la dirección traiga ?intro=1),
 //                   para que recargar en pleno vuelo no tape la telemetría.
 //  Entra sola; clic, Esc, Enter o espacio la adelantan. Al terminar dispara
 //  "zenit:intro-fin".
@@ -21,8 +22,17 @@
   const unaVez = script.dataset.unaVez === 'sesion';
   const terminar = () => { window.zenitIntroTerminada = true; window.dispatchEvent(new Event('zenit:intro-fin')); };
 
+  // "?intro=1" (los botones "Abrir panel" del prototipo) pide la intro aunque ya
+  // se haya visto; se quita de la dirección para que recargar no la repita.
+  const pedida = new URLSearchParams(location.search).has('intro');
+  if (pedida) {
+    const url = new URL(location.href);
+    url.searchParams.delete('intro');
+    history.replaceState(null, '', url.pathname + url.search + url.hash);
+  }
+
   let vista = false;
-  try { vista = unaVez && sessionStorage.getItem('zenit-intro') === '1'; } catch { /* sin almacenamiento */ }
+  try { vista = !pedida && unaVez && sessionStorage.getItem('zenit-intro') === '1'; } catch { /* sin almacenamiento */ }
   if (vista) { document.documentElement.classList.add('sin-intro'); queueMicrotask(terminar); return; }
   try { if (unaVez) sessionStorage.setItem('zenit-intro', '1'); } catch { /* sin almacenamiento */ }
 
@@ -72,7 +82,9 @@
   }
   cuadro = requestAnimationFrame(dibujar);
 
-  if (script.dataset.sonido === 'si' && !quieto) sonidoDespegue(inicio);
+  // Suena en el prototipo y cuando el panel se abre desde ahí (?intro=1); en el
+  // uso normal del panel nunca.
+  if ((script.dataset.sonido === 'si' || pedida) && !quieto) sonidoDespegue(inicio);
 
   let cerrada = false;
   function cerrar() {
