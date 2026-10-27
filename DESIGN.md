@@ -177,7 +177,7 @@ si alguien recarga en pleno vuelo.
 - **Vidrio ahumado (#17171B):** las piezas de la portada (MeshPhysicalMaterial con
   iridiscencia) y, en CSS, paneles translúcidos con desenfoque.
 - **Tricolor (#14975A / blanco / #E0283C):** firma, nunca relleno. Solo la línea de 2 px
-  bajo la marca del panel y las líneas junto a "MÉXICO" en la intro. No va en el pie ni en
+  bajo la marca del panel y las líneas junto a "MÉXICO" del logo (intro y pie). No va en
   el modelo 3D.
 - **Estados:** ok #34D58A, aviso #F6B73C, crítico #FF5D5D. Siempre acompañados de texto o
   símbolo (✓ ⚠ ✕), nunca solo color.

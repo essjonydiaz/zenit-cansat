@@ -171,10 +171,10 @@ html.sin-3d .enlace-mision { height: 44px; padding: 0 20px; border-radius: 8px; 
   background: #04060b;
 }
 .pie-pagina .pie-der { justify-self: end; text-align: right; }
-/* Emblema del logo (recorte de logo-zenit.jpeg; el negro desaparece con screen) */
+/* Logo completo (logo-zenit.jpeg sin el margen negro; el negro desaparece con screen) */
 .pie-logo {
-  display: block; width: 64px; aspect-ratio: 790 / 820;
-  background: url("/logo-zenit.jpeg") 50.7% 27.1% / 137.5% auto no-repeat;
+  display: block; width: 104px; aspect-ratio: 790 / 1120;
+  background: url("/logo-zenit.jpeg") 50.7% 51.8% / 137.5% auto no-repeat;
   mix-blend-mode: screen;               /* sin drop-shadow: el JPEG es opaco y marcaría el recuadro */
   transition: transform 0.5s var(--suave-salida), filter 0.5s;
 }
