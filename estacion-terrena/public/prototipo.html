@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es" data-tema="oscuro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zénit · Prototipo 3D</title>
+  <meta name="description" content="Recorrido 3D del CanSat Zénit: por dentro, la liberación a 450 m, el desacople a 200 m y el descenso con autogiro.">
+  <link rel="icon" type="image/jpeg" href="/logo-zenit.jpeg">
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="prototipo.css">
+  <!-- three.js 0.169.0 servido desde node_modules: funciona sin internet -->
+  <script type="importmap">
+    { "imports": { "three": "/vendor/three/build/three.module.min.js", "three/addons/": "/vendor/three/examples/jsm/" } }
+  </script>
+  <script type="module" src="prototipo.js"></script>
+</head>
+<body class="prototipo">
+<script src="intro.js" data-duracion="2900"></script>
+
+<canvas id="escena3d" class="escena3d" aria-hidden="true"></canvas>
+
+<!-- Capa de texto del vidrio: copia DOM del contenido impreso en las placas.
+     Se proyecta sobre la placa inclinada (matrix3d); es seleccionable y los
+     enlaces son reales. Sin WebGL se vuelve la portada visible. -->
+<div id="capaTexto" class="capa-texto">
+  <div class="bloque" id="bloque">
+    <nav class="nav-vidrio" aria-label="Secciones">
+      <a class="nav-marca" href="#inicio"><span class="nav-sello" aria-hidden="true"></span>ZÉNIT</a>
+      <span class="nav-enlaces">
+        <a href="#prototipo">Prototipo</a>
+        <a href="#por-dentro">Por dentro</a>
+        <a href="#separacion">Separación</a>
+        <a href="#descenso">Telemetría</a>
+      </span>
+      <a class="nav-panel" href="/">Panel en vivo</a>
+    </nav>
+    <div class="placa-texto" id="inicio">
+      <h1 class="heroe-titulo"><span>Ideas que llegan</span><span>más alto.</span></h1>
+      <p class="heroe-sub"><span>Un CanSat que sube a 450 m, se parte en dos a 200 m</span><span>y baja girando como semilla entre 8 y 12 m/s.</span></p>
+      <div class="heroe-acciones">
+        <a class="pildora" href="/" id="btnPanel">Abrir panel</a>
+        <a class="enlace-mision" href="#prototipo" id="btnMision">Ver la misión</a>
+      </div>
+      <span class="pie-izq">© Equipo Zénit · PEU-UM</span>
+      <span class="pie-der">CASAT-FIT2026 · LoRa 915 MHz</span>
+    </div>
+  </div>
+</div>
+
+<div id="etiquetas" class="etiquetas" aria-hidden="true"></div>
+
+<main class="historia">
+  <section class="tramo-heroe" aria-label="Portada"></section>
+
+  <section class="tramo" id="prototipo" data-escena="1">
+    <div class="texto izquierda">
+      <h2>Cabe en una lata.<br>Piensa como un satélite.</h2>
+      <p>Ø 9.6 cm, 21.5 cm de alto y menos de 600 g con dos huevos dentro. Dos cargas en un solo
+        cilindro: la <b>primaria</b> mide y decide; la <b>secundaria</b> se suelta y se deja encontrar.</p>
+      <dl class="cifras">
+        <div><dt>Altura de liberación</dt><dd class="num">450 m</dd></div>
+        <div><dt>Masa máxima</dt><dd class="num">600 g</dd></div>
+        <div><dt>Enlace</dt><dd class="num">≥ 1 km</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="tramo largo" id="por-dentro" data-escena="2">
+    <div class="texto izquierda arriba">
+      <h2>Por dentro.</h2>
+      <p>Una Heltec V3 (ESP32-S3) corre el vuelo a 50 Hz: lee el GY-91, filtra la altitud, decide
+        cuándo desacoplar y transmite por LoRa mientras el OpenLog guarda todo en la microSD.</p>
+      <ul class="componentes">
+        <li><b>Primaria</b> Heltec V3 · GY-91 · NEO-M8N · OpenLog · 2 servos SG90 · pila 9 V · huevo 1</li>
+        <li><b>Secundaria</b> ESP32-C3 SuperMini · RFM95W · NEO-6M · pila 9 V · huevo 2</li>
+      </ul>
+      <p class="nota">Acomodo ilustrativo: se actualiza cuando mecánica suba el CAD a <code>mecanica/cad</code>.</p>
+    </div>
+  </section>
+
+  <section class="tramo" id="ascenso" data-escena="3">
+    <div class="texto derecha">
+      <p class="altura num" aria-live="off"><span id="contadorAltura">0</span><small>m</small></p>
+      <h2>Un dron lo sube.<br>Luego lo suelta.</h2>
+      <p>En la caída libre el acelerómetro marca casi 0 g. La máquina de estados lo reconoce y
+        empieza a contar: el desacople solo se arma después de pasar 250 m.</p>
+      <p class="evento num">$E,150,63873,<b>LIBERACION</b>,h=449.2</p>
+    </div>
+  </section>
+
+  <section class="tramo largo" id="separacion" data-escena="4">
+    <div class="texto izquierda">
+      <h2>200 m.<br>Se parte en dos.</h2>
+      <p>Un servo abre el seguro y la secundaria cae por su cuenta. El IMU siente el jalón y lo
+        confirma. 400 ms después el segundo servo suelta las aspas: siempre, pase lo que pase.</p>
+      <ol class="secuencia num">
+        <li>$E,178,72817,<b>DESACOPLE</b>,AUTO h=198.0</li>
+        <li>$E,179,72838,<b>SEPARACION</b>,cambio=1.47 g</li>
+        <li>$E,180,73220,<b>AUTOGIRO</b>,h=183.4</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="tramo" id="descenso" data-escena="5">
+    <div class="texto derecha">
+      <p class="altura num"><span>8–12</span><small>m/s</small></p>
+      <h2>Baja girando,<br>sin motor.</h2>
+      <p>Las aspas pasivas convierten la caída en giro y frenan el descenso. Al tocar el suelo
+        sigue transmitiendo 10 s más para que la estación sepa dónde quedó.</p>
+      <div class="ticker num" aria-label="Tramas reales del firmware en simulación">
+        <div id="ticker"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tramo final" id="estacion" data-escena="6">
+    <div class="texto centro">
+      <h2>Míralo en vivo.</h2>
+      <p>La estación terrena recibe las tramas por el receptor LoRa y dibuja altitud, velocidad,
+        orientación en 3D, la baliza de la secundaria y cada requisito de la misión.</p>
+      <div class="acciones">
+        <a class="pildora grande" href="/">Abrir el panel</a>
+        <a class="enlace-mision" href="#inicio">Volver arriba</a>
+      </div>
+      <p class="nota">Sin hardware: <code>npm run simular</code> en <code>estacion-terrena</code>.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="pie-pagina">
+  <span>Universidad de Montemorelos · Programa Espacial Universitario</span>
+  <span class="tricolor-pie" aria-hidden="true"><i></i><i></i><i></i></span>
+  <span>ZÉNIT · CanSat 2026</span>
+</footer>
+</body>
+</html>

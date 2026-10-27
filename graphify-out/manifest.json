@@ -1,476 +1,554 @@
 {
   ".vscode/extensions.json": {
-    "mtime": 1792466082.0606918,
-    "seen": 1792468956.4181964,
+    "mtime": 1792469248.5182323,
+    "seen": 1793066129.5385845,
     "ast_hash": "92203d190b1561a98a9e47cdac7bab3a",
     "semantic_hash": "92203d190b1561a98a9e47cdac7bab3a"
   },
   "estacion-terrena/package.json": {
-    "mtime": 1792466082.0612526,
-    "seen": 1792468956.4182,
-    "ast_hash": "40d541a3f4ed3c19c81a74fe77a4f26d",
-    "semantic_hash": "40d541a3f4ed3c19c81a74fe77a4f26d"
+    "mtime": 1793064573.7872465,
+    "seen": 1793066129.5385845,
+    "ast_hash": "91a018760ca23dcacf8e7929d9d4bd2a",
+    "semantic_hash": ""
   },
   "estacion-terrena/public/app.js": {
-    "mtime": 1792468451.277502,
-    "seen": 1792468956.4182017,
-    "ast_hash": "4849be23dcbfdc436e0f1fa24772e0fd",
-    "semantic_hash": "4849be23dcbfdc436e0f1fa24772e0fd"
+    "mtime": 1793064814.726035,
+    "seen": 1793066129.5385845,
+    "ast_hash": "f89256987aa8efaf7ef50341aaee05a1",
+    "semantic_hash": ""
   },
   "estacion-terrena/server.js": {
-    "mtime": 1792466082.061789,
-    "seen": 1792468956.4182026,
-    "ast_hash": "1f5fccc3dc8b83cffdece4f3a048d8c6",
-    "semantic_hash": "1f5fccc3dc8b83cffdece4f3a048d8c6"
+    "mtime": 1793064599.7259624,
+    "seen": 1793066129.5385845,
+    "ast_hash": "86cfdfc0b7a7bad1ea8df841698b0753",
+    "semantic_hash": ""
   },
   "estacion-terrena/src/fuentes.js": {
-    "mtime": 1792466082.061789,
-    "seen": 1792468956.4182038,
+    "mtime": 1792469248.9620397,
+    "seen": 1793066129.5385845,
     "ast_hash": "bfcd48da04201e99697a6ec1f3e9d872",
     "semantic_hash": "bfcd48da04201e99697a6ec1f3e9d872"
   },
   "estacion-terrena/src/protocolo.js": {
-    "mtime": 1792468401.614248,
-    "seen": 1792468956.418205,
+    "mtime": 1792469248.979883,
+    "seen": 1793066129.5385845,
     "ast_hash": "8e11a58953c702306718eaae34e1e261",
     "semantic_hash": "8e11a58953c702306718eaae34e1e261"
   },
   "estacion-terrena/src/registro.js": {
-    "mtime": 1792466082.063004,
-    "seen": 1792468956.4182065,
+    "mtime": 1792469248.9995456,
+    "seen": 1793066129.5385845,
     "ast_hash": "e507717383d37bc2c801dbcc7504553e",
     "semantic_hash": "e507717383d37bc2c801dbcc7504553e"
   },
   "estacion-terrena/src/simulador.js": {
-    "mtime": 1792468401.614248,
-    "seen": 1792468956.4182088,
+    "mtime": 1792469249.019118,
+    "seen": 1793066129.5385845,
     "ast_hash": "1b3dbcafe80ca5dbcc5491a55d744557",
     "semantic_hash": "1b3dbcafe80ca5dbcc5491a55d744557"
   },
   "estacion-terrena/test/conexion.test.js": {
-    "mtime": 1792466082.063004,
-    "seen": 1792468956.41821,
+    "mtime": 1792469249.0384357,
+    "seen": 1793066129.5385845,
     "ast_hash": "4d803525d28e83c7b0f8f4c549419603",
     "semantic_hash": "4d803525d28e83c7b0f8f4c549419603"
   },
   "estacion-terrena/test/protocolo.test.js": {
-    "mtime": 1792468723.4493263,
-    "seen": 1792468956.4182112,
+    "mtime": 1792469249.0773587,
+    "seen": 1793066129.5385845,
     "ast_hash": "ad8a5a8d211f347ee85bcdef9286dcf3",
     "semantic_hash": "ad8a5a8d211f347ee85bcdef9286dcf3"
   },
   "estacion-terrena/test/servidor.test.js": {
-    "mtime": 1792466082.0631533,
-    "seen": 1792468956.4182124,
+    "mtime": 1792469249.095734,
+    "seen": 1793066129.5385845,
     "ast_hash": "f3aa6ecf64f94422e0d681f8f258761c",
     "semantic_hash": "f3aa6ecf64f94422e0d681f8f258761c"
   },
   "firmware/comun/ZenitComun/library.json": {
-    "mtime": 1792466082.0639262,
-    "seen": 1792468956.4182136,
+    "mtime": 1792469249.126156,
+    "seen": 1793066129.5385845,
     "ast_hash": "8ee5ddafef074136350ef936fc866407",
     "semantic_hash": "8ee5ddafef074136350ef936fc866407"
   },
   "firmware/comun/ZenitComun/src/Filtros.cpp": {
-    "mtime": 1792468401.614248,
-    "seen": 1792468956.4182146,
+    "mtime": 1792469249.179779,
+    "seen": 1793066129.5385845,
     "ast_hash": "a23fadf3414e368f97eafcfa670cdcc0",
     "semantic_hash": "a23fadf3414e368f97eafcfa670cdcc0"
   },
   "firmware/comun/ZenitComun/src/Filtros.h": {
-    "mtime": 1792468401.614248,
-    "seen": 1792468956.4182158,
+    "mtime": 1792469249.2031257,
+    "seen": 1793066129.5385845,
     "ast_hash": "3aa745ad2d05b4ed55dbff61cf02bf32",
     "semantic_hash": "3aa745ad2d05b4ed55dbff61cf02bf32"
   },
   "firmware/comun/ZenitComun/src/Geo.cpp": {
-    "mtime": 1792466082.064092,
-    "seen": 1792468956.4182167,
+    "mtime": 1792469249.226786,
+    "seen": 1793066129.5385845,
     "ast_hash": "914048b049ec3782fab9996b15eee0d2",
     "semantic_hash": "914048b049ec3782fab9996b15eee0d2"
   },
   "firmware/comun/ZenitComun/src/Geo.h": {
-    "mtime": 1792466082.064092,
-    "seen": 1792468956.4182177,
+    "mtime": 1792469249.2493584,
+    "seen": 1793066129.5385845,
     "ast_hash": "61191740ffbe281de9433613b6784c14",
     "semantic_hash": "61191740ffbe281de9433613b6784c14"
   },
   "firmware/comun/ZenitComun/src/MaquinaEstados.cpp": {
-    "mtime": 1792466082.064092,
-    "seen": 1792468956.4182189,
+    "mtime": 1792469249.2734005,
+    "seen": 1793066129.5385845,
     "ast_hash": "11253de2e9dc7835d614722c58091f1f",
     "semantic_hash": "11253de2e9dc7835d614722c58091f1f"
   },
   "firmware/comun/ZenitComun/src/MaquinaEstados.h": {
-    "mtime": 1792466082.064092,
-    "seen": 1792468956.4182196,
+    "mtime": 1792469249.2977078,
+    "seen": 1793066129.5385845,
     "ast_hash": "665510a25a889c4777532b5afb81f825",
     "semantic_hash": "665510a25a889c4777532b5afb81f825"
   },
   "firmware/comun/ZenitComun/src/Pines.h": {
-    "mtime": 1792468401.614248,
-    "seen": 1792468956.4182205,
+    "mtime": 1792469249.321618,
+    "seen": 1793066129.5385845,
     "ast_hash": "63839f7490aa167fe12e3d35b04568a2",
     "semantic_hash": "63839f7490aa167fe12e3d35b04568a2"
   },
   "firmware/comun/ZenitComun/src/Protocolo.cpp": {
-    "mtime": 1792466082.064092,
-    "seen": 1792468956.4182215,
+    "mtime": 1792469249.342579,
+    "seen": 1793066129.5385845,
     "ast_hash": "ebbd383048b990e56f8917f68e61958e",
     "semantic_hash": "ebbd383048b990e56f8917f68e61958e"
   },
   "firmware/comun/ZenitComun/src/Protocolo.h": {
-    "mtime": 1792466082.064092,
-    "seen": 1792468956.418223,
+    "mtime": 1792469249.3653753,
+    "seen": 1793066129.5385845,
     "ast_hash": "eed90db2c20cad0438add27b9ad7b90e",
     "semantic_hash": "eed90db2c20cad0438add27b9ad7b90e"
   },
   "firmware/comun/ZenitComun/src/RadioConfig.h": {
-    "mtime": 1792468401.614248,
-    "seen": 1792468956.418224,
+    "mtime": 1792469249.3953457,
+    "seen": 1793066129.5385845,
     "ast_hash": "3b48aeffa3d63a1603ebeff6ea9c50e1",
     "semantic_hash": "3b48aeffa3d63a1603ebeff6ea9c50e1"
   },
   "firmware/comun/ZenitComun/src/Separacion.cpp": {
-    "mtime": 1792466403.4118178,
-    "seen": 1792468956.4182255,
+    "mtime": 1792469249.4177651,
+    "seen": 1793066129.5385845,
     "ast_hash": "9740e7d5c268c7d54cba1b74a749ef1c",
     "semantic_hash": "9740e7d5c268c7d54cba1b74a749ef1c"
   },
   "firmware/comun/ZenitComun/src/Separacion.h": {
-    "mtime": 1792466415.5070825,
-    "seen": 1792468956.4182265,
+    "mtime": 1792469249.4414015,
+    "seen": 1793066129.5385845,
     "ast_hash": "7c12b1720a407791712193cfcabdd910",
     "semantic_hash": "7c12b1720a407791712193cfcabdd910"
   },
   "firmware/comun/ZenitComun/src/SimuladorVuelo.cpp": {
-    "mtime": 1792466082.064092,
-    "seen": 1792468956.4182277,
+    "mtime": 1792469249.4719996,
+    "seen": 1793066129.5385845,
     "ast_hash": "f22adccf6d1bb6906387b1a0ed7eb6fc",
     "semantic_hash": "f22adccf6d1bb6906387b1a0ed7eb6fc"
   },
   "firmware/comun/ZenitComun/src/SimuladorVuelo.h": {
-    "mtime": 1792466082.064092,
-    "seen": 1792468956.418229,
+    "mtime": 1792469249.4990146,
+    "seen": 1793066129.5385845,
     "ast_hash": "e86626251b49cd7b888d010664d0bc5c",
     "semantic_hash": "e86626251b49cd7b888d010664d0bc5c"
   },
   "firmware/comun/ZenitComun/src/TiempoAire.cpp": {
-    "mtime": 1792466464.2238214,
-    "seen": 1792468956.41823,
+    "mtime": 1792469249.5243042,
+    "seen": 1793066129.5385845,
     "ast_hash": "32ce632839a08ec4ac5db2588a4edd95",
     "semantic_hash": "32ce632839a08ec4ac5db2588a4edd95"
   },
   "firmware/comun/ZenitComun/src/TiempoAire.h": {
-    "mtime": 1792466460.3158212,
-    "seen": 1792468956.418231,
+    "mtime": 1792469249.5527585,
+    "seen": 1793066129.5385845,
     "ast_hash": "62bf9e45ff6a46092a5c96e5a6abc9fd",
     "semantic_hash": "62bf9e45ff6a46092a5c96e5a6abc9fd"
   },
   "firmware/comun/ZenitComun/src/Ubx.cpp": {
-    "mtime": 1792466454.831821,
-    "seen": 1792468956.4182327,
+    "mtime": 1792469249.5804524,
+    "seen": 1793066129.5385845,
     "ast_hash": "be568faa1abf8a3e49a5d682e34bfcda",
     "semantic_hash": "be568faa1abf8a3e49a5d682e34bfcda"
   },
   "firmware/comun/ZenitComun/src/Ubx.h": {
-    "mtime": 1792466450.9158208,
-    "seen": 1792468956.4182339,
+    "mtime": 1792469249.6053512,
+    "seen": 1793066129.5385845,
     "ast_hash": "120c6e74cd679addee616c6e255a4ac7",
     "semantic_hash": "120c6e74cd679addee616c6e255a4ac7"
   },
   "firmware/comun/ZenitComun/src/ZenitComun.h": {
-    "mtime": 1792468401.614248,
-    "seen": 1792468956.4182348,
+    "mtime": 1792469249.6307795,
+    "seen": 1793066129.5385845,
     "ast_hash": "f39294bb719b3b0279295276c6056712",
     "semantic_hash": "f39294bb719b3b0279295276c6056712"
   },
   "firmware/comun/ZenitPantalla/library.json": {
-    "mtime": 1792466486.764818,
-    "seen": 1792468956.418236,
+    "mtime": 1792469249.6579661,
+    "seen": 1793066129.5385845,
     "ast_hash": "738698b1285e8dc028d56d783841d554",
     "semantic_hash": "738698b1285e8dc028d56d783841d554"
   },
   "firmware/comun/ZenitPantalla/src/ZenitPantalla.cpp": {
-    "mtime": 1792466539.279826,
-    "seen": 1792468956.4182372,
+    "mtime": 1792469249.7112236,
+    "seen": 1793066129.5385845,
     "ast_hash": "09cb86e3588554350166ac2a51fa888f",
     "semantic_hash": "09cb86e3588554350166ac2a51fa888f"
   },
   "firmware/comun/ZenitPantalla/src/ZenitPantalla.h": {
-    "mtime": 1792466533.6758256,
-    "seen": 1792468956.4182382,
+    "mtime": 1792469249.7388928,
+    "seen": 1793066129.5385845,
     "ast_hash": "e5c7fafcedcadf0be1a359a4d4a5685d",
     "semantic_hash": "e5c7fafcedcadf0be1a359a4d4a5685d"
   },
   "firmware/comun/ZenitRadio/library.json": {
-    "mtime": 1792466486.761865,
-    "seen": 1792468956.418239,
+    "mtime": 1792469249.7682765,
+    "seen": 1793066129.5385845,
     "ast_hash": "a2e58fb8424f7494746a8239f4e8af11",
     "semantic_hash": "a2e58fb8424f7494746a8239f4e8af11"
   },
   "firmware/comun/ZenitRadio/src/ZenitRadio.cpp": {
-    "mtime": 1792466523.327825,
-    "seen": 1792468956.4182403,
+    "mtime": 1792469249.8251436,
+    "seen": 1793066129.5385845,
     "ast_hash": "30f0aec1fa4e34f7452fc6b1d1cc1ece",
     "semantic_hash": "30f0aec1fa4e34f7452fc6b1d1cc1ece"
   },
   "firmware/comun/ZenitRadio/src/ZenitRadio.h": {
-    "mtime": 1792466507.9918242,
-    "seen": 1792468956.4182413,
+    "mtime": 1792469249.8488436,
+    "seen": 1793066129.5385845,
     "ast_hash": "ecb7a5d3f762afeb7d73280c4673bccb",
     "semantic_hash": "ecb7a5d3f762afeb7d73280c4673bccb"
   },
   "firmware/comun/ZenitSensores/library.json": {
-    "mtime": 1792466486.7693071,
-    "seen": 1792468956.4182422,
+    "mtime": 1792469249.8783233,
+    "seen": 1793066129.5385845,
     "ast_hash": "ffcb804f857f3514e7eeeed2db6787a7",
     "semantic_hash": "ffcb804f857f3514e7eeeed2db6787a7"
   },
   "firmware/comun/ZenitSensores/src/ZenitSensores.cpp": {
-    "mtime": 1792466579.1958284,
-    "seen": 1792468956.4182432,
+    "mtime": 1792469249.938598,
+    "seen": 1793066129.5385845,
     "ast_hash": "67e36e75eeb68b9584527c2125de223c",
     "semantic_hash": "67e36e75eeb68b9584527c2125de223c"
   },
   "firmware/comun/ZenitSensores/src/ZenitSensores.h": {
-    "mtime": 1792466553.407827,
-    "seen": 1792468956.4182441,
+    "mtime": 1792469249.9639857,
+    "seen": 1793066129.5385845,
     "ast_hash": "ca0f6db70341940d759de6cfa33344ed",
     "semantic_hash": "ca0f6db70341940d759de6cfa33344ed"
   },
   "firmware/primaria/include/config.h": {
-    "mtime": 1792469803.879863,
-    "seen": 1792470058.3801782,
+    "mtime": 1792470081.31443,
+    "seen": 1793066129.5385845,
     "ast_hash": "e2b7f69d2424041057711b001dfbfe9c",
     "semantic_hash": ""
   },
   "firmware/primaria/src/Comunicaciones.cpp": {
-    "mtime": 1792468401.614248,
-    "seen": 1792468956.4182465,
+    "mtime": 1792469250.04582,
+    "seen": 1793066129.5385845,
     "ast_hash": "bc6e251d7cdc0cd427d5d93b29841994",
     "semantic_hash": "bc6e251d7cdc0cd427d5d93b29841994"
   },
   "firmware/primaria/src/Comunicaciones.h": {
-    "mtime": 1792468401.614248,
-    "seen": 1792468956.4182477,
+    "mtime": 1792469250.0663354,
+    "seen": 1793066129.5385845,
     "ast_hash": "196e04b8c423d251f9e94acc9fce0aa5",
     "semantic_hash": "196e04b8c423d251f9e94acc9fce0aa5"
   },
   "firmware/primaria/src/Sensores.cpp": {
-    "mtime": 1792468401.614248,
-    "seen": 1792468956.4182498,
+    "mtime": 1792469250.0851023,
+    "seen": 1793066129.5385845,
     "ast_hash": "a7da37501a2b1a8029a0eaffc76d0a95",
     "semantic_hash": "a7da37501a2b1a8029a0eaffc76d0a95"
   },
   "firmware/primaria/src/Sensores.h": {
-    "mtime": 1792468401.614248,
-    "seen": 1792468956.418251,
+    "mtime": 1792469250.1054845,
+    "seen": 1793066129.5385845,
     "ast_hash": "308e78c0b26bd7c5ec86f458fbacd57e",
     "semantic_hash": "308e78c0b26bd7c5ec86f458fbacd57e"
   },
   "firmware/primaria/src/main.cpp": {
-    "mtime": 1792469803.8805306,
-    "seen": 1792470058.3801851,
+    "mtime": 1792470081.7936926,
+    "seen": 1793066129.5385845,
     "ast_hash": "e14dd30f2e599bae8a0086a083b9f6f9",
     "semantic_hash": ""
   },
   "firmware/primaria/test/test_logica/test_main.cpp": {
-    "mtime": 1792468401.614248,
-    "seen": 1792468956.4182527,
+    "mtime": 1792469250.1655977,
+    "seen": 1793066129.5385845,
     "ast_hash": "abf680304a41583388b232cb5659201a",
     "semantic_hash": "abf680304a41583388b232cb5659201a"
   },
   "firmware/pruebas/src/p1_autodiagnostico.cpp": {
-    "mtime": 1792468401.6165564,
-    "seen": 1792468956.418254,
-    "ast_hash": "49efc902066ed972e936b28465490ff2",
-    "semantic_hash": "49efc902066ed972e936b28465490ff2"
+    "mtime": 1792544798.9845574,
+    "seen": 1793066129.5385845,
+    "ast_hash": "8e0111cfc29a6877f92c9e973fa2e13a",
+    "semantic_hash": ""
   },
   "firmware/pruebas/src/p2_sensores.cpp": {
-    "mtime": 1792468401.6165564,
-    "seen": 1792468956.4182549,
+    "mtime": 1792469250.240011,
+    "seen": 1793066129.5385845,
     "ast_hash": "90208399f9c01665239ca371758a9116",
     "semantic_hash": "90208399f9c01665239ca371758a9116"
   },
   "firmware/pruebas/src/p3_alcance_lora.cpp": {
-    "mtime": 1792468401.6165564,
-    "seen": 1792468956.4182558,
+    "mtime": 1792469250.2592351,
+    "seen": 1793066129.5385845,
     "ast_hash": "5b8e118c2cc67cfa3d4ce6ef08a3a3ca",
     "semantic_hash": "5b8e118c2cc67cfa3d4ce6ef08a3a3ca"
   },
   "firmware/pruebas/src/p4_bateria.cpp": {
-    "mtime": 1792468401.6165564,
-    "seen": 1792468956.418257,
+    "mtime": 1792469250.2792132,
+    "seen": 1793066129.5385845,
     "ast_hash": "f8a549cddf59355b1f4730cb85173c97",
     "semantic_hash": "f8a549cddf59355b1f4730cb85173c97"
   },
   "firmware/pruebas/src/p5_registro_openlog.cpp": {
-    "mtime": 1792468401.6165564,
-    "seen": 1792468956.4182582,
+    "mtime": 1792469250.2979536,
+    "seen": 1793066129.5385845,
     "ast_hash": "cd09b9da404ed349658c82e58a20b69e",
     "semantic_hash": "cd09b9da404ed349658c82e58a20b69e"
   },
   "firmware/pruebas/src/p6_servos.cpp": {
-    "mtime": 1792468401.6165564,
-    "seen": 1792468956.418259,
+    "mtime": 1792469250.3168783,
+    "seen": 1793066129.5385845,
     "ast_hash": "b53f11820d080a604e413774357480a3",
     "semantic_hash": "b53f11820d080a604e413774357480a3"
   },
   "firmware/receptor/include/config.h": {
-    "mtime": 1792468401.6165564,
-    "seen": 1792468956.4182599,
+    "mtime": 1792469250.3454945,
+    "seen": 1793066129.5385845,
     "ast_hash": "9b8f7107011d8771dcb7463944f5a86d",
     "semantic_hash": "9b8f7107011d8771dcb7463944f5a86d"
   },
   "firmware/receptor/src/main.cpp": {
-    "mtime": 1792468401.6165564,
-    "seen": 1792468956.418261,
+    "mtime": 1792469250.3881493,
+    "seen": 1793066129.5385845,
     "ast_hash": "db520ef21e346779b7383f213eb7fff7",
     "semantic_hash": "db520ef21e346779b7383f213eb7fff7"
   },
   "firmware/secundaria/include/config.h": {
-    "mtime": 1792468401.6165564,
-    "seen": 1792468956.418262,
+    "mtime": 1792469250.4146287,
+    "seen": 1793066129.5385845,
     "ast_hash": "548c4c742c3aa6652db98650cffd88a2",
     "semantic_hash": "548c4c742c3aa6652db98650cffd88a2"
   },
   "firmware/secundaria/src/main.cpp": {
-    "mtime": 1792468401.6165564,
-    "seen": 1792468956.4182632,
+    "mtime": 1792469250.4589622,
+    "seen": 1793066129.5385845,
     "ast_hash": "0c3a0e7d17973b22e07024a0a7b7ba2a",
     "semantic_hash": "0c3a0e7d17973b22e07024a0a7b7ba2a"
   },
   "herramientas/analisis_vuelo.py": {
-    "mtime": 1792468770.795051,
-    "seen": 1792468956.4182644,
+    "mtime": 1792469251.0053215,
+    "seen": 1793066129.5385845,
     "ast_hash": "e78564269e1b77e1def9fea5c33f4ac3",
     "semantic_hash": "e78564269e1b77e1def9fea5c33f4ac3"
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1792466082.0606918,
-    "seen": 1792469155.7107646,
+    "mtime": 1792469248.4827762,
+    "seen": 1793066129.5385845,
     "ast_hash": "8c96cd7a395212b1bb9f7e1da60198e7",
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1792469018.727115,
-    "seen": 1792469155.7107666,
-    "ast_hash": "95ea081c4be19503ac990a82acb54eaf",
+    "mtime": 1793067006.6600788,
+    "seen": 1793067134.9492273,
+    "ast_hash": "7f8f4e4835126a346266a474a8df7231",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1792469020.6391149,
-    "seen": 1792469155.7107675,
-    "ast_hash": "63b7f4fdf338281e418dccdfef735024",
+    "mtime": 1793066988.6824772,
+    "seen": 1793067134.9492273,
+    "ast_hash": "d0d19d76f95b6f779335ad2c9d486d1a",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792469436.1536074,
-    "seen": 1792470058.3802094,
-    "ast_hash": "0ec3d258415f3263fa91f40b5a4f4083",
+    "mtime": 1793066104.9218466,
+    "seen": 1793066129.5385845,
+    "ast_hash": "0a417553e1a757c112317aab18421d03",
     "semantic_hash": ""
   },
   "docs/01-arquitectura.md": {
-    "mtime": 1792468852.6948872,
-    "seen": 1792469155.7107701,
+    "mtime": 1792469248.5724247,
+    "seen": 1793066129.5385845,
     "ast_hash": "80fcc1df974d70348e1dc87ad8641c5b",
     "semantic_hash": ""
   },
   "docs/02-conexiones.md": {
-    "mtime": 1792468823.0431194,
-    "seen": 1792469155.7107708,
+    "mtime": 1792469248.588454,
+    "seen": 1793066129.5385845,
     "ast_hash": "53ba95d8f8290f090049551b800808b1",
     "semantic_hash": ""
   },
   "docs/03-protocolo-telemetria.md": {
-    "mtime": 1792470052.362763,
-    "seen": 1792470058.3802133,
+    "mtime": 1792470080.4118688,
+    "seen": 1793066129.5385845,
     "ast_hash": "edfdfd9467977a3e8435b19fac966a2c",
     "semantic_hash": ""
   },
   "docs/04-maquina-de-estados.md": {
-    "mtime": 1792468861.8584778,
-    "seen": 1792469155.710773,
+    "mtime": 1792469248.6182182,
+    "seen": 1793066129.5385845,
     "ast_hash": "1b78f12140cb00e035a7fab9bc0f31e0",
     "semantic_hash": ""
   },
   "docs/05-plan-de-pruebas.md": {
-    "mtime": 1792468881.9492793,
-    "seen": 1792469155.7107742,
+    "mtime": 1792469248.6323116,
+    "seen": 1793066129.5385845,
     "ast_hash": "0cbb173b0fffdae8170f606261a660aa",
     "semantic_hash": ""
   },
   "docs/06-dia-de-lanzamiento.md": {
-    "mtime": 1792470052.3637,
-    "seen": 1792470058.380218,
+    "mtime": 1792470080.6787612,
+    "seen": 1793066129.5385845,
     "ast_hash": "9d7af345f66ade91611a4a81d04490ef",
     "semantic_hash": ""
   },
   "docs/07-requisitos-y-riesgos.md": {
-    "mtime": 1792470052.3633504,
-    "seen": 1792470058.3802195,
+    "mtime": 1792470081.028541,
+    "seen": 1793066129.5385845,
     "ast_hash": "8ee17ea46c85806a78a950aa3a02b853",
     "semantic_hash": ""
   },
   "docs/08-git-y-github.md": {
-    "mtime": 1792466082.0609272,
-    "seen": 1792469155.7107775,
+    "mtime": 1792469248.6790972,
+    "seen": 1793066129.5385845,
     "ast_hash": "dfcb64c0c6618afeaa59ea05b83d9398",
     "semantic_hash": ""
   },
   "documentos/README.md": {
-    "mtime": 1792466082.0609272,
-    "seen": 1792469155.7107787,
+    "mtime": 1792469248.6978803,
+    "seen": 1793066129.5385845,
     "ast_hash": "dff3c4d5573818d5daadde8058f80ec4",
     "semantic_hash": ""
   },
   "documentos/openlog/config.txt": {
-    "mtime": 1792468778.5701933,
-    "seen": 1792469155.7107797,
+    "mtime": 1792469248.7188966,
+    "seen": 1793066129.5385845,
     "ast_hash": "cd113b4a61d11babc649c2c7f720e3dd",
     "semantic_hash": ""
   },
   "estacion-terrena/public/LUCIDE-LICENSE.txt": {
-    "mtime": 1792466082.0612526,
-    "seen": 1792469155.7107809,
+    "mtime": 1792469248.8056314,
+    "seen": 1793066129.5385845,
     "ast_hash": "0ac379ab65904bcb1cf0c068528e82ce",
     "semantic_hash": ""
   },
   "estacion-terrena/public/index.html": {
-    "mtime": 1792468448.114716,
-    "seen": 1792469155.710782,
-    "ast_hash": "8e594405b4e970c4b9d03daa9f9d9f10",
+    "mtime": 1793064828.5549505,
+    "seen": 1793066129.5385845,
+    "ast_hash": "0d7c91c2956073e9e09082b350e52f73",
     "semantic_hash": ""
   },
   "estacion-terrena/test/datos/salida_firmware_sim.txt": {
-    "mtime": 1792468734.1011882,
-    "seen": 1792469155.710783,
+    "mtime": 1792469249.0625422,
+    "seen": 1793066129.5385845,
     "ast_hash": "c899a94d5007c95685fbce80a8feade1",
     "semantic_hash": ""
   },
   "herramientas/requirements.txt": {
-    "mtime": 1792466082.0653522,
-    "seen": 1792469155.710784,
+    "mtime": 1792469251.155744,
+    "seen": 1793066129.5385845,
     "ast_hash": "8783f5b2732e6e37731e4d394217d2ae",
     "semantic_hash": ""
   },
   "mecanica/README.md": {
-    "mtime": 1792466082.0653522,
-    "seen": 1792469155.710785,
+    "mtime": 1792469251.1773906,
+    "seen": 1793066129.5385845,
     "ast_hash": "01d6ec4b0f6042caa30661ef65807735",
     "semantic_hash": ""
   },
-  "estacion-terrena/public/logo-zenit.jpeg": {
-    "mtime": 1792466082.061789,
-    "seen": 1792469155.7107863,
-    "ast_hash": "094c2d914bce7a76827ee212ce341e0d",
+  "docs/09-guia-primera-prueba.md": {
+    "mtime": 1792544799.2934358,
+    "seen": 1793066129.5385845,
+    "ast_hash": "a21f0b3b400f9523cbef69b417e47d5c",
     "semantic_hash": ""
   },
-  "docs/09-guia-primera-prueba.md": {
-    "mtime": 1792469439.217584,
-    "seen": 1792470058.3802228,
-    "ast_hash": "be73a8883276eebde657453bc4ceb73e",
+  "estacion-terrena/public/cansat3d.js": {
+    "mtime": 1793065681.963878,
+    "seen": 1793066129.5385845,
+    "ast_hash": "f0d705300f31f1be8a061f0b09bd6750",
+    "semantic_hash": ""
+  },
+  "estacion-terrena/public/intro.js": {
+    "mtime": 1793067017.8280551,
+    "seen": 1793067134.9481535,
+    "ast_hash": "84972e33fea57078d30d9391804c2c6c",
+    "semantic_hash": ""
+  },
+  "estacion-terrena/public/prototipo.js": {
+    "mtime": 1793067036.3709924,
+    "seen": 1793067134.9481535,
+    "ast_hash": "4ebd3afa39fa87cf7cf84cb2156b51c0",
+    "semantic_hash": ""
+  },
+  "estacion-terrena/public/visor3d.js": {
+    "mtime": 1793065025.8941758,
+    "seen": 1793066129.5385845,
+    "ast_hash": "da25882c345b7a98b6cee35819c9c7a7",
+    "semantic_hash": ""
+  },
+  "firmware/primaria/.vscode/extensions.json": {
+    "mtime": 1792545528.8154385,
+    "seen": 1793066129.5385845,
+    "ast_hash": "b4fe65422789c169a6e60ad8eeb1d8c6",
+    "semantic_hash": ""
+  },
+  "DESIGN.md": {
+    "mtime": 1793067101.3058698,
+    "seen": 1793067134.9492273,
+    "ast_hash": "d6d9cf61ece929225c0096628af1928e",
+    "semantic_hash": ""
+  },
+  "GRAPHIFY.md": {
+    "mtime": 1793066989.5370889,
+    "seen": 1793067134.9492273,
+    "ast_hash": "07ec8c38961a7b3529b4fbd25efcee1e",
+    "semantic_hash": ""
+  },
+  "PRODUCT.md": {
+    "mtime": 1793067006.722625,
+    "seen": 1793067134.9492273,
+    "ast_hash": "133e41cb633605ad428f7de507103afe",
+    "semantic_hash": ""
+  },
+  "docs/10-pendientes-del-equipo.md": {
+    "mtime": 1792547003.535263,
+    "seen": 1793066129.5385845,
+    "ast_hash": "50a787136b632604566b4e958c2adf28",
+    "semantic_hash": ""
+  },
+  "docs/decisiones/0001-recursos-locales-sin-internet.md": {
+    "mtime": 1793066051.995324,
+    "seen": 1793066129.5385845,
+    "ast_hash": "abb9dd599988bb2e20a98e3d07c7a9f3",
+    "semantic_hash": ""
+  },
+  "docs/decisiones/0002-sistema-visual-design-md.md": {
+    "mtime": 1793067006.7737267,
+    "seen": 1793067134.9492273,
+    "ast_hash": "4a29cd866cdaade69378c6b185c99c2d",
+    "semantic_hash": ""
+  },
+  "docs/decisiones/README.md": {
+    "mtime": 1793067006.8238938,
+    "seen": 1793067134.9492273,
+    "ast_hash": "967c97abcead0d2cb8bac76624c3e6e7",
+    "semantic_hash": ""
+  },
+  "estacion-terrena/public/prototipo.html": {
+    "mtime": 1793067037.8398223,
+    "seen": 1793067134.9492273,
+    "ast_hash": "987b0d03512531494829e5b1c7457756",
+    "semantic_hash": ""
+  },
+  "docs/decisiones/0003-modelo-3d-procedural-ilustrativo.md": {
+    "mtime": 1793066991.4214995,
+    "seen": 1793067134.9492273,
+    "ast_hash": "ee4e919f7ae5cedf9262887e0ba6651c",
     "semantic_hash": ""
   }
 }

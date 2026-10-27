@@ -15,8 +15,8 @@ Idioma del proyecto: **español** (código, comentarios, commits y respuestas).
    ```
 3. Después abre **solo** los archivos que el grafo señala (las líneas vienen en `loc=`).
 4. Si cambiaste código, actualiza el mapa (sin costo de API): `graphify update .`
-   (si cambió mucho: `graphify extract . --code-only` y `graphify cluster-only .`).
-   El grafo cubre el código; la documentación está en `docs/` (tabla abajo).
+   (si cambió mucho: `graphify update . --force` y `graphify cluster-only .`).
+   Qué entra y qué no, y qué conceptos debe conectar: **[GRAPHIFY.md](GRAPHIFY.md)**.
 
 ## 2. Qué es cada cosa
 
@@ -29,8 +29,11 @@ Idioma del proyecto: **español** (código, comentarios, commits y respuestas).
 | `firmware/comun/ZenitComun` | **C++ puro** (sin Arduino): pines, radio, protocolo, filtros, máquina de estados, separación, Haversine, UBX, tiempo en el aire, simulador | C++ |
 | `firmware/comun/ZenitRadio` · `ZenitSensores` · `ZenitPantalla` | Drivers solo-ESP32 (RadioLib, GY-91, OLED) | C++ |
 | `estacion-terrena/` | Node.js: `server.js` + `src/` (protocolo, simulador, registro) + `public/` (panel web) | JavaScript |
+| `estacion-terrena/public/` | Panel: `index.html` · `app.js` · `estilos.css`. Compartido: `base.css` (tokens + intro) · `intro.js` (logo al inicio) · `cansat3d.js` (modelo 3D). `visor3d.js` (orientación en vivo). Prototipo: `prototipo.html/.css/.js` | HTML/CSS/JS + three.js |
 | `herramientas/analisis_vuelo.py` | Tabla y gráficas para el documento RAM | Python |
-| `docs/` | 01 arquitectura · 02 conexiones · 03 protocolo · 04 máquina de estados · 05 pruebas · 06 lanzamiento · 07 requisitos/riesgos · 08 git | Markdown |
+| `docs/` | 01 arquitectura · 02 conexiones · 03 protocolo · 04 máquina de estados · 05 pruebas · 06 lanzamiento · 07 requisitos/riesgos · 08 git · 09 primera prueba · 10 pendientes | Markdown |
+| `docs/decisiones/` | ADR: el *por qué* de cada decisión (recursos locales, sistema visual, modelo 3D) | Markdown |
+| `DESIGN.md` · `PRODUCT.md` | Sistema visual (formato DESIGN.md de Google) y verdad del producto (quién usa la interfaz, dónde, qué no se negocia) | Markdown |
 
 Valores de la misión: liberación a **450 m**, desacople + autogiro a **200 m**, descenso
 **8–12 m/s**, transmitir **≥ 10 s** tras aterrizar, **pila de 9 V**, **≤ 600 g**, 2 huevos de 65 g,
@@ -42,7 +45,7 @@ LoRa **915 MHz**, alcance **≥ 1 km** (PDR).
 |---|---|
 | Pruebas de la lógica (16) | `firmware/primaria`: `pio test -e native` |
 | Compilar | `pio run -d firmware/primaria -e primaria -e primaria_sim` · `pio run -d firmware/secundaria` · `pio run -d firmware/receptor` · `pio run -d firmware/pruebas` |
-| Estación terrena | `estacion-terrena`: `npm install` · `npm test` (8) · `npm run simular` → http://localhost:3000 |
+| Estación terrena | `estacion-terrena`: `npm install` · `npm test` (8) · `npm run simular` → http://localhost:3000 (panel) y http://localhost:3000/prototipo.html (recorrido 3D) |
 | Análisis | `python herramientas/analisis_vuelo.py herramientas/ejemplos/VUELO_SIMULADO.CSV` |
 
 GitHub Actions (`.github/workflows/ci.yml`) corre todo esto en cada push.
@@ -71,13 +74,22 @@ GitHub Actions (`.github/workflows/ci.yml`) corre todo esto en cada push.
    `aire::tiempoEnAireMs` y ajustar `test_tiempo_en_aire`.
 10. Seguridad de la misión: el desacople solo se arma después de pasar 250 m; el autogiro se
     abre **siempre** 400 ms después del desacople. No quitar esas protecciones.
+11. **Sin internet en la cancha**: la interfaz no usa CDNs ni Google Fonts. three.js
+    (0.169.0 exacta), fuentes y Chart.js se sirven desde `node_modules` vía `/vendor` en
+    `server.js` (ADR 0001).
+12. **La telemetría manda** en el panel: la intro del logo sale una vez por pestaña y se
+    salta; el 3D es opcional (sin WebGL queda el horizonte SVG); `visor3d.js` solo lee
+    `window.zenit.estado()`. Los IDs de `index.html` los usa `app.js`. Reglas visuales y
+    tokens: `DESIGN.md` + `base.css` (cámbialos juntos).
 
 ## 5. Antes de dar algo por terminado
 
 - `pio test -e native` y `npm test` en verde; los entornos tocados compilan **sin advertencias**.
 - Si cambió el flujo de vuelo: subir `env:primaria_sim` (o el emulador) y revisar que salgan
   `ASCENSO → LIBERACION → DESACOPLE → SEPARACION → AUTOGIRO → ATERRIZAJE → POST_ATERRIZAJE_OK`.
-- Actualizar el doc correspondiente de `docs/` y `graphify update .`.
+- Si cambió la interfaz: `npm run simular` y revisar `/` y `/prototipo.html` en escritorio y a
+  390 px (sin scroll horizontal, con y sin "reducir movimiento").
+- Actualizar el doc correspondiente de `docs/` (o un ADR en `docs/decisiones/`) y `graphify update .`.
 - Commits en español, en presente: "Agrega…", "Corrige…", "Ajusta…".
 
 ## 6. Lo que todavía depende del hardware

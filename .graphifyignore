@@ -1,0 +1,12 @@
+# Lo que graphify no debe leer (ver GRAPHIFY.md)
+node_modules/
+.pio/
+.claude/
+graphify-out/
+estacion-terrena/logs/
+estacion-terrena/node_modules/
+documentos/*.pdf
+herramientas/*_resultados/
+*.png
+*.jpeg
+*.jpg

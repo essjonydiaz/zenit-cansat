@@ -26,3 +26,6 @@ desktop.ini
 # Paquete local del panel (los archivos instalados se guardan en sus rutas reales)
 /zenit-panel-actualizado.zip
 /zenit-panel-actualizado/
+
+# Configuración local de asistentes de IA (no se sube)
+.claude/

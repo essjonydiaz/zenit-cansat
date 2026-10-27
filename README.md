@@ -31,11 +31,29 @@ Hardware tal como quedó en el **PDR (etapa 3)**. Pines y diferencias encontrada
 | [`firmware/receptor`](firmware/receptor) | Receptor LoRa de tierra (Heltec V3, puente radio ↔ USB, pantalla con RSSI) | C++ |
 | [`firmware/pruebas`](firmware/pruebas) | Programas para las pruebas P1–P6 (autodiagnóstico, GY-91, alcance, pila, OpenLog, servos) | C++ |
 | [`firmware/comun`](firmware/comun) | `ZenitComun` (pines, protocolo, filtros, máquina de estados, separación, GPS, simulador; C++ puro) + `ZenitRadio`, `ZenitSensores`, `ZenitPantalla` (drivers) | C++ |
-| [`estacion-terrena`](estacion-terrena) | Servidor + panel web en tiempo real, simulador y registro de sesión | JavaScript (Node.js) |
+| [`estacion-terrena`](estacion-terrena) | Servidor + panel web en tiempo real (con modelo 3D), página del prototipo, simulador y registro de sesión | JavaScript (Node.js) + three.js |
 | [`herramientas`](herramientas) | Análisis del vuelo para el documento RAM (gráficas + tabla) | Python |
 | [`docs`](docs) | Arquitectura, conexiones, protocolo, pruebas, día del lanzamiento, requisitos | Markdown |
 | `mecanica/`, `documentos/` | Lugar para los CAD/STL y los entregables (CoDR, PDR, CDR, RAM). `documentos/openlog/config.txt` va en la microSD | — |
 | [`AGENTS.md`](AGENTS.md), [`graphify-out/`](graphify-out) | Guía para asistentes de IA (Claude, Copilot, Codex…) y mapa del código | — |
+
+## Documentación
+
+| Documento | Para qué |
+|---|---|
+| [docs/01-arquitectura.md](docs/01-arquitectura.md) | Cómo se conectan las placas, tareas y modos de compilación |
+| [docs/02-conexiones.md](docs/02-conexiones.md) | Pines de cada placa y diferencias con el PDR |
+| [docs/03-protocolo-telemetria.md](docs/03-protocolo-telemetria.md) | Formato de las tramas T, P, B, E, R, C |
+| [docs/04-maquina-de-estados.md](docs/04-maquina-de-estados.md) | Fases del vuelo y secuencia de separación |
+| [docs/05-plan-de-pruebas.md](docs/05-plan-de-pruebas.md) | Pruebas P1–P9 y criterios |
+| [docs/06-dia-de-lanzamiento.md](docs/06-dia-de-lanzamiento.md) | Checklist del día del lanzamiento |
+| [docs/07-requisitos-y-riesgos.md](docs/07-requisitos-y-riesgos.md) | Matriz de requisitos, riesgos y pendientes |
+| [docs/08-git-y-github.md](docs/08-git-y-github.md) | Trabajo en equipo con Git |
+| [docs/09-guia-primera-prueba.md](docs/09-guia-primera-prueba.md) | Dejar la PC lista y primera prueba con hardware |
+| [docs/10-pendientes-del-equipo.md](docs/10-pendientes-del-equipo.md) | Pendientes y preguntas al equipo |
+| [docs/decisiones/](docs/decisiones/README.md) | Por qué se decidió cada cosa (ADR) |
+| [DESIGN.md](DESIGN.md) · [PRODUCT.md](PRODUCT.md) | Sistema visual de la interfaz y a quién sirve |
+| [AGENTS.md](AGENTS.md) · [CLAUDE.md](CLAUDE.md) · [GRAPHIFY.md](GRAPHIFY.md) | Reglas para asistentes de IA y uso del grafo de conocimiento |
 
 ## Empezar (Windows)
 
@@ -66,8 +84,13 @@ npm install
 npm run simular
 ```
 Abrir **http://localhost:3000** → se ve un vuelo completo: ascenso, liberación, desacople a
-200 m, autogiro, aterrizaje. Se pueden probar los botones de comandos.
+200 m, autogiro, aterrizaje, con el CanSat en 3D siguiendo la orientación. Se pueden probar
+los botones de comandos.
 
+Para presentar el proyecto: **http://localhost:3000/prototipo.html**, un recorrido 3D con
+scroll (portada de vidrio que se rompe, vista por dentro, desacople y autogiro). Todo
+funciona sin internet.
+    
 Deja esa terminal abierta mientras usas el panel. Para detenerlo y liberar el puerto,
 presiona **Ctrl+C** en esa misma terminal. Si aparece «puerto 3000 ocupado», ya hay
 otro proceso escuchando: si es la estación, basta abrir la dirección y recargar con

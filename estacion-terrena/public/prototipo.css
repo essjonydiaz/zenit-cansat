@@ -1,0 +1,189 @@
+/* =============================================================================
+   Zénit · Prototipo 3D — recorrido con scroll
+   La portada es una placa de vidrio ahumado partida en piezas (prototipo.js);
+   al bajar se hace añicos y deja ver el CanSat, que cuenta la misión.
+   Tokens: base.css · Reglas: DESIGN.md
+   ========================================================================== */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body.prototipo {
+  margin: 0;
+  background: #04060b;
+  color: var(--texto);
+  font: 17px/1.6 var(--f-texto);
+  overflow-x: hidden;
+}
+code { font-family: var(--f-datos); font-size: 0.9em; color: var(--azul-brillo); }
+.num { font-family: var(--f-datos); font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------------------- lienzo 3D -- */
+.escena3d { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; }
+html.sin-3d .escena3d { display: none; }
+
+/* ------------------------------------------- capa de texto del vidrio -- */
+/* Los textos son transparentes: lo que se ve es su copia impresa en el
+   vidrio. Siguen ahí para seleccionar, leer con lector de pantalla y hacer clic. */
+.capa-texto { position: fixed; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; }
+.bloque { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.bloque a, .bloque h1, .bloque p, .bloque span { position: absolute; margin: 0; white-space: nowrap; }
+.bloque, .bloque * { color: transparent; text-decoration: none; }
+.bloque ::selection { background: rgba(80, 140, 255, 0.42); color: transparent; }
+.bloque h1, .bloque p, .bloque .pie-izq, .bloque .pie-der, .bloque .nav-marca { pointer-events: auto; cursor: text; }
+.bloque a { pointer-events: auto; cursor: pointer; }
+.bloque h1 span, .bloque p span { position: static; display: block; }
+.heroe-titulo { font-family: var(--f-display); font-weight: 700; font-stretch: 125%; }
+.heroe-sub, .heroe-acciones a, .nav-vidrio a, .pie-izq, .pie-der { font-family: var(--f-texto); }
+.nav-sello { display: inline-block; }
+.heroe-acciones { position: static; }
+.bloque a:focus-visible { outline: 2px solid var(--azul-brillo); outline-offset: 4px; border-radius: 8px; }
+.capa-texto.disperso .bloque { visibility: hidden; }
+
+/* Sin WebGL o con movimiento reducido: la portada es HTML con estilo de vidrio */
+html.sin-3d .capa-texto { position: relative; z-index: 2; pointer-events: auto; overflow: visible; }
+html.sin-3d .bloque {
+  position: relative; transform: none !important; width: auto !important; height: auto !important;
+  margin: 10vh 5.5vw 0; padding: 0;
+  display: grid; gap: 14px;
+}
+html.sin-3d .bloque, html.sin-3d .bloque * { position: static !important; color: inherit; white-space: normal; }
+html.sin-3d .nav-vidrio, html.sin-3d .placa-texto {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 18px;
+  padding: 18px 24px; border-radius: 20px;
+  background: linear-gradient(180deg, rgba(36, 40, 52, 0.85), rgba(16, 18, 26, 0.9));
+  border: 1px solid rgba(220, 230, 255, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 30px 60px -30px #000;
+}
+html.sin-3d .nav-enlaces { display: flex; gap: 18px; margin-left: auto; }
+html.sin-3d .nav-vidrio a { color: rgba(255, 255, 255, 0.7); font-size: 15px !important; }
+html.sin-3d .nav-marca { color: #fff !important; font: 800 18px/1 var(--f-display) !important; font-stretch: 125% !important; letter-spacing: 0.16em; }
+html.sin-3d .placa-texto { display: grid; padding: clamp(28px, 6vw, 80px); min-height: 70vh; align-content: center; }
+html.sin-3d .heroe-titulo { font-size: clamp(44px, 7.5vw, 96px) !important; line-height: 0.97 !important; letter-spacing: -0.03em !important; color: #dcdce0 !important; }
+html.sin-3d .heroe-sub { font-size: 18px !important; color: rgba(255, 255, 255, 0.6) !important; max-width: 46ch; }
+html.sin-3d .heroe-acciones { display: flex; gap: 12px; align-items: center; }
+html.sin-3d .pildora { background: #f1f3f8; color: #0b0d12 !important; padding: 10px 20px; border-radius: 8px; font-weight: 600; }
+html.sin-3d .pie-izq, html.sin-3d .pie-der { font-size: 12px !important; color: rgba(255, 255, 255, 0.4) !important; }
+
+/* ------------------------------------------------- etiquetas 3D -- */
+.etiquetas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+.etiqueta {
+  position: absolute; left: 0; top: 0;
+  display: grid; gap: 1px;
+  padding-left: 14px;
+  font-size: 13px; line-height: 1.25; width: max-content; max-width: 230px;
+  opacity: 0; transition: opacity 0.35s;
+  will-change: transform;
+}
+.etiqueta::before {
+  content: ""; position: absolute; left: 0; top: 6px; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--azul-brillo); box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.25), 0 0 12px var(--azul);
+}
+.etiqueta.izq { padding: 0 14px 0 0; text-align: right; }
+.etiqueta.izq::before { left: auto; right: 0; }
+.etiqueta b { font-weight: 650; color: #fff; font-stretch: 108%; }
+.etiqueta small { color: var(--suave); font-size: 11.5px; }
+
+/* --------------------------------------------------------- historia -- */
+.historia { position: relative; z-index: 2; pointer-events: none; }
+.historia a, .historia .texto { pointer-events: auto; }
+.tramo-heroe { height: 100vh; }
+.tramo { min-height: 120vh; display: flex; align-items: center; padding: 12vh 5.5vw; }
+.tramo.largo { min-height: 190vh; align-items: flex-start; }
+.tramo.final { min-height: 100vh; justify-content: center; }
+.texto { max-width: 34rem; min-width: 0; position: sticky; top: 16vh; }
+.texto.izquierda { margin-right: auto; }
+.texto.derecha { margin-left: auto; }
+.texto.centro { text-align: center; margin: 0 auto; max-width: 40rem; }
+.texto.arriba { top: 12vh; }
+.texto h2 {
+  margin: 0 0 0.45em;
+  font: 750 clamp(36px, 4.4vw, 72px)/1 var(--f-display);
+  font-stretch: 118%;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  color: #f2f5fd;
+}
+.texto p { margin: 0 0 1em; color: var(--suave); max-width: 60ch; text-wrap: pretty; }
+.texto b { color: #fff; font-weight: 650; }
+.texto .nota { font-size: 13.5px; color: var(--tenue); }
+
+/* Entrada de cada bloque de texto al llegar con el scroll */
+.texto > * { opacity: 0; transform: translateY(26px); filter: blur(6px); transition: opacity 0.9s var(--suave-salida), transform 0.9s var(--suave-salida), filter 0.9s var(--suave-salida); }
+.tramo.visible .texto > * { opacity: 1; transform: none; filter: none; }
+.tramo.visible .texto > :nth-child(2) { transition-delay: 0.08s; }
+.tramo.visible .texto > :nth-child(3) { transition-delay: 0.16s; }
+.tramo.visible .texto > :nth-child(4) { transition-delay: 0.24s; }
+.tramo.visible .texto > :nth-child(5) { transition-delay: 0.32s; }
+@media (prefers-reduced-motion: reduce) { .texto > * { opacity: 1; transform: none; filter: none; transition: none; } }
+html.sin-3d .texto > * { opacity: 1; transform: none; filter: none; }
+
+.cifras { display: grid; grid-template-columns: repeat(3, auto); gap: 8px 28px; margin: 1.6em 0 0; justify-content: start; }
+.cifras div { display: grid; gap: 2px; border-top: 1px solid var(--borde-fuerte); padding-top: 10px; }
+.cifras dt { font-size: 12px; color: var(--tenue); }
+.cifras dd { margin: 0; font-size: 22px; font-weight: 600; color: #fff; }
+
+.componentes { list-style: none; margin: 0 0 1em; padding: 0; display: grid; gap: 10px; }
+.componentes li { color: var(--suave); padding: 12px 14px; border-radius: 14px; background: rgba(16, 24, 42, 0.62); border: 1px solid var(--borde); backdrop-filter: blur(10px); }
+.componentes b { display: block; color: var(--azul-brillo); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 2px; }
+
+.altura { display: flex; align-items: baseline; gap: 0.12em; margin: 0 0 0.1em !important; color: #fff !important; font-size: clamp(64px, 9vw, 150px) !important; font-weight: 700; line-height: 0.9; letter-spacing: -0.06em; }
+.altura small { font-size: 0.28em; color: var(--azul-brillo); letter-spacing: 0; }
+
+.evento, .secuencia li { font-size: 13px; color: var(--tenue) !important; }
+.evento b, .secuencia b { color: var(--azul-brillo); font-weight: 600; }
+.secuencia { list-style: none; margin: 1.2em 0 0; padding: 0; display: grid; gap: 8px; }
+.secuencia li { padding: 8px 12px; border-radius: 10px; border: 1px solid var(--borde); background: rgba(10, 16, 30, 0.6); }
+
+.ticker {
+  height: 150px; overflow: hidden; margin-top: 1.4em;
+  font-size: 12px; line-height: 1.7; color: var(--tenue);
+  mask-image: linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent);
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent);
+}
+.ticker div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ticker .t { color: var(--azul-brillo); }
+
+.acciones { display: flex; gap: 12px; align-items: center; justify-content: center; margin: 1.8em 0 1.2em; flex-wrap: wrap; }
+.historia .pildora {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 26px; height: 52px; border-radius: 10px;
+  background: #f1f3f8; color: #0a0d14; font-weight: 650; text-decoration: none;
+  transition: background-color 0.25s, transform 0.25s var(--suave-salida), box-shadow 0.25s;
+}
+.historia .pildora:hover { background: #36d67e; transform: translateY(-2px); box-shadow: 0 14px 30px -12px rgba(54, 214, 126, 0.7); }
+.historia .enlace-mision, html.sin-3d .enlace-mision {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 26px; height: 52px; border-radius: 10px;
+  color: #fff !important; font-weight: 600; text-decoration: none;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  backdrop-filter: blur(8px);
+  transition: background-color 0.25s, border-color 0.25s, transform 0.25s var(--suave-salida);
+}
+.historia .enlace-mision:hover, html.sin-3d .enlace-mision:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.6); transform: translateY(-2px); }
+html.sin-3d .enlace-mision { height: 44px; padding: 0 20px; border-radius: 8px; }
+
+.pie-pagina {
+  position: relative; z-index: 2;
+  display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+  padding: 28px 5.5vw 36px; font-size: 13px; color: var(--tenue);
+  border-top: 1px solid var(--borde);
+  background: #04060b;
+}
+.tricolor-pie { display: flex; width: 120px; height: 2px; }
+.tricolor-pie i { flex: 1; }
+.tricolor-pie i:nth-child(1) { background: var(--mx-verde); }
+.tricolor-pie i:nth-child(2) { background: #e9eef9; }
+.tricolor-pie i:nth-child(3) { background: var(--mx-rojo); }
+
+/* ------------------------------------------------------- teléfonos -- */
+@media (max-width: 760px) {
+  body.prototipo { font-size: 16px; }
+  .tramo { padding: 10vh 16px; min-height: 110vh; align-items: flex-end; }
+  .tramo.largo { min-height: 170vh; }
+  .texto { max-width: none; top: auto; bottom: 4vh; position: sticky; background: linear-gradient(180deg, transparent, rgba(4, 6, 11, 0.86) 18%); padding-top: 24px; }
+  .cifras { grid-template-columns: repeat(2, auto); }
+  .etiqueta small { display: none; }
+  html.sin-3d .bloque { margin: 16px; }
+  html.sin-3d .nav-enlaces { display: none; }
+}

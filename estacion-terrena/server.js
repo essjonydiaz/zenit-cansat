@@ -50,6 +50,10 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 // Chart.js servido localmente: en la cancha NO hay internet.
 app.use('/vendor', express.static(path.join(__dirname, 'node_modules', 'chart.js', 'dist')));
+// Lo mismo para el modelo 3D (three.js) y las tipografías del panel.
+app.use('/vendor/three', express.static(path.join(__dirname, 'node_modules', 'three')));
+app.use('/vendor/fuentes/archivo', express.static(path.join(__dirname, 'node_modules', '@fontsource-variable', 'archivo')));
+app.use('/vendor/fuentes/mono', express.static(path.join(__dirname, 'node_modules', '@fontsource-variable', 'jetbrains-mono')));
 app.use('/logs', express.static(CARPETA_LOGS));
 
 const servidor = http.createServer(app);

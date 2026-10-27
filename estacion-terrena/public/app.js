@@ -78,6 +78,8 @@ function estadoInicial() {
   };
 }
 S = estadoInicial();
+// El visor 3D (visor3d.js, módulo aparte) lee el estado desde aquí; solo lectura.
+window.zenit = { estado: () => S };
 let fuente = { modo: 'ninguna', conectado: false };
 let wsAbierto = false;
 let comandoPendiente = null;
@@ -577,12 +579,28 @@ function dibujarPerfil() {
   }
 }
 
+let faseDibujada = null;
 function dibujarFases() {
   const e = S.T ? S.T.estado : -1;
   document.querySelectorAll('#fases li').forEach((li) => {
     const n = Number(li.dataset.e);
     li.className = n === e ? 'actual' : (n < e ? 'hecha' : '');
   });
+  // La atmósfera del fondo cambia con la fase; el destello marca la transición.
+  if (e !== faseDibujada) {
+    document.body.dataset.fase = String(e);
+    if (faseDibujada !== null && e >= 0) {
+      const li = document.querySelector(`#fases li[data-e="${e}"]`);
+      if (li && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        li.animate([
+          { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(143,216,255,.0)' },
+          { transform: 'scale(1.06)', boxShadow: '0 0 0 6px rgba(143,216,255,.35)', offset: 0.35 },
+          { transform: 'scale(1)', boxShadow: '0 0 0 14px rgba(143,216,255,0)' },
+        ], { duration: 900, easing: 'cubic-bezier(.16,1,.3,1)' });
+      }
+    }
+    faseDibujada = e;
+  }
 }
 
 // ------------------------------------------------------ instrumentos -----
@@ -700,7 +718,7 @@ function dibujarInstrumentos() {
 }
 
 // -------------------------------------------------------------- gráficas --
-Chart.defaults.font.family = '"Segoe UI", system-ui, sans-serif';
+Chart.defaults.font.family = '"Archivo Variable", "Segoe UI", system-ui, sans-serif';
 Chart.defaults.font.size = 11;
 Chart.defaults.animation = false;
 const rangos = { alt: 0, vel: 0, acel: 0 };  // segundos visibles (0 = todo)
@@ -712,7 +730,7 @@ const marcasEventos = {
     if (!a) return;
     const lista = [['liberacion', 'Liberación', '--azul-texto'], ['desacople', 'Desacople', '--aviso'], ['aterrizaje', 'Aterrizaje', '--ok']];
     ctx.save();
-    ctx.font = '10px "Segoe UI", sans-serif';
+    ctx.font = '10px "Archivo Variable", "Segoe UI", sans-serif';
     lista.forEach(([k, texto, color], fila) => {
       const m = S.marcas[k];
       if (!m) return;
@@ -741,7 +759,7 @@ const bandaAutogiro = {
     ctx.fillStyle = css('--ok-fondo');
     ctx.fillRect(a.left, Math.min(y1, y2), a.right - a.left, Math.abs(y2 - y1));
     ctx.fillStyle = css('--ok');
-    ctx.font = '10px "Segoe UI", sans-serif';
+    ctx.font = '10px "Archivo Variable", "Segoe UI", sans-serif';
     ctx.textAlign = 'right';
     ctx.fillText('Rango autogiro (−8 a −12 m/s)', a.right - 4, Math.max(y1, y2) + 12);
     ctx.restore();

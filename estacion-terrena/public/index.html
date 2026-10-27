@@ -6,10 +6,17 @@
   <title>Zénit · Estación terrena</title>
   <link rel="icon" type="image/jpeg" href="/logo-zenit.jpeg">
   <link rel="apple-touch-icon" href="/logo-zenit.jpeg">
+  <link rel="stylesheet" href="base.css">
   <link rel="stylesheet" href="estilos.css">
   <script src="/vendor/chart.umd.min.js"></script>
+  <!-- three.js servido desde node_modules: en la cancha no hay internet -->
+  <script type="importmap">
+    { "imports": { "three": "/vendor/three/build/three.module.min.js", "three/addons/": "/vendor/three/examples/jsm/" } }
+  </script>
+  <script type="module" src="visor3d.js"></script>
 </head>
-<body>
+<body data-fase="-1">
+<script src="intro.js" data-duracion="2600" data-una-vez="sesion"></script>
 <!-- Iconos Lucide (licencia: LUCIDE-LICENSE.txt), disponibles sin internet. -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -154,6 +161,10 @@
 
   <div class="lema-final" aria-hidden="true">CIENCIA<br>DISCIPLINA<br>PROPÓSITO</div>
 
+  <a class="btn enlace-prototipo" href="/prototipo.html" title="Recorrido 3D del prototipo">
+    <svg class="ico"><use href="#i-cubo"/></svg><span>Prototipo 3D</span>
+  </a>
+
   <div class="tema" role="group" aria-label="Tema">
     <button id="btnClaro" class="tema-btn" title="Tema claro (para usar al sol)"><svg class="ico"><use href="#i-sol"/></svg></button>
     <button id="btnOscuro" class="tema-btn" title="Tema oscuro"><svg class="ico"><use href="#i-luna"/></svg></button>
@@ -240,9 +251,12 @@
         </div>
       </div>
       <div class="tarjeta instrumento" id="instOri">
-        <h3 class="inst-titulo"><svg class="ico"><use href="#i-orientacion"/></svg>Orientación</h3>
+        <h3 class="inst-titulo"><svg class="ico"><use href="#i-orientacion"/></svg>Orientación <small>3D</small></h3>
         <div class="orientacion">
-          <svg id="horizonte" viewBox="-80 -80 160 160" aria-hidden="true"></svg>
+          <div id="visor3d" class="visor3d" role="img" aria-label="Modelo 3D del CanSat con la orientación recibida">
+            <svg id="horizonte" viewBox="-80 -80 160 160" aria-hidden="true"></svg>
+            <span class="visor-espera">En espera de telemetría</span>
+          </div>
           <dl class="angulos">
             <dt>Roll</dt><dd id="oRoll" class="num">—</dd>
             <dt>Pitch</dt><dd id="oPitch" class="num">—</dd>
