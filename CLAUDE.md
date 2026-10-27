@@ -15,5 +15,5 @@ Copilot, Codex y Cursor). Léelas antes de empezar:
 - **Interfaz:** antes de tocar `estacion-terrena/public/` lee [PRODUCT.md](PRODUCT.md) y
   [DESIGN.md](DESIGN.md). La carpeta `.claude/` es local de cada quien y no se sube.
 - Para ver la interfaz: `cd estacion-terrena && npm run simular` → `http://localhost:3000`
-  (3.ª edición, la predeterminada), `/v1`, `/v2` y `/prototipo.html`. Si agregas una ruta, el
+  (prototipo 3D), `/panel` (3.ª edición, la predeterminada del panel), `/v1` y `/v2`. Si agregas una ruta, el
   servidor que ya estaba prendido no la conoce: reinícialo (ver `docs/11-servidor-local.md`).

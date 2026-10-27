@@ -33,11 +33,15 @@ test('las ediciones del panel responden, también con un punto al final', { time
   assert.ok(inicio, `El servidor no inició: ${errores}`);
   assert.equal(inicio.status, 200);
 
-  for (const ruta of ['/v1', '/v2', '/v3', '/prototipo.html', '/v3.', '/v2,']) {
+  // /index.html, /v2.html y /v3.html son los enlaces del selector «Edición 1 · 2 · 3».
+  for (const ruta of ['/panel', '/v1', '/v2', '/v3', '/index.html', '/v2.html', '/v3.html', '/prototipo.html', '/v3.', '/v2,']) {
     const r = await fetch(`${base}${ruta}`);
     assert.equal(r.status, 200, `${ruta} respondió ${r.status}`);
     assert.match(await r.text(), /<!doctype html>/i, `${ruta} no devolvió una página`);
   }
-  // La edición predeterminada en / es la 3.ª, «modo misión».
-  assert.match(await inicio.text(), /Modo misión/, '/ no abre la edición 3');
+  // En / se ve primero el prototipo; /panel y sus botones «Abrir panel» llevan a la 3.ª edición.
+  const portada = await inicio.text();
+  assert.match(portada, /<title>Zénit · Prototipo 3D<\/title>/, '/ no abre el prototipo');
+  assert.match(portada, /href="\/v3\.html\?intro=1"/, 'el prototipo no lleva al panel');
+  assert.match(await (await fetch(`${base}/panel`)).text(), /Modo misión/, '/panel no abre la edición 3');
 });

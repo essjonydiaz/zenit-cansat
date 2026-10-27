@@ -11,6 +11,8 @@
 //    npm start -- --puerto COM5      conecta directo al receptor en COM5
 //    npm run simular                 vuelo simulado (sin hardware)
 //    npm run replay -- logs/sesion_X.txt   repite una sesión guardada
+//    ... -- --red [--pin 1234]       deja ver el panel desde otros aparatos
+//                                    de la red; sus comandos piden el PIN
 //  Luego abrir http://localhost:3000
 // =============================================================================
 'use strict';
@@ -18,6 +20,9 @@
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
+const os = require('os');
+const net = require('net');
+const crypto = require('crypto');
 const { parseArgs } = require('util');
 const express = require('express');
 const { WebSocketServer } = require('ws');
@@ -37,15 +42,28 @@ const { values: args, positionals } = parseArgs({
     velocidad: { type: 'string', default: '1' },
     http: { type: 'string', default: '3000' },
     clave: { type: 'string', default: process.env.ZENIT_CLAVE || 'ZENIT' },
+    red: { type: 'boolean', default: false },
+    pin: { type: 'string', default: process.env.ZENIT_PIN },
   },
 });
 if (!args.replay && positionals[0]) args.replay = positionals[0];
+// Sin --red el servidor solo escucha en esta compu: nadie del WiFi de la cancha
+// puede abrir el panel ni mandar comandos. Con --red, los otros aparatos ven el
+// panel, pero para mandar comandos necesitan el PIN que se muestra al arrancar.
+const PIN = args.red ? (args.pin || String(crypto.randomInt(100000, 1000000))) : null;
 
 const ORDENES_PERMITIDAS = ['PING', 'BUZZER', 'CALIBRAR', 'CERRAR', 'DESACOPLAR'];
 const CARPETA_LOGS = path.join(__dirname, 'logs');
 
 // ------------------------------------------------------------- Servidor --
 const app = express();
+// Sin --red solo se acepta el nombre "localhost": así una página de internet
+// abierta en esta compu no puede hacerse pasar por el panel (DNS rebinding).
+const NOMBRES_LOCALES = ['localhost', '127.0.0.1', '[::1]'];
+app.use((req, res, next) => {
+  if (args.red || NOMBRES_LOCALES.includes(String(req.hostname).toLowerCase())) return next();
+  res.status(403).send('Abre el panel en http://localhost');
+});
 app.use(express.json());
 // Una URL copiada de un texto o de la terminal a veces trae el punto o la coma
 // de la oración ("…/v3."): se redirige a la ruta sin esa puntuación.
@@ -54,10 +72,12 @@ app.use((req, res, next) => {
   if (limpia && limpia !== req.path) return res.redirect(302, limpia);
   next();
 });
-// Ediciones del panel. La 3.ª («modo misión») es la predeterminada en /; las
-// otras siguen a la mano para compararlas (selector «Edición 1 · 2 · 3»).
+// En / se ve primero el prototipo 3D; sus botones «Abrir panel» llevan a la
+// 3.ª edición («modo misión»), que también está en /panel. Las otras ediciones
+// siguen a la mano para compararlas (selector «Edición 1 · 2 · 3»).
 const edicion = (archivo) => (req, res) => res.sendFile(path.join(__dirname, 'public', archivo));
-app.get('/', edicion('v3.html'));
+app.get('/', edicion('prototipo.html'));
+app.get('/panel', edicion('v3.html'));
 app.get('/v1', edicion('index.html'));
 app.get('/v2', edicion('v2.html'));
 app.get('/v3', edicion('v3.html'));
@@ -84,9 +104,19 @@ function difundir(obj) {
   wss.clients.forEach((c) => { if (c.readyState === 1) c.send(texto); });
 }
 
+// Si alguien cambia el código del servidor (git pull, una ruta nueva) y no lo
+// reinicia, las páginas nuevas darían "Cannot GET". El panel avisa en vez de eso.
+const ARRANQUE_MS = Date.now();
+function desactualizado() {
+  const carpetaSrc = path.join(__dirname, 'src');
+  const archivos = [__filename, ...fs.readdirSync(carpetaSrc).map((f) => path.join(carpetaSrc, f))];
+  return archivos.some((f) => { try { return fs.statSync(f).mtimeMs > ARRANQUE_MS; } catch { return false; } });
+}
+const mensajeEstado = () => ({ tipo: 'estado', fuente: infoFuente, desactualizado: desactualizado() });
+
 function avisarEstado(extra = {}) {
   infoFuente = { ...infoFuente, ...extra };
-  difundir({ tipo: 'estado', fuente: infoFuente });
+  difundir(mensajeEstado());
 }
 
 function alRecibirLinea(linea) {
@@ -115,11 +145,23 @@ async function usarFuente(nueva, info) {
 }
 
 wss.on('connection', (ws) => {
-  ws.send(JSON.stringify({ tipo: 'estado', fuente: infoFuente }));
+  ws.send(JSON.stringify(mensajeEstado()));
   ws.send(JSON.stringify({ tipo: 'historial', mensajes: historial }));
 });
 
 // ------------------------------------------------------------------ API --
+const esEstaCompu = (req) => ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress);
+// Lo que cambia algo (conectar, desconectar, comandos) solo entra como JSON, que
+// es como lo manda el panel: un formulario de otra página no puede mandarlo así.
+// Desde otro aparato de la red (--red) además se pide el PIN.
+app.post('/api/*', (req, res, next) => {
+  if (!req.is('application/json')) {
+    res.status(415).json({ ok: false, error: 'Solo se aceptan órdenes del panel' });
+  } else if (PIN && !esEstaCompu(req) && req.get('X-Zenit-Pin') !== PIN) {
+    res.status(401).json({ ok: false, pin: true, error: 'Falta el PIN de la estación (se ve en la terminal del servidor)' });
+  } else next();
+});
+
 app.get('/api/puertos', async (_req, res) => {
   try {
     res.json(await PuertoSerie.listar());
@@ -191,10 +233,37 @@ function errorServidor(error) {
 servidor.on('error', errorServidor);
 wss.on('error', errorServidor);
 
-servidor.listen(Number(args.http), async () => {
+function direccionesDeRed() {
+  return Object.values(os.networkInterfaces()).flat()
+    .filter((d) => d && d.family === 'IPv4' && !d.internal).map((d) => d.address);
+}
+
+// Un servidor viejo que escuchaba en toda la red puede seguir prendido en el
+// mismo puerto por IPv6 sin chocar con este: el navegador abriría ese y no este.
+function contestaEnIpv6(puerto) {
+  return new Promise((resolve) => {
+    const s = net.connect({ host: '::1', port: puerto });
+    s.once('connect', () => { s.destroy(); resolve(true); });
+    s.once('error', () => resolve(false));
+  });
+}
+
+contestaEnIpv6(Number(args.http)).then((ocupado) => {
+  if (ocupado) errorServidor({ code: 'EADDRINUSE' });
+  else servidor.listen(Number(args.http), args.red ? '0.0.0.0' : '127.0.0.1', alEscuchar);
+});
+
+async function alEscuchar() {
   console.log('==================================================');
   console.log('  ZÉNIT · Estación terrena');
   console.log(`  Abrir en el navegador:  http://localhost:${args.http}`);
+  console.log(`  Panel directo:          http://localhost:${args.http}/panel`);
+  if (args.red) {
+    direccionesDeRed().forEach((ip) => console.log(`  Desde otro aparato:     http://${ip}:${args.http}`));
+    console.log(`  PIN para comandos desde otro aparato: ${PIN}`);
+  } else {
+    console.log('  Solo en esta compu (para verlo en celulares: --red)');
+  }
   console.log('==================================================');
   try {
     if (args.sim) {
@@ -210,7 +279,7 @@ servidor.listen(Number(args.http), async () => {
     console.error(`[error] ${e.message}`);
     avisarEstado({ conectado: false, error: e.message });
   }
-});
+}
 
 process.on('SIGINT', () => {
   if (fuente) fuente.detener();

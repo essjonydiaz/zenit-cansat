@@ -81,7 +81,7 @@ npm run simular
 ```
 
 - `npm test` debe terminar con `# pass 8` y `# fail 0`.
-- `npm run simular` → abre **http://localhost:3000** y mira un vuelo simulado completo
+- `npm run simular` → abre **http://localhost:3000/panel** y mira un vuelo simulado completo
   (eventos: Ascenso, Liberación, Desacople, Autogiro, Aterrizaje). Detenlo con `Ctrl+C`.
 
 ### A5. Análisis del vuelo (Python)
@@ -153,7 +153,7 @@ Objetivo: comprobar que los radios funcionan antes de cablear sensores.
    cd estacion-terrena
    npm start
    ```
-   Abre http://localhost:3000 → elige el puerto COM del receptor → **Conectar**.
+   Abre http://localhost:3000/panel → elige el puerto COM del receptor → **Conectar**.
 4. Debe verse el vuelo simulado **llegando por radio** (Radio en verde con su RSSI en dBm).
    La pantalla del receptor cuenta los paquetes `RX:`.
 

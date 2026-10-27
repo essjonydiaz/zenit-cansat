@@ -84,14 +84,13 @@ cd estacion-terrena
 npm install
 npm run simular
 ```
-Abrir **http://localhost:3000** → se ve un vuelo completo: ascenso, liberación, desacople a
-200 m, autogiro, aterrizaje, con el CanSat en 3D siguiendo la orientación. Se pueden probar
-los botones de comandos. Esa es la 3.ª edición del panel («modo misión»); con el selector
-«Edición 1 · 2 · 3» del encabezado se cambia a las otras (`/v1`, `/v2`) para compararlas.
-
-Para presentar el proyecto: **http://localhost:3000/prototipo.html**, un recorrido 3D con
-scroll (portada de vidrio que se rompe, vista por dentro, desacople y autogiro). Todo
-funciona sin internet.
+Abrir **http://localhost:3000** → primero se ve el prototipo: un recorrido 3D con scroll
+(portada de vidrio que se rompe, vista por dentro, desacople y autogiro). Su botón
+**«Abrir panel»** lleva al panel en vivo (también en **http://localhost:3000/panel**): un
+vuelo completo con ascenso, liberación, desacople a 200 m, autogiro y aterrizaje, con el
+CanSat en 3D siguiendo la orientación, y se pueden probar los botones de comandos. Esa es la
+3.ª edición del panel («modo misión»); con el selector «Edición 1 · 2 · 3» del encabezado se
+cambia a las otras (`/v1`, `/v2`) para compararlas. Todo funciona sin internet.
     
 Deja esa terminal abierta mientras usas el panel. Para detenerlo y liberar el puerto,
 presiona **Ctrl+C** en esa misma terminal. Si aparece «puerto 3000 ocupado», ya hay

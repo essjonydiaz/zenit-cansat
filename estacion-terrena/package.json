@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "simular": "node server.js --sim",
+    "simular": "node --watch server.js --sim",
     "replay": "node server.js --replay",
     "test": "node --test"
   },

@@ -6,21 +6,21 @@
     "semantic_hash": "92203d190b1561a98a9e47cdac7bab3a"
   },
   "estacion-terrena/package.json": {
-    "mtime": 1793064573.7872465,
-    "seen": 1793066129.5385845,
-    "ast_hash": "91a018760ca23dcacf8e7929d9d4bd2a",
+    "mtime": 1793079878.2113764,
+    "seen": 1793080262.5185034,
+    "ast_hash": "cc74b8cb9d99ae292d167f3a62677514",
     "semantic_hash": ""
   },
   "estacion-terrena/public/app.js": {
-    "mtime": 1793072048.015673,
-    "seen": 1793072085.8826275,
-    "ast_hash": "6a49afe446d837643f5eaa8098e2b6df",
+    "mtime": 1793080037.7117116,
+    "seen": 1793080262.5185034,
+    "ast_hash": "15a14ed6bc5b4f43176ed954d4a566cc",
     "semantic_hash": ""
   },
   "estacion-terrena/server.js": {
-    "mtime": 1793078687.9326,
-    "seen": 1793078830.9455621,
-    "ast_hash": "25744e9746c2d6a81e9cba35bb25dd46",
+    "mtime": 1793081228.4678009,
+    "seen": 1793081311.0911143,
+    "ast_hash": "08a84044c52fac0dceb5c1ed3b8596ae",
     "semantic_hash": ""
   },
   "estacion-terrena/src/fuentes.js": {
@@ -354,21 +354,21 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1793078800.8090436,
-    "seen": 1793078830.9455621,
-    "ast_hash": "b8a48c6390db2ebe8c106f4bd9dd1e32",
+    "mtime": 1793081255.315605,
+    "seen": 1793081311.0911143,
+    "ast_hash": "676cef9df23bd2a8aa13d5de067088be",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1793078801.6411474,
-    "seen": 1793078830.9455621,
-    "ast_hash": "f1e5874c1d378d7f7b2c0279029fb435",
+    "mtime": 1793081256.1196413,
+    "seen": 1793081311.0911143,
+    "ast_hash": "6ab9e065af6d25706a786325e2b62999",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1793078802.4614801,
-    "seen": 1793078830.9455621,
-    "ast_hash": "4bb2b00a76e168106a095f698fe07f8f",
+    "mtime": 1793081253.6906524,
+    "seen": 1793081311.0911143,
+    "ast_hash": "b3a61f78f45ba55ff1749bc9fe1bdc40",
     "semantic_hash": ""
   },
   "docs/01-arquitectura.md": {
@@ -438,9 +438,9 @@
     "semantic_hash": ""
   },
   "estacion-terrena/public/index.html": {
-    "mtime": 1793078691.273895,
-    "seen": 1793078830.9455621,
-    "ast_hash": "987198d97bd9a8b6a5ba1dfb202e1afe",
+    "mtime": 1793080047.2947707,
+    "seen": 1793080262.5185034,
+    "ast_hash": "9fb3c681ac4b99f0d4751ab674524f5b",
     "semantic_hash": ""
   },
   "estacion-terrena/test/datos/salida_firmware_sim.txt": {
@@ -462,9 +462,9 @@
     "semantic_hash": ""
   },
   "docs/09-guia-primera-prueba.md": {
-    "mtime": 1792544799.2934358,
-    "seen": 1793066129.5385845,
-    "ast_hash": "a21f0b3b400f9523cbef69b417e47d5c",
+    "mtime": 1793081269.3575242,
+    "seen": 1793081311.0911143,
+    "ast_hash": "829f685a3fcae0377cedc9e6a4af5155",
     "semantic_hash": ""
   },
   "estacion-terrena/public/cansat3d.js": {
@@ -510,15 +510,15 @@
     "semantic_hash": ""
   },
   "PRODUCT.md": {
-    "mtime": 1793078799.1665347,
-    "seen": 1793078830.9455621,
-    "ast_hash": "e27831cb76301689f35a252215369e90",
+    "mtime": 1793081267.4248614,
+    "seen": 1793081311.0911143,
+    "ast_hash": "45069e4206c6847d03a3e55335e92ad6",
     "semantic_hash": ""
   },
   "docs/10-pendientes-del-equipo.md": {
-    "mtime": 1792547003.535263,
-    "seen": 1793066129.5385845,
-    "ast_hash": "50a787136b632604566b4e958c2adf28",
+    "mtime": 1793080256.7453864,
+    "seen": 1793080262.5185034,
+    "ast_hash": "4e935aabdfd5c39dec9d6bc71ab5edb0",
     "semantic_hash": ""
   },
   "docs/decisiones/0001-recursos-locales-sin-internet.md": {
@@ -540,9 +540,9 @@
     "semantic_hash": ""
   },
   "estacion-terrena/public/prototipo.html": {
-    "mtime": 1793071358.962107,
-    "seen": 1793072085.8826275,
-    "ast_hash": "2a5d5debd2f985a10bd36dd1d8a77556",
+    "mtime": 1793081227.3729584,
+    "seen": 1793081311.0911143,
+    "ast_hash": "f10d6b4efd22605ced114c2fd6a7e4e4",
     "semantic_hash": ""
   },
   "docs/decisiones/0003-modelo-3d-procedural-ilustrativo.md": {
@@ -558,9 +558,9 @@
     "semantic_hash": ""
   },
   "estacion-terrena/public/v2.html": {
-    "mtime": 1793078690.4273906,
-    "seen": 1793078830.9455621,
-    "ast_hash": "4b165a48f29ed006fd2e00c3df3cc2b4",
+    "mtime": 1793080047.321769,
+    "seen": 1793080262.5185034,
+    "ast_hash": "e4fcf69e68196403f2c6f426c8a9566a",
     "semantic_hash": ""
   },
   "estacion-terrena/public/mision3d.js": {
@@ -576,21 +576,33 @@
     "semantic_hash": ""
   },
   "estacion-terrena/public/v3.html": {
-    "mtime": 1793078689.591168,
-    "seen": 1793078830.9455621,
-    "ast_hash": "f202b7f19e6fee84e571419ab911d3b7",
+    "mtime": 1793080047.3422296,
+    "seen": 1793080262.5185034,
+    "ast_hash": "790b00ad4ddeb434bcb537fc2bc29c1d",
     "semantic_hash": ""
   },
   "estacion-terrena/test/rutas.test.js": {
-    "mtime": 1793078703.754452,
-    "seen": 1793078830.9455621,
-    "ast_hash": "9febcbb6af5e56eb9b9e1b9bbe024c9b",
+    "mtime": 1793081230.1037693,
+    "seen": 1793081311.0911143,
+    "ast_hash": "ffd548d077ff7982399272ddf3ab0da0",
     "semantic_hash": ""
   },
   "docs/11-servidor-local.md": {
-    "mtime": 1793078804.8838131,
-    "seen": 1793078830.9455621,
-    "ast_hash": "6c682d297c4b4aa913f5b7d8946b4cca",
+    "mtime": 1793081272.4734035,
+    "seen": 1793081311.0911143,
+    "ast_hash": "320889d354fd80a847a6d3bebe3201b7",
+    "semantic_hash": ""
+  },
+  "estacion-terrena/public/diagnostico.js": {
+    "mtime": 1793080133.6965983,
+    "seen": 1793080262.5185034,
+    "ast_hash": "0c6f83921a7ef12626ead4e2c7172ebb",
+    "semantic_hash": ""
+  },
+  "estacion-terrena/test/seguridad.test.js": {
+    "mtime": 1793079915.6297734,
+    "seen": 1793080262.5185034,
+    "ast_hash": "1742ce84d19633a829aec15a1ed334ae",
     "semantic_hash": ""
   }
 }

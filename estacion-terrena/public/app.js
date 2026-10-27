@@ -99,10 +99,15 @@ let erroresPanel = 0;
 // Cada alerta tiene un id. Las "de condición" se quitan solas cuando la
 // condición deja de cumplirse; las "persistentes" esperan el botón Entendido.
 const alertas = new Map();
+// Todo lo que pasó en la sesión, aunque la alerta ya se haya quitado sola:
+// lo usa el reporte del botón «Diagnóstico» (diagnostico.js).
+const historialAlertas = [];
 function alerta(id, nivel, titulo, detalle = '', persistente = false) {
   const a = alertas.get(id);
   if (a) { a.detalle = detalle; a.titulo = titulo; a.nivel = nivel; return; }
   alertas.set(id, { id, nivel, titulo, detalle, pc: ahora(), ack: false, persistente });
+  historialAlertas.push({ pc: ahora(), nivel, titulo, detalle });
+  if (historialAlertas.length > 300) historialAlertas.shift();
   S.sucio = true;
 }
 function condicion(id, activa, nivel, titulo, detalle) {
@@ -1083,13 +1088,20 @@ setInterval(() => {
 window.addEventListener('resize', () => { S.sucio = true; });
 
 // ------------------------------------------------------------ conexión ----
+// El servidor avisa si su código cambió después de prenderlo (git pull, una ruta
+// nueva): sin reiniciarlo, alguna página daría "Cannot GET".
+let servidorViejo = false;
+function avisarServidorViejo() {
+  condicion('servidor-viejo', servidorViejo, 'aviso', 'Reinicia el servidor',
+    'Su código cambió después de prenderlo y puede faltar alguna página. En su terminal: Ctrl+C y otra vez npm run simular (o npm start).');
+}
 function conectarWs() {
   const ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`);
   ws.onopen = () => { wsAbierto = true; };
   ws.onmessage = (ev) => {
     const m = JSON.parse(ev.data);
-    if (m.tipo === 'estado') { fuente = m.fuente; S.sucio = true; }
-    if (m.tipo === 'reinicio') { S = estadoInicial(); alertas.clear(); }
+    if (m.tipo === 'estado') { fuente = m.fuente; S.sucio = true; servidorViejo = !!m.desactualizado; avisarServidorViejo(); }
+    if (m.tipo === 'reinicio') { S = estadoInicial(); alertas.clear(); avisarServidorViejo(); }
     if (m.tipo === 'historial') { S = estadoInicial(); m.mensajes.forEach(procesar); }
     if (m.tipo === 'linea') procesar(m.msg);
   };
@@ -1101,9 +1113,19 @@ function conectarWs() {
 }
 conectarWs();
 
-async function post(url, cuerpo) {
-  const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo || {}) });
+// Desde otro aparato de la red (servidor con --red) las órdenes piden el PIN
+// que el servidor muestra en su terminal. Desde la compu del servidor no.
+function leerPin() { try { return sessionStorage.getItem('zenit-pin') || ''; } catch { return ''; } }
+async function post(url, cuerpo, reintento = false) {
+  const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Zenit-Pin': leerPin() }, body: JSON.stringify(cuerpo || {}) });
   const j = await r.json().catch(() => ({}));
+  if (r.status === 401 && j.pin && !reintento) {
+    const pin = prompt('PIN de la estación terrena (se ve en la terminal del servidor):');
+    if (pin) {
+      try { sessionStorage.setItem('zenit-pin', pin.trim()); } catch { /* sin almacenamiento */ }
+      return post(url, cuerpo, true);
+    }
+  }
   if (!r.ok) throw new Error(j.error || r.statusText);
   return j;
 }

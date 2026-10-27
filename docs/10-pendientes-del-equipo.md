@@ -214,6 +214,7 @@ software supone, hay que avisar antes de la primera prueba para cambiarlo.
 | ¿Quién se queda con la segunda Heltec (receptor de tierra) y la laptop el día del lanzamiento? | Control y programación |
 | ¿Cuándo podemos hacer la reunión de la primera prueba? | Sin fecha |
 | ¿Quién corrige el documento PDR con la tabla de la sección 9? | Sin asignar |
+| ¿Cómo protegemos los comandos por radio? Hoy la clave es `ZENIT`, está en GitHub y viaja sin cifrar: otro equipo con LoRa a 915 MHz podría mandar `DESACOPLAR`, que la primaria acepta en cualquier fase. Opciones: **(a)** aceptar el desacople manual solo después de la liberación; **(b)** cambiar la clave por una que no se suba a GitHub; **(c)** las dos | La primaria obedece `DESACOPLAR` en cualquier fase si la clave coincide (`main.cpp`, `procesarComando`). Cualquier opción cambia el firmware (y la (b) también la estación) |
 
 ## 9. Correcciones pendientes en el documento PDR
 

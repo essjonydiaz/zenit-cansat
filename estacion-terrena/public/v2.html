@@ -161,9 +161,9 @@
   </a>
   <nav class="ediciones" aria-label="Edición del panel">
     <span class="ediciones-etiqueta">Edición</span>
-    <a href="/v1" title="Edición 1: panel clásico">1</a>
-    <a href="/v2" aria-current="page" title="Edición 2">2</a>
-    <a href="/" title="Edición 3: modo misión (predeterminada)">3</a>
+    <a href="/index.html" title="Edición 1: panel clásico">1</a>
+    <a href="/v2.html" aria-current="page" title="Edición 2">2</a>
+    <a href="/v3.html" title="Edición 3: modo misión (predeterminada)">3</a>
   </nav>
 
   <div class="tema" role="group" aria-label="Tema">
@@ -401,6 +401,7 @@
           <option value="E">Eventos</option><option value="INFO">INFO</option>
         </select>
         <label class="casilla"><input id="autoscroll" type="checkbox" checked> Autoscroll</label>
+        <button id="btnDiagnostico" class="btn chico diag-boton" title="Qué está fallando y qué revisar (se puede descargar)"><svg class="ico"><use href="#i-alerta"/></svg>Diagnóstico</button>
         <button id="btnLimpiar" class="btn chico">Limpiar</button>
       </div>
     </div>
@@ -417,6 +418,7 @@
 </footer>
 
 <script src="app.js"></script>
+<script src="diagnostico.js"></script>
 <script src="v2.js"></script>
 </body>
 </html>
