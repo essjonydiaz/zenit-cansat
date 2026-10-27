@@ -42,6 +42,16 @@ function svg(tag, attrs = {}, texto) {
   return e;
 }
 const icono = (id) => `<svg class="ico"><use href="#${id}"/></svg>`;
+// El panel se dibuja cada 250 ms: reemplazar el HTML igual reinicia las
+// animaciones (el pulso de la cadena, la entrada de las alertas) y se ve
+// trabado. Solo se toca el DOM cuando el contenido cambió de verdad.
+const htmlPrevio = new WeakMap();
+function ponerHtml(el, html) {
+  if (htmlPrevio.get(el) === html) return false;
+  htmlPrevio.set(el, html);
+  el.innerHTML = html;
+  return true;
+}
 
 // ------------------------------------------------------------------ tema --
 let graficas = null;
@@ -393,18 +403,24 @@ function evaluarAlertas(c) {
 // --------------------------------------------------------------- dibujo ---
 function dibujarCadena(c) {
   const ol = $('cadena');
-  const eslabonConFoco = ol.contains(document.activeElement) ? document.activeElement.dataset.id : null;
-  ol.innerHTML = ESLABONES.map((e) => {
+  // Los <li> se crean una vez y se reutilizan: así el pulso que viaja entre
+  // eslabones (::before) no se reinicia en cada dibujo.
+  if (ol.children.length !== ESLABONES.length) {
+    ol.innerHTML = ESLABONES.map((e) => `<li class="eslabon" data-id="${e.id}" role="button" tabindex="0" title="Ver diagnóstico y qué revisar"></li>`).join('');
+  }
+  ESLABONES.forEach((e, i) => {
     const s = c[e.id];
+    const li = ol.children[i];
     const marca = { ok: '✓', aviso: '⚠', critico: '✕', gris: '' }[s.estado];
-    return `<li class="eslabon ${s.estado}${cadenaSel === e.id ? ' seleccionado' : ''}" data-id="${e.id}" role="button" tabindex="0" aria-expanded="${cadenaSel === e.id}" title="Ver diagnóstico y qué revisar">
-      ${icono(e.icono)}<div><b>${e.nombre}<span class="marca-est">${marca}</span></b><small>${escapar(s.sub)}</small></div></li>`;
-  }).join('');
-  if (eslabonConFoco) ol.querySelector(`[data-id="${eslabonConFoco}"]`)?.focus({ preventScroll: true });
+    const clase = `eslabon ${s.estado}${cadenaSel === e.id ? ' seleccionado' : ''}`;
+    if (li.className !== clase) li.className = clase;
+    li.setAttribute('aria-expanded', String(cadenaSel === e.id));
+    ponerHtml(li, `${icono(e.icono)}<div><b>${e.nombre}<span class="marca-est">${marca}</span></b><small>${escapar(s.sub)}</small></div>`);
+  });
   const det = $('cadenaDetalle');
   if (cadenaSel && c[cadenaSel]) {
     det.hidden = false;
-    det.innerHTML = `<b>${ESLABONES.find((e) => e.id === cadenaSel).nombre}:</b> ${c[cadenaSel].ayuda}`;
+    ponerHtml(det, `<b>${ESLABONES.find((e) => e.id === cadenaSel).nombre}:</b> ${c[cadenaSel].ayuda}`);
   } else det.hidden = true;
 }
 function seleccionarEslabon(li) {
@@ -436,11 +452,11 @@ function dibujarSalud(c) {
     ['Baliza', 'i-baliza', !Number.isFinite(edadSec) ? 'gris' : (edadSec > 15 ? 'critico' : (edadSec > 5 || (S.B && S.B.fix === 0) ? 'aviso' : 'ok'))],
   ];
   const texto = { ok: '✓ OK', aviso: '⚠ AVISO', critico: '✕ FALLA', gris: '—' };
-  $('salud').innerHTML = tiles.map(([n, ic, e]) => {
+  ponerHtml($('salud'), tiles.map(([n, ic, e]) => {
     // Sin enlace, el último estado conocido ya no es confiable: se muestra en gris.
     const sinEnlace = e !== 'gris' && (n === 'Baliza' ? c.sec.estado === 'gris' : viejo);
     return `<div class="mosaico ${sinEnlace ? 'gris' : e}">${icono(ic)}<b>${n}</b><span>${sinEnlace ? 'sin datos' : texto[e]}</span></div>`;
-  }).join('');
+  }).join(''));
 }
 
 function dibujarBateria() {
@@ -463,13 +479,23 @@ function dibujarAlertas() {
     const p = { critico: 0, aviso: 1, info: 2 };
     return (a.ack - b.ack) || (p[a.nivel] - p[b.nivel]) || (b.pc - a.pc);
   });
-  $('alertas').innerHTML = lista.map((a) => `
-    <li class="alerta ${a.nivel}${a.ack ? ' reconocida' : ''}">
-      ${icono('i-alerta')}
+  // Cada alerta conserva su <li> mientras exista: la animación de entrada corre
+  // una sola vez y los contadores ("hace N s") cambian sin que parpadee.
+  const ul = $('alertas');
+  const previas = new Map([...ul.children].map((li) => [li.dataset.id, li]));
+  lista.forEach((a, i) => {
+    let li = previas.get(a.id);
+    if (li) previas.delete(a.id);
+    else { li = document.createElement('li'); li.dataset.id = a.id; }
+    const clase = `alerta ${a.nivel}${a.ack ? ' reconocida' : ''}`;
+    if (li.className !== clase) li.className = clase;
+    ponerHtml(li, `${icono('i-alerta')}
       <b><span>${escapar(a.titulo)}</span><time>${horaPc(a.pc)}</time></b>
       <p>${escapar(a.detalle)}</p>
-      ${a.ack ? '' : `<button class="btn chico" data-ack="${escapar(a.id)}">Entendido</button>`}
-    </li>`).join('');
+      ${a.ack ? '' : `<button class="btn chico" data-ack="${escapar(a.id)}">Entendido</button>`}`);
+    if (ul.children[i] !== li) ul.insertBefore(li, ul.children[i] || null);
+  });
+  previas.forEach((li) => li.remove());
   const activas = lista.filter((a) => !a.ack);
   const crit = activas.filter((a) => a.nivel === 'critico').length;
   const avi = activas.filter((a) => a.nivel === 'aviso').length;
@@ -914,8 +940,8 @@ function dibujarRequisitos(c) {
   }
   const marca = { ok: '✓', pendiente: '', falla: '✕' };
   $('requisitos').classList.toggle('largo', items.length > 8);
-  $('requisitos').innerHTML = items.map((i) =>
-    `<li class="${i.estado}" title="${escapar(i.texto)}"><span class="m">${marca[i.estado]}</span><span class="t">${escapar(i.texto)}</span><span class="v">${escapar(i.valor)}</span></li>`).join('');
+  ponerHtml($('requisitos'), items.map((i) =>
+    `<li class="${i.estado}" title="${escapar(i.texto)}"><span class="m">${marca[i.estado]}</span><span class="t">${escapar(i.texto)}</span><span class="v">${escapar(i.valor)}</span></li>`).join(''));
   const circ = 2 * Math.PI * 42;
   const arco = $('anilloArco');
   arco.style.strokeDasharray = `${circ}`;
@@ -994,13 +1020,13 @@ function dibujarEventos() {
   HITOS.forEach((h, i) => { if (S.hitos[h] !== undefined) ultimo = i; });
   const pos = (i) => 5 + (i / (HITOS.length - 1)) * 90;  // margen para que las etiquetas no se corten
   const clases = { LIBERACION: 'lib', DESACOPLE: 'des', AUTOGIRO: 'des', ATERRIZAJE: 'ate', POST_ATERRIZAJE_OK: 'ate' };
-  cont.innerHTML = `<div class="base" style="left:${pos(0)}%;right:${100 - pos(HITOS.length - 1)}%"></div><div class="avance" style="left:${pos(0)}%;width:${ultimo < 0 ? 0 : pos(ultimo) - pos(0)}%"></div>` +
+  ponerHtml(cont, `<div class="base" style="left:${pos(0)}%;right:${100 - pos(HITOS.length - 1)}%"></div><div class="avance" style="left:${pos(0)}%;width:${ultimo < 0 ? 0 : pos(ultimo) - pos(0)}%"></div>` +
     HITOS.map((h, i) => {
       const ocurrido = S.hitos[h] !== undefined;
       const cls = `hito-ev ${ocurrido ? clases[h] || '' : ''}`;
       const estilo = ocurrido ? '' : 'opacity:.45;';
       return `<div class="${cls}" style="left:${pos(i)}%;${estilo}"><span class="et">${NOMBRE_HITO[h]}</span><span class="tt">${ocurrido ? mmss(S.hitos[h] - t0) : '--:--'}</span><span class="palo"></span><span class="punto"${ocurrido ? '' : ` style="background:${css('--gris')}"`}></span></div>`;
-    }).join('');
+    }).join(''));
 }
 
 let consolaFirma = '';

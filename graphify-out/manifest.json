@@ -12,15 +12,15 @@
     "semantic_hash": ""
   },
   "estacion-terrena/public/app.js": {
-    "mtime": 1793064814.726035,
-    "seen": 1793066129.5385845,
-    "ast_hash": "f89256987aa8efaf7ef50341aaee05a1",
+    "mtime": 1793072048.015673,
+    "seen": 1793072085.8826275,
+    "ast_hash": "6a49afe446d837643f5eaa8098e2b6df",
     "semantic_hash": ""
   },
   "estacion-terrena/server.js": {
-    "mtime": 1793064599.7259624,
-    "seen": 1793066129.5385845,
-    "ast_hash": "86cfdfc0b7a7bad1ea8df841698b0753",
+    "mtime": 1793071606.493515,
+    "seen": 1793072085.8826275,
+    "ast_hash": "f2b50e7e13d49c3f8a56a3e2c104d2ca",
     "semantic_hash": ""
   },
   "estacion-terrena/src/fuentes.js": {
@@ -354,9 +354,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1793067006.6600788,
-    "seen": 1793067134.9492273,
-    "ast_hash": "7f8f4e4835126a346266a474a8df7231",
+    "mtime": 1793071606.7394915,
+    "seen": 1793072085.8826275,
+    "ast_hash": "6979521f7b1027cfd3cbf6b02ea583d3",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -474,15 +474,15 @@
     "semantic_hash": ""
   },
   "estacion-terrena/public/intro.js": {
-    "mtime": 1793069071.3429115,
-    "seen": 1793069118.290619,
-    "ast_hash": "a151243171a0241291bf2cc858d83dd7",
+    "mtime": 1793071375.210018,
+    "seen": 1793072085.8826275,
+    "ast_hash": "6bc4c755c11359df54aaa6b27c8d6648",
     "semantic_hash": ""
   },
   "estacion-terrena/public/prototipo.js": {
-    "mtime": 1793069369.0460744,
-    "seen": 1793069826.4660213,
-    "ast_hash": "b600bc0c154a563ea513ac851b82551b",
+    "mtime": 1793070138.6459925,
+    "seen": 1793072085.8826275,
+    "ast_hash": "838b358d282b96836b4194da264706b2",
     "semantic_hash": ""
   },
   "estacion-terrena/public/visor3d.js": {
@@ -498,9 +498,9 @@
     "semantic_hash": ""
   },
   "DESIGN.md": {
-    "mtime": 1793069372.309074,
-    "seen": 1793069826.4660213,
-    "ast_hash": "ab80995467fb446d5d9081ead441fa10",
+    "mtime": 1793070036.6736014,
+    "seen": 1793072085.8826275,
+    "ast_hash": "394f450154c617f6128009510e1f3a94",
     "semantic_hash": ""
   },
   "GRAPHIFY.md": {
@@ -510,9 +510,9 @@
     "semantic_hash": ""
   },
   "PRODUCT.md": {
-    "mtime": 1793067006.722625,
-    "seen": 1793067134.9492273,
-    "ast_hash": "133e41cb633605ad428f7de507103afe",
+    "mtime": 1793071606.9580796,
+    "seen": 1793072085.8826275,
+    "ast_hash": "fc6352bedfe254b1e0206aacc4388f81",
     "semantic_hash": ""
   },
   "docs/10-pendientes-del-equipo.md": {
@@ -540,15 +540,27 @@
     "semantic_hash": ""
   },
   "estacion-terrena/public/prototipo.html": {
-    "mtime": 1793069368.9725423,
-    "seen": 1793069826.4660213,
-    "ast_hash": "7b4b49a9cf35d14004c712a9c59b99d4",
+    "mtime": 1793071358.962107,
+    "seen": 1793072085.8826275,
+    "ast_hash": "2a5d5debd2f985a10bd36dd1d8a77556",
     "semantic_hash": ""
   },
   "docs/decisiones/0003-modelo-3d-procedural-ilustrativo.md": {
     "mtime": 1793066991.4214995,
     "seen": 1793067134.9492273,
     "ast_hash": "ee4e919f7ae5cedf9262887e0ba6651c",
+    "semantic_hash": ""
+  },
+  "estacion-terrena/public/v2.js": {
+    "mtime": 1793071606.2603867,
+    "seen": 1793072085.8826275,
+    "ast_hash": "01662d27d5acb2ca3c0ed772dc06ae7a",
+    "semantic_hash": ""
+  },
+  "estacion-terrena/public/v2.html": {
+    "mtime": 1793071605.7973714,
+    "seen": 1793072085.8826275,
+    "ast_hash": "bd7fffd569d589bb0ecfe7f9d924b523",
     "semantic_hash": ""
   }
 }
