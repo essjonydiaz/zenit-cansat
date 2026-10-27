@@ -1,0 +1,136 @@
+/* =============================================================================
+   Tercera edición del panel: "modo misión" (v3.html)
+   Se carga después de base.css y estilos.css; solo agrega el escenario 3D a
+   pantalla completa, el HUD de vidrio encima y reacomoda el panel de abajo.
+   ========================================================================== */
+
+/* El encabezado (pegajoso desde estilos.css) flota sobre la escena.
+   --v3-encabezado lo mide v3.js: a menos de 1450 px se parte en dos renglones. */
+.v3 .meta, .v3 .lema-final { display: none; }
+.v3 .lema { display: block; }          /* bloque, para que el «…» recorte y no se encime */
+.v3 .enlace-edicion { font-size: 12px; padding: 5px 12px; white-space: nowrap; }
+
+/* ------------------------------------------------------------ escenario -- */
+.escenario {
+  position: relative;
+  height: 100vh; min-height: 640px;
+  margin-top: calc(-1 * var(--v3-encabezado, 78px));   /* la escena pasa por debajo del encabezado */
+  overflow: hidden;
+  background: radial-gradient(120% 80% at 50% 100%, #10264f, #03060c 70%);
+}
+.escena-mision { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.escena-espera { position: absolute; left: 50%; top: 45%; transform: translateX(-50%); color: var(--tenue); }
+
+/* ------------------------------------------------------------------ HUD -- */
+.hud {
+  position: absolute; inset: 0;
+  padding: calc(var(--v3-encabezado, 78px) + 20px) 16px 16px;
+  display: grid; gap: 14px;
+  grid-template-columns: minmax(250px, 300px) minmax(0, 1fr) minmax(250px, 320px);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "fase  .     sig"
+    "izq   .     der"
+    "linea linea linea";
+  pointer-events: none;
+}
+.hud > * { pointer-events: auto; min-width: 0; }
+.vidrio {
+  background: rgba(6, 11, 22, 0.58);
+  border: 1px solid rgba(160, 190, 255, 0.16);
+  border-radius: var(--r-lg);
+  box-shadow: 0 20px 50px -24px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(220, 232, 255, 0.08);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+}
+:root[data-tema="claro"] .vidrio { background: rgba(255, 255, 255, 0.86); border-color: var(--borde); }
+.hud-etiqueta { font: 700 10.5px/1 var(--f-display); font-stretch: 118%; letter-spacing: 0.18em; text-transform: uppercase; color: var(--tenue); }
+
+.hud-fase { grid-area: fase; align-self: start; display: grid; gap: 6px; padding: 14px 18px; }
+.hud-fase-nombre { font: 800 30px/1.05 var(--f-display); font-stretch: 112%; letter-spacing: -0.01em; color: #fff; display: flex; align-items: center; gap: 10px; }
+.hud-fase-nombre::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--fase-color, var(--gris)); box-shadow: 0 0 0 4px color-mix(in srgb, var(--fase-color, var(--gris)) 30%, transparent), 0 0 18px var(--fase-color, transparent); flex: none; }
+:root[data-tema="claro"] .hud-fase-nombre { color: var(--texto); }
+.hud-fila { display: flex; align-items: baseline; gap: 10px; }
+.hud-reloj { font-size: 26px; font-weight: 700; color: var(--cian); }
+body[data-fase="0"] { --fase-color: var(--f-prevuelo); }
+body[data-fase="1"] { --fase-color: var(--f-ascenso); }
+body[data-fase="2"] { --fase-color: var(--f-caida); }
+body[data-fase="3"] { --fase-color: var(--f-autogiro); }
+body[data-fase="4"] { --fase-color: var(--f-aterrizado); }
+
+.hud-siguiente { grid-area: sig; align-self: start; display: grid; gap: 6px; padding: 14px 18px; }
+.hud-siguiente strong { font: 700 19px/1.2 var(--f-display); font-stretch: 106%; color: var(--texto); }
+.hud-barra { display: block; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
+.hud-barra i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--cian), var(--azul)); border-radius: 4px; transition: width 0.6s var(--suave-salida); }
+.hud-detalle { font-size: 12.5px; color: var(--suave); }
+
+/* Altímetro y velocímetro: las tarjetas del panel, transparentes sobre el vidrio */
+.hud-izq { grid-area: izq; align-self: center; }
+.hud-der { grid-area: der; align-self: center; display: grid; gap: 14px; }
+.hud .tarjeta.instrumento { padding: 12px 14px; }
+.hud .tarjeta.instrumento:not(.vidrio) { background: transparent; border: 0; box-shadow: none; }
+.hud .num.enorme { font-size: 44px; }
+.hud .altimetro { grid-template-columns: 120px minmax(0, 1fr); }
+.hud #cinta { height: 220px; }
+.hud .hud-angulos { padding: 12px 16px; }
+.hud .hud-angulos .angulos { grid-template-columns: repeat(3, 1fr); text-align: center; gap: 0 8px; }
+.hud .hud-angulos dt { grid-row: 1; }
+.hud .hud-angulos dd { grid-row: 2; font-size: 24px; margin: 0; }
+
+/* Línea de eventos a lo ancho */
+.hud-linea { grid-area: linea; padding: 10px 26px 4px; }
+.hud .linea-tiempo { margin: 0 10px; }
+
+.hud-bajar {
+  position: absolute; right: 16px; bottom: 112px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.06em; color: var(--suave); text-decoration: none;
+  padding: 6px 14px; border-radius: 999px; background: rgba(6, 11, 22, 0.5); border: 1px solid rgba(160, 190, 255, 0.16);
+  transition: color 0.2s, background-color 0.2s;
+}
+.hud-bajar:hover { color: #fff; background: rgba(47, 107, 255, 0.35); }
+:root[data-tema="claro"] .hud-bajar { color: var(--texto); background: rgba(255, 255, 255, 0.86); border-color: var(--borde); }
+:root[data-tema="claro"] .hud-bajar:hover { color: #fff; background: var(--azul); }
+
+/* Anuncio grande de cada momento clave (LIBERACIÓN, DESACOPLE…) */
+.hud-anuncio {
+  position: absolute; left: 50%; top: 24%; transform: translateX(-50%);
+  display: grid; justify-items: center; gap: 4px; text-align: center;
+  pointer-events: none !important; opacity: 0;
+}
+.hud-anuncio.visible { animation: anuncio 3.6s var(--suave-salida) both; }
+.hud-anuncio b { font: 800 clamp(34px, 5vw, 72px)/1 var(--f-display); font-stretch: 125%; letter-spacing: 0.06em; color: #fff; text-shadow: 0 0 40px var(--anuncio-color, var(--azul)); }
+.hud-anuncio span { font: 600 16px/1.3 var(--f-datos); color: var(--azul-brillo); letter-spacing: 0.04em; }
+@keyframes anuncio {
+  0% { opacity: 0; transform: translate(-50%, 16px) scale(0.96); filter: blur(8px); letter-spacing: 0.3em; }
+  14% { opacity: 1; transform: translate(-50%, 0) scale(1); filter: none; }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -10px); }
+}
+@media (prefers-reduced-motion: reduce) { .hud-anuncio.visible { animation-duration: 3.6s; animation-timing-function: steps(1, end); } }
+
+/* --------------------------------------------------------- panel de abajo -- */
+.v3 .tablero.detalle {
+  grid-template-columns: minmax(260px, 20%) minmax(0, 1fr) minmax(330px, 23%);
+  grid-template-areas:
+    "cadena  cadena  cadena"
+    "estado  vuelo   mision"
+    "consola consola consola";
+  padding-top: 18px;
+  scroll-margin-top: 90px;
+}
+.v3 .tablero.detalle .consola { height: 150px; }
+
+/* ----------------------------------------------------------- responsivo -- */
+@media (max-width: 1250px) {
+  .hud { grid-template-columns: minmax(220px, 260px) minmax(0, 1fr) minmax(220px, 270px); }
+  .hud .num.enorme { font-size: 34px; }
+  .v3 .tablero.detalle { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "cadena cadena" "vuelo vuelo" "estado mision" "consola consola"; }
+}
+@media (max-width: 760px) {
+  .escenario { height: auto; min-height: 0; margin-top: 0; }
+  .escena-mision { position: relative; height: 56vh; }
+  .hud { position: relative; padding: 12px 10px; grid-template-columns: minmax(0, 1fr); grid-template-areas: "fase" "sig" "izq" "der" "linea"; }
+  .hud-anuncio { top: 18vh; }
+  .hud-bajar { display: none; }
+  .v3 .tablero.detalle { grid-template-columns: minmax(0, 1fr); grid-template-areas: "cadena" "vuelo" "estado" "mision" "consola"; }
+}

@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="es" data-tema="oscuro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zénit · Modo misión</title>
+  <link rel="icon" type="image/jpeg" href="/logo-zenit.jpeg">
+  <link rel="apple-touch-icon" href="/logo-zenit.jpeg">
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="estilos.css">
+  <link rel="stylesheet" href="v3.css">
+  <script src="/vendor/chart.umd.min.js"></script>
+  <!-- three.js servido desde node_modules: en la cancha no hay internet -->
+  <script type="importmap">
+    { "imports": { "three": "/vendor/three/build/three.module.min.js", "three/addons/": "/vendor/three/examples/jsm/" } }
+  </script>
+  <script type="module" src="mision3d.js"></script>
+</head>
+<!-- =============================================================================
+     Tercera edición del panel: "modo misión" para la pantalla grande.
+     Arriba, el vuelo en 3D a pantalla completa con el HUD encima (mision3d.js,
+     v3.js); abajo, el panel completo. Usa app.js tal cual: mismos IDs que
+     index.html, generados desde ahí. El panel original y la v2 no cambian.
+     ========================================================================== -->
+<body data-fase="-1" class="v3">
+<script src="intro.js" data-duracion="3500" data-una-vez="sesion"></script>
+<!-- Iconos Lucide (licencia: LUCIDE-LICENSE.txt), disponibles sin internet. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-laptop" viewBox="0 0 24 24"><path d="M18 5a2 2 0 0 1 2 2v8.526a2 2 0 0 0 .212.897l1.068 2.127a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45l1.068-2.127A2 2 0 0 0 4 15.526V7a2 2 0 0 1 2-2z" />
+  <path d="M20.054 15.987H3.946" /></symbol>
+    <symbol id="i-servidor" viewBox="0 0 24 24"><rect width="20" height="8" x="2" y="2" rx="2" ry="2" />
+  <rect width="20" height="8" x="2" y="14" rx="2" ry="2" />
+  <line x1="6" x2="6.01" y1="6" y2="6" />
+  <line x1="6" x2="6.01" y1="18" y2="18" /></symbol>
+    <symbol id="i-receptor" viewBox="0 0 24 24"><path d="M4.9 16.1C1 12.2 1 5.8 4.9 1.9" />
+  <path d="M7.8 4.7a6.14 6.14 0 0 0-.8 7.5" />
+  <circle cx="12" cy="9" r="2" />
+  <path d="M16.2 4.8c2 2 2.26 5.11.8 7.47" />
+  <path d="M19.1 1.9a9.96 9.96 0 0 1 0 14.1" />
+  <path d="M9.5 18h5" />
+  <path d="m8 22 4-11 4 11" /></symbol>
+    <symbol id="i-senal" viewBox="0 0 24 24"><path d="M5 21v-6" />
+  <path d="M12 21V3" />
+  <path d="M19 21V9" /></symbol>
+    <symbol id="i-cubo" viewBox="0 0 24 24"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+  <path d="m3.3 7 8.7 5 8.7-5" />
+  <path d="M12 22V12" /></symbol>
+    <symbol id="i-baliza" viewBox="0 0 24 24"><path d="M16.247 7.761a6 6 0 0 1 0 8.478" />
+  <path d="M19.075 4.933a10 10 0 0 1 0 14.134" />
+  <path d="M4.925 19.067a10 10 0 0 1 0-14.134" />
+  <path d="M7.753 16.239a6 6 0 0 1 0-8.478" />
+  <circle cx="12" cy="12" r="2" /></symbol>
+    <symbol id="i-baro" viewBox="0 0 24 24"><path d="m12 14 4-4" />
+  <path d="M3.34 19a10 10 0 1 1 17.32 0" /></symbol>
+    <symbol id="i-imu" viewBox="0 0 24 24"><path d="M20.341 6.484A10 10 0 0 1 10.266 21.85" />
+  <path d="M3.659 17.516A10 10 0 0 1 13.74 2.152" />
+  <circle cx="12" cy="12" r="3" />
+  <circle cx="19" cy="5" r="2" />
+  <circle cx="5" cy="19" r="2" /></symbol>
+    <symbol id="i-sd" viewBox="0 0 24 24"><path d="M10 16h.01" />
+  <path d="M2.212 11.577a2 2 0 0 0-.212.896V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5.527a2 2 0 0 0-.212-.896L18.55 5.11A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+  <path d="M21.946 12.013H2.054" />
+  <path d="M6 16h.01" /></symbol>
+    <symbol id="i-gps" viewBox="0 0 24 24"><path d="m13.5 6.5-3.148-3.148a1.205 1.205 0 0 0-1.704 0L6.352 5.648a1.205 1.205 0 0 0 0 1.704L9.5 10.5" />
+  <path d="M16.5 7.5 19 5" />
+  <path d="m17.5 10.5 3.148 3.148a1.205 1.205 0 0 1 0 1.704l-2.296 2.296a1.205 1.205 0 0 1-1.704 0L13.5 14.5" />
+  <path d="M9 21a6 6 0 0 0-6-6" />
+  <path d="M9.352 10.648a1.205 1.205 0 0 0 0 1.704l2.296 2.296a1.205 1.205 0 0 0 1.704 0l4.296-4.296a1.205 1.205 0 0 0 0-1.704l-2.296-2.296a1.205 1.205 0 0 0-1.704 0z" /></symbol>
+    <symbol id="i-bateria" viewBox="0 0 24 24"><path d="M10 10v4" />
+  <path d="M14 10v4" />
+  <path d="M22 14v-4" />
+  <path d="M6 10v4" />
+  <rect x="2" y="6" width="16" height="12" rx="2" /></symbol>
+    <symbol id="i-alerta" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" /></symbol>
+    <symbol id="i-campana" viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0" />
+  <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" /></symbol>
+    <symbol id="i-sol" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" />
+  <path d="M12 2v2" />
+  <path d="M12 20v2" />
+  <path d="m4.93 4.93 1.41 1.41" />
+  <path d="m17.66 17.66 1.41 1.41" />
+  <path d="M2 12h2" />
+  <path d="M20 12h2" />
+  <path d="m6.34 17.66-1.41 1.41" />
+  <path d="m19.07 4.93-1.41 1.41" /></symbol>
+    <symbol id="i-luna" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" /></symbol>
+    <symbol id="i-enviar" viewBox="0 0 24 24"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" />
+  <path d="m21.854 2.147-10.94 10.939" /></symbol>
+    <symbol id="i-bocina" viewBox="0 0 24 24"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z" />
+  <path d="M16 9a5 5 0 0 1 0 6" />
+  <path d="M19.364 18.364a9 9 0 0 0 0-12.728" /></symbol>
+    <symbol id="i-mira" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" />
+  <line x1="22" x2="18" y1="12" y2="12" />
+  <line x1="6" x2="2" y1="12" y2="12" />
+  <line x1="12" x2="12" y1="6" y2="2" />
+  <line x1="12" x2="12" y1="22" y2="18" /></symbol>
+    <symbol id="i-candado" viewBox="0 0 24 24"><circle cx="12" cy="16" r="1" />
+  <rect x="3" y="10" width="18" height="12" rx="2" />
+  <path d="M7 10V7a5 5 0 0 1 10 0v3" /></symbol>
+    <symbol id="i-altimetro" viewBox="0 0 24 24"><line x1="10" x2="14" y1="2" y2="2" />
+  <line x1="12" x2="15" y1="14" y2="11" />
+  <circle cx="12" cy="14" r="8" /></symbol>
+    <symbol id="i-velocimetro" viewBox="0 0 24 24"><path d="m12 14 4-4" />
+  <path d="M3.34 19a10 10 0 1 1 17.32 0" /></symbol>
+    <symbol id="i-orientacion" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" />
+  <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" /></symbol>
+    <symbol id="i-lista" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+  <path d="M12 11h4" />
+  <path d="M12 16h4" />
+  <path d="M8 11h.01" />
+  <path d="M8 16h.01" /></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><path d="M12 19h8" />
+  <path d="m4 17 6-6-6-6" /></symbol>
+    <symbol id="i-corazon" viewBox="0 0 24 24"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" /></symbol>
+    <symbol id="i-cadena" viewBox="0 0 24 24"><path d="M9 17H7A5 5 0 0 1 7 7h2" />
+  <path d="M15 7h2a5 5 0 1 1 0 10h-2" />
+  <line x1="8" x2="16" y1="12" y2="12" /></symbol>
+    <symbol id="i-refrescar" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+  <path d="M21 3v5h-5" />
+  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+  <path d="M8 16H3v5" /></symbol>
+  </defs>
+</svg>
+
+<header class="encabezado">
+  <div class="marca">
+    <a class="logo-enlace" href="/logo-zenit.jpeg" target="_blank" rel="noopener" title="Ver logo de Zénit">
+      <img class="logo" src="/logo-zenit.jpeg" width="40" height="40" alt="Logo de Zénit México">
+    </a>
+    <div class="marca-texto">
+      <span class="marca-nombre">Z<span class="acento">É</span>NIT</span>
+      <span class="tricolor" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="marca-pais">MÉXICO</span>
+    </div>
+    <div class="separador" aria-hidden="true"></div>
+    <div class="titulo">
+      <h1>Estación terrena · Modo misión</h1>
+      <span class="lema">Ideas que llegan más alto</span>
+    </div>
+  </div>
+
+  <div class="controles">
+    <select id="selPuerto" aria-label="Puerto del receptor"></select>
+    <button id="btnRefrescar" class="btn icono" title="Buscar puertos otra vez" aria-label="Buscar puertos otra vez"><svg class="ico"><use href="#i-refrescar"/></svg></button>
+    <button id="btnConectar" class="btn">Conectar</button>
+    <button id="btnSim" class="btn">Simulación</button>
+    <button id="btnDesconectar" class="btn">Desconectar</button>
+  </div>
+
+  <div class="reloj-caja" title="Tiempo desde el último paquete de la carga primaria. Más de 3 s requiere revisar el enlace.">
+    <span class="reloj-etiqueta">ÚLTIMO PAQUETE</span>
+    <span id="reloj" class="reloj">SIN DATOS</span>
+  </div>
+
+  <button id="btnCampana" class="campana" title="Ver alertas">
+    <svg class="ico"><use href="#i-campana"/></svg>
+    <span id="campanaTexto">0 críticas · 0 avisos</span>
+  </button>
+
+  <div class="meta">
+    <span>LoRa 915 MHz</span><span>Carga útil: 2 huevos</span>
+  </div>
+
+  <div class="lema-final" aria-hidden="true">CIENCIA<br>DISCIPLINA<br>PROPÓSITO</div>
+
+  <a class="btn enlace-edicion" href="/" title="Panel original">Edición 1</a>
+  <a class="btn enlace-edicion" href="/v2" title="Segunda edición del panel">Edición 2</a>
+  <a class="btn enlace-prototipo" href="/prototipo.html" title="Recorrido 3D del prototipo">
+    <svg class="ico"><use href="#i-cubo"/></svg><span>Prototipo 3D</span>
+  </a>
+
+  <div class="tema" role="group" aria-label="Tema">
+    <button id="btnClaro" class="tema-btn" title="Tema claro (para usar al sol)"><svg class="ico"><use href="#i-sol"/></svg></button>
+    <button id="btnOscuro" class="tema-btn" title="Tema oscuro"><svg class="ico"><use href="#i-luna"/></svg></button>
+  </div>
+</header>
+
+<!-- Banner de falla crítica -->
+<div id="banner" class="banner" hidden>
+  <svg class="ico"><use href="#i-alerta"/></svg>
+  <strong>CRÍTICO</strong><span id="bannerTexto"></span>
+</div>
+
+<!-- ================================================== ESCENARIO 3D + HUD -->
+<section class="escenario" aria-label="Vista de misión en 3D">
+  <canvas id="escenaMision" class="escena-mision" aria-hidden="true"></canvas>
+  <div class="escena-espera" id="escenaEspera" hidden>Sin WebGL: los datos siguen abajo.</div>
+
+  <div class="hud">
+    <div class="hud-fase vidrio">
+      <span class="hud-etiqueta">Fase</span>
+      <strong id="v3Fase" class="hud-fase-nombre">Sin datos</strong>
+      <span class="hud-fila"><span class="hud-etiqueta">T+</span><span id="v3Reloj" class="num hud-reloj">--:--</span></span>
+    </div>
+    <div class="hud-siguiente vidrio">
+      <span class="hud-etiqueta">Siguiente</span>
+      <strong id="v3Sig">Esperando telemetría</strong>
+      <span class="hud-barra"><i id="v3SigBarra"></i></span>
+      <span id="v3SigDet" class="hud-detalle"></span>
+    </div>
+
+    <div class="hud-izq vidrio">
+      <div class="tarjeta instrumento" id="instAlt">
+        <h3 class="inst-titulo"><svg class="ico"><use href="#i-altimetro"/></svg>Altímetro <small>(m)</small></h3>
+        <div class="altimetro">
+          <svg id="cinta" viewBox="0 0 150 190" aria-hidden="true"></svg>
+          <div class="inst-valor">
+            <span class="linea-valor"><span id="altValor" class="num enorme">—</span><span class="unidad">m</span></span>
+            <span id="altMax" class="tenue chico">Altura máxima —</span>
+            <span id="altEdad" class="edad"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hud-der">
+      <div class="vidrio">
+      <div class="tarjeta instrumento" id="instVel">
+        <h3 class="inst-titulo"><svg class="ico"><use href="#i-velocimetro"/></svg>Velocímetro <small>(m/s)</small></h3>
+        <svg id="gauge" viewBox="0 0 260 150" aria-hidden="true"></svg>
+        <div class="inst-valor centro">
+          <span><span id="velValor" class="num enorme">—</span><span class="unidad">m/s</span> <span id="velFlecha" class="flecha"></span></span>
+          <span id="velNota" class="etiqueta-rango" hidden></span>
+          <span id="velEdad" class="edad"></span>
+        </div>
+      </div>
+      </div>
+      <div class="tarjeta instrumento hud-angulos vidrio" id="instOri">
+        <svg id="horizonte" viewBox="-80 -80 160 160" aria-hidden="true" hidden></svg>
+        <dl class="angulos">
+            <dt>Roll</dt><dd id="oRoll" class="num">—</dd>
+            <dt>Pitch</dt><dd id="oPitch" class="num">—</dd>
+            <dt>Yaw</dt><dd id="oYaw" class="num">—</dd>
+          </dl>
+      </div>
+    </div>
+
+    <div id="v3Anuncio" class="hud-anuncio" aria-live="polite"></div>
+
+    <div class="hud-linea vidrio">
+      <div id="lineaTiempo" class="linea-tiempo"></div>
+    </div>
+
+    <a class="hud-bajar" href="#detalle">Panel completo</a>
+  </div>
+</section>
+
+<!-- ===================================================== PANEL COMPLETO -->
+<main class="tablero detalle" id="detalle">
+  <section class="panel cadena" aria-label="Cadena de conexión">
+    <h2 class="mini"><svg class="ico"><use href="#i-cadena"/></svg>Cadena de conexión</h2>
+    <ol id="cadena" class="eslabones"></ol>
+    <p id="cadenaDetalle" class="cadena-detalle" hidden></p>
+  </section>
+
+  <section class="columna estado" aria-label="Estado del sistema">
+    <h2 class="columna-titulo">Estado del sistema</h2>
+
+    <div class="tarjeta">
+      <h3>Salud de subsistemas</h3>
+      <div id="salud" class="salud"></div>
+    </div>
+
+    <div class="tarjeta">
+      <h3>Batería</h3>
+      <div class="bateria">
+        <div class="pila" aria-hidden="true"><div id="pilaNivel" class="pila-nivel"></div><div class="pila-borne"></div></div>
+        <div class="bateria-datos">
+          <span id="batValor" class="num grande">—</span>
+          <span class="tenue">(pila de 9 V)</span>
+        </div>
+      </div>
+      <p id="batSec" class="tenue chico"></p>
+    </div>
+
+    <div class="tarjeta alertas-tarjeta" id="alertasTarjeta">
+      <h3>Alertas</h3>
+      <ol id="alertas" class="alertas"></ol>
+      <p id="alertasVacio" class="tenue">Sin alertas.</p>
+    </div>
+  </section>
+
+  <section class="columna vuelo" aria-label="Vuelo">
+    <h2 class="columna-titulo">Vuelo</h2>
+    <div class="tarjeta perfil">
+      <div class="tarjeta-cabeza">
+        <h3>Perfil de misión</h3>
+        <span class="leyenda"><i class="l-solida"></i>Completado <i class="l-punteada"></i>Pendiente</span>
+      </div>
+      <svg id="perfil" class="perfil-svg" viewBox="0 0 900 150" preserveAspectRatio="none" aria-label="Perfil de la misión"></svg>
+      <ol id="fases" class="fases">
+        <li data-e="0">Prevuelo</li><li data-e="1">Ascenso</li><li data-e="2">Caída libre</li>
+        <li data-e="3">Descenso autogiro</li><li data-e="4">Aterrizado</li>
+      </ol>
+    </div>
+    <div class="graficas">
+      <div class="tarjeta grafica">
+        <div class="tarjeta-cabeza"><h3>Altitud <span id="gAltValor" class="num valor-g">—</span></h3><div class="rangos" data-g="alt"></div></div>
+        <div class="lienzo"><canvas id="gAlt"></canvas></div>
+      </div>
+      <div class="tarjeta grafica">
+        <div class="tarjeta-cabeza"><h3>Velocidad <span id="gVelValor" class="num valor-g">—</span></h3><div class="rangos" data-g="vel"></div></div>
+        <div class="lienzo"><canvas id="gVel"></canvas></div>
+      </div>
+      <div class="tarjeta grafica">
+        <div class="tarjeta-cabeza"><h3>Aceleración <span id="gAcelValor" class="num valor-g"></span></h3><div class="rangos" data-g="acel"></div></div>
+        <div class="lienzo"><canvas id="gAcel"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="columna mision" aria-label="Misión">
+    <h2 class="columna-titulo">Misión</h2>
+
+    <div class="tarjeta">
+      <h3 id="reqTitulo">Requisitos de la misión</h3>
+      <div class="requisitos-caja">
+        <div class="anillo">
+          <svg viewBox="0 0 100 100" aria-hidden="true"><circle class="anillo-fondo" cx="50" cy="50" r="42"/><circle id="anilloArco" class="anillo-arco" cx="50" cy="50" r="42"/></svg>
+          <span id="anilloTexto" class="num">0/8</span>
+        </div>
+        <div>
+          <p id="prevueloSello" class="sello" hidden></p>
+          <ul id="requisitos" class="requisitos"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h3>Carga secundaria</h3>
+      <div class="secundaria">
+        <div class="brujula-caja">
+          <svg id="brujula" viewBox="-60 -60 120 120" aria-hidden="true">
+            <circle r="50" class="b-aro"/>
+            <g class="b-marcas"></g>
+            <text y="-35" class="b-card">N</text><text x="37" y="4" class="b-card">E</text>
+            <text y="42" class="b-card">S</text><text x="-37" y="4" class="b-card">O</text>
+            <g id="bFlecha"><path d="M0,-30 L7,4 L0,-1 L-7,4 Z" class="b-flecha"/><path d="M0,30 L5,4 L0,8 L-5,4 Z" class="b-cola"/></g>
+            <circle r="3" class="b-centro"/>
+          </svg>
+          <span id="secResumen" class="num">—</span>
+          <span id="secEdad" class="tenue chico"></span>
+        </div>
+        <div class="plano-caja">
+          <svg id="plano" viewBox="0 0 150 150" aria-hidden="true"></svg>
+          <ul class="plano-leyenda">
+            <li><i class="p-lanz"></i>Punto de lanzamiento</li>
+            <li><i class="p-pri"></i>Carga primaria</li>
+            <li><i class="p-sec"></i>Carga secundaria</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h3>Comandos</h3>
+      <div class="comandos">
+        <button class="btn cmd" data-orden="PING"><svg class="ico"><use href="#i-enviar"/></svg>Ping</button>
+        <button class="btn cmd" data-orden="BUZZER"><svg class="ico"><use href="#i-bocina"/></svg>Probar buzzer</button>
+        <button class="btn cmd" data-orden="CALIBRAR" title="Solo en tierra y con el CanSat quieto"><svg class="ico"><use href="#i-mira"/></svg>Calibrar en tierra</button>
+        <button class="btn cmd" data-orden="CERRAR" title="Solo en tierra: cierra el seguro del servo"><svg class="ico"><use href="#i-candado"/></svg>Cerrar seguro</button>
+      </div>
+      <button id="btnDesacoplar" class="btn peligro" data-orden="DESACOPLAR"><svg class="ico"><use href="#i-candado"/></svg><span>Desacople manual (doble clic)</span></button>
+      <p id="respuesta" class="tenue chico respuesta">El desacople es automático a 200 m; el manual es solo respaldo.</p>
+    </div>
+  </section>
+
+  <section class="tarjeta consola-tarjeta" aria-label="Consola">
+    <div class="tarjeta-cabeza">
+      <h3>Consola</h3>
+      <div class="consola-controles">
+        <select id="filtroConsola" aria-label="Filtro de la consola">
+          <option value="todo">Todo</option><option value="error">Solo errores</option>
+          <option value="E">Eventos</option><option value="INFO">INFO</option>
+        </select>
+        <label class="casilla"><input id="autoscroll" type="checkbox" checked> Autoscroll</label>
+        <button id="btnLimpiar" class="btn chico">Limpiar</button>
+      </div>
+    </div>
+    <div id="consola" class="consola" role="log"></div>
+  </section>
+</main>
+
+<footer class="pie">
+  <span>Universidad de Montemorelos · Programa Espacial Universitario</span>
+  <span id="pieFuente"></span>
+  <span>ZÉNIT · CanSat 2026</span>
+</footer>
+
+<script src="app.js"></script>
+<script src="v3.js"></script>
+</body>
+</html>
