@@ -74,7 +74,7 @@ async function iniciar() {
     document.fonts.load('400 20px "Archivo Variable"'),
     document.fonts.load('800 20px "Archivo Variable"'),
   ]).catch(() => {});
-  const emblema = await cargarEmblema();
+  const { emblema, completo: logoCompleto } = await cargarLogos();
 
   // ------------------------------------------------------------ vidrio --
   const compartidos = {
@@ -378,6 +378,16 @@ async function iniciar() {
     g.textAlign = 'left';
     const wEnlace = E.w;
 
+    // Logo original impreso en el lado derecho de la placa (en teléfono no cabe)
+    if (logoCompleto && !L.tel) {
+      const alto = L.panelH * 0.8;
+      const ancho = alto * (790 / 1120);
+      const cx = L.bw * 0.74, cy = L.navH + L.gap + L.panelH * 0.5;
+      g.globalAlpha = 0.92;
+      g.drawImage(logoCompleto, cx - ancho / 2, cy - alto / 2, ancho, alto);
+      g.globalAlpha = 1;
+    }
+
     // Pie de la placa
     const Pf = D.pie;
     g.font = `400 ${Pf.fs}px "Archivo Variable"`;
@@ -486,7 +496,7 @@ async function iniciar() {
 
   // Fotogramas del recorrido (s = sección + avance dentro de la sección)
   const FOTOS = [
-    { s: 0, x: 0, y: 0, e: 0.85, z: -260, spin: 0.25, tilt: 0, ex: 0, cub: 1, sep: 0, des: 0, rv: 0, est: 0.15, tierra: 0, et: 0 },
+    { s: 0, x: 0, y: 0, e: 0.85, z: -900, spin: 0.25, tilt: 0, ex: 0, cub: 1, sep: 0, des: 0, rv: 0, est: 0.15, tierra: 0, et: 0 },
     { s: 1, x: 0.17, y: -0.01, e: 1, z: 0, spin: 0.3, tilt: 0.05, ex: 0, cub: 1, sep: 0, des: 0, rv: 0, est: 0.1, tierra: 0, et: 0 },
     { s: 2, x: 0.16, y: 0, e: 0.88, z: 0, spin: 0.12, tilt: 0.1, ex: 0, cub: 1, sep: 0, des: 0, rv: 0, est: 0.05, tierra: 0, et: 0 },
     { s: 2.35, x: 0.21, y: -0.04, e: 0.56, z: 0, spin: 0.05, tilt: 0.18, ex: 1, cub: 0.1, sep: 0, des: 0, rv: 0, est: 0.05, tierra: 0, et: 1 },
@@ -714,17 +724,27 @@ function homografia(w, h, q) {
   return `matrix3d(${a},${d},0,${g},${b},${e},0,${hh},0,0,1,0,${c},${f},0,1)`;
 }
 
-// Emblema del logo con el negro convertido en transparencia (para el sello)
-async function cargarEmblema() {
+// Logo con el negro convertido en transparencia: el sello del nav (solo el
+// emblema) y el logo completo que va impreso en la portada.
+async function cargarLogos() {
   try {
     const img = new Image();
     img.src = '/logo-zenit.jpeg';
     await img.decode();
+    return {
+      emblema: recorteSinNegro(img, 128, 150, 830, 830, 256, 256),
+      completo: recorteSinNegro(img, 150, 170, 790, 1120, 790, 1120),
+    };
+  } catch { return { emblema: null, completo: null }; }
+}
+
+function recorteSinNegro(img, sx, sy, sw, sh, w, h) {
+  {
     const c = document.createElement('canvas');
-    c.width = c.height = 256;
+    c.width = w; c.height = h;
     const g = c.getContext('2d');
-    g.drawImage(img, 128, 150, 830, 830, 0, 0, 256, 256);
-    const datos = g.getImageData(0, 0, 256, 256);
+    g.drawImage(img, sx, sy, sw, sh, 0, 0, w, h);
+    const datos = g.getImageData(0, 0, w, h);
     const p = datos.data;
     for (let i = 0; i < p.length; i += 4) {
       const m = Math.max(p[i], p[i + 1], p[i + 2]);
@@ -733,5 +753,5 @@ async function cargarEmblema() {
     }
     g.putImageData(datos, 0, 0);
     return c;
-  } catch { return null; }
+  }
 }
