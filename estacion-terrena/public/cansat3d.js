@@ -250,7 +250,12 @@ export function crearCanSat({ calidad = 'alta' } = {}) {
     // explotada se abren a medias para que no tapen la electrónica.
     const d = Math.max(suave(Math.min(1, Math.max(0, estado.despliegue))), ex * 0.55);
     aspas.forEach((a) => { a.pivote.quaternion.setFromAxisAngle(a.eje, THREE.MathUtils.degToRad(a.grados) * d); });
-    rotor.rotation.y = estado.giro;
+    // Plegadas, las aspas tienen que quedar en sus canales: el rotor vuelve al
+    // múltiplo de 120° más cercano (las 3 aspas son iguales, no se nota el salto).
+    // Así, al repetir la simulación, no se quedan giradas encima de la pared.
+    const tercio = (Math.PI * 2) / 3;
+    const enCanal = Math.round(estado.giro / tercio) * tercio;
+    rotor.rotation.y = lerp(enCanal, estado.giro, d);
     const brazo = (n, t) => { if (brazos[n]) brazos[n].rotation.z = brazos[n].userData.base + t * 1.4; };
     brazo('servo_autogiro', d);
     brazo('servo_desacople', Math.min(1, s * 4));
