@@ -498,7 +498,10 @@ async function iniciar() {
     { s: 4.7, x: 0.2, y: 0.1, e: 0.8, z: 0, spin: 0.1, tilt: 0.05, ex: 0, cub: 1, sep: 1, des: 1, rv: 9, est: -1, tierra: 0, et: 0 },
     { s: 5, x: -0.17, y: 0.06, e: 0.78, z: 0, spin: 0.05, tilt: 0.04, ex: 0, cub: 1, sep: 1, des: 1, rv: 10, est: -0.8, tierra: 0.25, et: 0 },
     { s: 5.75, x: -0.17, y: 0.02, e: 0.7, z: 0, spin: 0.03, tilt: 0, ex: 0, cub: 1, sep: 1, des: 1, rv: 0.4, est: -0.1, tierra: 0.72, et: 0 },
-    { s: 6, x: 0.34, y: 0.16, e: 0.42, z: -300, spin: 0.2, tilt: 0.08, ex: 0, cub: 1, sep: 1, des: 1, rv: 1.2, est: 0.05, tierra: 0.62, et: 0 },
+    // galería de renders: el modelo sale por la derecha y baja el horizonte
+    { s: 6, x: 1.2, y: 0.1, e: 0.5, z: -300, spin: 0.2, tilt: 0.08, ex: 0, cub: 1, sep: 1, des: 1, rv: 1.2, est: 0.05, tierra: 0, et: 0 },
+    { s: 6.6, x: 1.2, y: 0.1, e: 0.5, z: -300, spin: 0.2, tilt: 0.08, ex: 0, cub: 1, sep: 1, des: 1, rv: 1.2, est: 0.05, tierra: 0, et: 0 },
+    { s: 7, x: 0.34, y: 0.16, e: 0.42, z: -300, spin: 0.2, tilt: 0.08, ex: 0, cub: 1, sep: 1, des: 1, rv: 1.2, est: 0.05, tierra: 0.62, et: 0 },
   ];
   function fotograma(s) {
     let i = 0;
