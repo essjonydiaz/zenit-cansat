@@ -1,9 +1,12 @@
-# CanSat Zénit completo · diseño en CAD (versión 1)
+# CanSat Zénit completo · diseño en CAD (versión 2)
 
 Diseño completo del CanSat, listo para imprimir en 3D: carga primaria con autogiro y
 desacople, carga secundaria, protección de los dos huevos y soporte de la electrónica. Todo
 está en un solo archivo de código (`cansat_completo.py`, CadQuery); cada medida se cambia
 arriba, en la sección MEDIDAS, y se vuelve a generar.
+
+**Versión 2:** la pared ya no tiene ranuras. Las aspas van en canales por fuera de una pared
+completa y se sujetan con imanes a través de ella, así que al abrirse no queda ningún hueco.
 
 ![Cerrado](salida/imagenes/cansat_cerrado.png)
 
@@ -14,11 +17,12 @@ arriba, en la sección MEDIDAS, y se vuelve a generar.
 | Cilindro de Ø 9–10 cm | Ø 96 mm | Sí |
 | Alto total de 20 a 23 cm | 229 mm | Sí |
 | Primaria ≤ 16 cm · secundaria ≤ 7 cm | 159 mm · 70 mm | Sí |
-| Superficie lisa, sin protuberancias | Las aspas forman parte de la pared, al ras | Sí |
+| Superficie lisa, sin protuberancias | Las aspas van al ras, en canales de 2 mm; nada sobresale | Sí |
+| Sin huecos en la pared al abrir las aspas | Pared de 1.2 mm completa: los canales no la atraviesan | Sí |
 | Un solo orificio de Ø 9–10 mm y ≥ 3 mm de profundo en la tapa superior | Ø 9.5 × 3.5 mm | Sí |
 | Autogiro embebido, pasivo, sin motor | 3 aspas sobre balero; las suelta un servo | Sí |
 | Antenas por dentro | LoRa y GPS por dentro de la carcasa | Sí |
-| ≤ 600 g con los 2 huevos de 65 g | ~600 g estimados (ver sección 5) | Justo: hay que pesar |
+| ≤ 600 g con los 2 huevos de 65 g | ~596 g estimados con pilas de litio (sección 5) | Justo: hay que pesar |
 
 La revisión automática del archivo no encontró **ningún choque** entre piezas
 (`salida/reporte.txt`).
@@ -34,8 +38,9 @@ La revisión automática del archivo no encontró **ningún choque** entre pieza
 2. **Desacople:** el poste de la secundaria entra al piso de la primaria. Un pasador de acero de
    3 mm atraviesa la torre y el poste. A 200 m, el servo de desacople jala el pasador y la
    secundaria cae por su peso.
-3. **Anillo de retención:** detiene la punta de las 3 aspas. 0.4 s después del desacople, el
-   servo del autogiro gira el anillo 12° y suelta las aspas.
+3. **Anillo de retención con imanes:** tiene 3 imanes que, a través de la pared, jalan el imán
+   de la punta de cada aspa. 0.4 s después del desacople, el servo del autogiro gira el anillo
+   15° (antihorario visto desde arriba), los imanes se separan y las aspas se sueltan.
 4. **Huevo de la primaria:** acostado en una hamaca de ligas entre 6 ganchos abajo y 6 arriba,
    con una cama y un techo de espuma EVA.
 5. **Electrónica:** las 3 placas de 4 × 6 cm (la Heltec en la placa 2) entre el disco base (con
@@ -49,10 +54,15 @@ La revisión automática del archivo no encontró **ningún choque** entre pieza
 8. **Columna:** 3 varillas roscadas M3 van del piso a la tapa. Por ahí pasa el peso cuando el
    dron lo carga. La carcasa es solo la piel.
 
-**Autogiro.** Cada aspa mide 130 mm y es un pedazo curvo de la pared, al ras. Cuelga de una
-bisagra en el rotor. Cerradas, las aspas tapan sus ranuras y la superficie queda lisa. Al
-soltarlas, una liga en cada bisagra las empuja hacia afuera y el aire termina de abrirlas
-(rotor de ~35 cm). El rotor gira sobre el balero; el cuerpo casi no gira, lo que ayuda al GPS y al IMU.
+**Autogiro.** Cada aspa mide 130 mm y es una lámina curva de 1.6 mm que va en un canal de 2 mm
+por fuera de la pared, al ras del cilindro. La pared detrás del canal está completa: **no hay
+ranuras ni agujeros**. Cuelga de una bisagra en el rotor. Al soltarlas, una liga en cada bisagra
+las empuja hacia afuera y el aire termina de abrirlas (rotor de ~35 cm). Después solo quedan los 3
+canales poco profundos.
+
+![Corte desde arriba](salida/imagenes/aspas_dentro_del_cilindro.png)
+
+El rotor gira sobre el balero; el cuerpo casi no gira, lo que ayuda al GPS y al IMU.
 
 ![Desplegado](salida/imagenes/cansat_desplegado.png)
 
@@ -82,7 +92,9 @@ soltarlas, una liga en cada bisagra las empuja hacia afuera y el aire termina de
 | espaciador_base / espaciador_huevo | 3 + 3 | Ø 6 | Parados |
 | separador_placas_0/1/2 | 4 + 4 + 4 | hexagonales | Parados (o usar los de nylon) |
 
-PLA o PETG, capa de 0.2 mm, 3 perímetros, 15–20 % de relleno. Tiempo total aproximado:
+PLA o PETG, capa de 0.2 mm, 3 perímetros (las aspas, 4), 15–20 % de relleno. Las piezas que cargan o giran
+(aspas, rotor, tapas, discos, piso, anillo) deben ser rígidas: **no en TPU**. La carcasa de la secundaria sí
+se puede probar en TPU, porque cae libre y así no se rompe. Tiempo total aproximado:
 12–14 horas. Los mismos archivos los imprime un servicio de impresión si no tienen impresora.
 
 ## 4. Lista de compras
@@ -95,29 +107,31 @@ PLA o PETG, capa de 0.2 mm, 3 perímetros, 15–20 % de relleno. Tiempo total ap
 | 1 | Tornillo M3 × 12 con rondana | Detiene el rotor por abajo del balero |
 | 10 cm | Varilla o clavo de acero de 3 mm | Pasador del desacople |
 | 50 cm | Alambre de acero de 1 mm (cuerda de piano) | Varillas de los servos y ejes de las bisagras (1.5 mm) |
-| 1 | O-ring 88 × 2 mm | Centra la electrónica en el tubo |
+| 1 | O-ring 86 × 2 mm | Centra la electrónica contra los 3 canales |
+| 3 + 3 | Imanes de neodimio N52: 3 de Ø 8 × 1 mm (aspas) y 3 de Ø 8 × 2 mm (anillo) | Seguro de las aspas a través de la pared |
 | 8 | Arandelas de hule o silicón Ø 8 × 3 × 2 mm | Amortiguan las 3 placas |
 | 4 | Tuercas M3 con seguro de nylon | Para que las placas no se aflojen |
 | 1 bolsa | Ligas chicas | Hamaca de los huevos y resorte de cada aspa |
 | 1 hoja | Espuma EVA de 5 mm | Cama y techo de cada huevo |
-| 2 | Pilas de 9 V (**de litio** si se puede: ~12 g menos cada una) | Energía |
+| 2 | Pilas de 9 V **de litio** (las alcalinas pesan 12 g más cada una y el CanSat pasaría de 600 g) | Energía |
 | 3 | Placas perforadas 4 × 6 cm y separadores de nylon | Ya las tienen |
 
 ## 5. Peso estimado
 
 | Grupo | Peso |
 |---|---|
-| Piezas impresas | 222 g |
+| Piezas impresas | 238 g |
 | Huevos (2 × 65 g, como manda la guía) | 130 g |
-| Pilas de 9 V alcalinas (2) | 92 g |
+| Pilas de 9 V **de litio** (2) | 68 g |
 | Electrónica (Heltec, placas, sensores, GPS, secundaria) | 72 g |
-| Servos, balero, varillas, tornillos, cables, hules, espuma y ligas | 84 g |
-| **Total** | **~600 g** (límite 600 g) |
+| Servos, balero, varillas, tornillos, cables, hules, imanes, espuma y ligas | 88 g |
+| **Total** | **~596 g** (límite 600 g) |
 
-Queda **justo**. Para tener margen:
-1. Pilas de 9 V de litio: −24 g.
-2. Pesar cada pieza real en una báscula de cocina y anotarla. Mis números son estimados (±10 %).
-3. Si aun así pasa, se puede adelgazar la tapa de la electrónica o acortar el vaso de la secundaria.
+Queda **justo**. La pared completa pesa 16 g más que la de la versión 1, por eso las pilas
+**tienen que ser de litio** (con alcalinas serían ~620 g). Además:
+1. Pesar cada pieza real en una báscula de cocina y anotarla. Mis números son estimados (±10 %).
+2. Si aun así pasa, cambiar las 3 varillas M3 de acero por varillas de nylon o aluminio (−15 a −18 g;
+   probar que aguanten el jalón del dron) o adelgazar la tapa de la electrónica.
 
 ## 6. Velocidad del autogiro (8–12 m/s)
 
@@ -138,8 +152,10 @@ caídas de prueba. Si baja muy lento, se acortan las aspas; si baja muy rápido,
 ![Explosivo](salida/imagenes/cansat_explosivo.png)
 
 1. **Piso:** meter las 3 tuercas en los hexágonos de abajo y atornillar las 3 varillas. Poner la
-   pila con un cincho y los 2 servos en sus cunas. Montar el anillo de retención en sus guías y
-   unir con alambre el brazo del servo del autogiro con el brazo del anillo.
+   pila con un cincho y los 2 servos en sus cunas. Pegar los 3 imanes de Ø 8 × 2 en los dientes del
+   anillo de retención, montarlo en sus guías y unir con alambre el brazo del servo del autogiro
+   con el brazo del anillo. El servo debe girar el anillo **15° antihorario** (visto desde arriba)
+   para soltar.
 2. Pasar los espaciadores de la base, el disco del huevo, la espuma y los espaciadores del huevo.
 3. **Electrónica:** armar aparte las 3 placas con sus separadores entre el disco base y la tapa,
    con una arandela de hule en cada torre del disco y otra arriba de cada separador corto. Apretar
@@ -147,8 +163,9 @@ caídas de prueba. Si baja muy lento, se acortan las aspas; si baja muy rápido,
 4. Deslizar la **carcasa** desde arriba hasta asentarla en el piso.
 5. **Rotor:** el balero entra en la torre de la tapa. El perno del rotor entra en el balero y se
    fija por abajo con el tornillo M3 y la rondana.
-6. **Aspas:** colocar cada una en su bisagra (eje de alambre de 1.5 mm), con una liga como
-   resorte. Plegarlas en su ranura y trabar la lengüeta de la punta en el diente del anillo.
+6. **Aspas:** pegar el imán de Ø 8 × 1 en el hueco de la punta de cada aspa, **con el polo que
+   atrae al imán del anillo** (probar antes de pegar). Colocar cada aspa en su bisagra (eje de
+   alambre de 1.5 mm), con una liga como resorte, y plegarla en su canal: el imán la sujeta.
 7. **Secundaria:** bandeja dentro del vaso. La tapa con la electrónica se atornilla a las 3 torres.
 
 **El día del concurso** los huevos los dan los organizadores. Para meter el huevo de la
@@ -168,7 +185,9 @@ medida:
 ## 9. Lo que falta comprobar con piezas reales
 
 - Que el SG90 jale el pasador y gire el anillo sin atorarse (prueba P6, 20 de 20).
+- Que los imanes sostengan las aspas con la vibración del dron y que se suelten al girar el anillo.
 - Que las aspas abran solas con la liga (caídas de prueba).
+- Calibrar la brújula del GY-91 con el CanSat armado (los imanes la desvían un poco; al LoRa no le afectan).
 - La velocidad de descenso con cada largo de aspa (sección 6).
 - El huevo de la secundaria en caída libre: es la prueba más difícil. Probar con huevo real
   desde el techo (modo prueba) y luego con más altura.

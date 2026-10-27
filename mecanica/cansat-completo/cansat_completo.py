@@ -15,6 +15,7 @@
 #    · cilindro de Ø 9–10 cm y 20–23 cm de alto; primaria ≤ 16 cm, secundaria ≤ 7 cm
 #    · superficie lisa; un solo orificio (Ø 9–10 mm, ≥ 3 mm de profundo) en la tapa superior
 #    · autogiro embebido, sin protuberancias, sin motor; antenas por dentro
+#    · la pared no queda con huecos al abrirse las aspas (van en canales por fuera de la pared)
 #    · ≤ 600 g con los 2 huevos de 65 g (ver reporte.txt)
 # =============================================================================
 import os, math
@@ -53,7 +54,7 @@ Z_TUBO_ARRIBA = ZU + 148.8             # borde de arriba del tubo
 Z_TAPA = (ZU + 145.8, ZU + 150.8)      # tapa de la electrónica (con ceja Ø96 arriba)
 Z_ROTOR0 = ZU + 151.3                  # falda del rotor
 Z_ROTOR_PLATO = ZU + 155.0             # plato superior del rotor (hasta Z_TOP)
-Z_BISAGRA = ZU + 153.0; R_BISAGRA = 44.0
+Z_BISAGRA = ZU + 153.0                 # eje de las bisagras (su radio, R_BISAGRA, va abajo)
 L_ASPA = 130.0
 Z_ASPA_RAIZ = Z_BISAGRA - 1.0          # 222
 Z_ASPA_PUNTA = Z_ASPA_RAIZ - L_ASPA    # 92
@@ -61,6 +62,20 @@ ASPA_ANCHO = (26.0, 20.0)              # raíz, punta
 ORIFICIO_DRON = (9.5, 3.5)             # Ø y profundidad
 BALERO = (16.0, 8.0, 5.0)              # 688ZZ: Ø ext, Ø int, ancho (4 g)
 GPS_ANT = (25.4, 4.5); GPS_POS = (28.5, 0.0)
+
+# --- canales de las aspas: la pared del tubo es CONTINUA (sin huecos). Cada aspa va en un
+#     canal poco profundo por fuera, al ras; al abrirse, la pared queda entera.
+T_ASPA = 1.6                           # grueso del aspa (4 perímetros)
+HOLGURA_ASPA = 0.4
+R_CANAL = R - T_ASPA - HOLGURA_ASPA    # 46.0: fondo del canal (cara de afuera de la pared)
+RI_CANAL = R_CANAL - T                 # 44.8: cara de adentro de la pared en los canales
+R_BISAGRA = R_CANAL + HOLGURA_ASPA     # 46.4: eje en la cara de adentro del aspa (al abrir no choca con el rotor)
+# Retención con imanes a través de la pared (no hay que perforarla):
+IMAN_ASPA = (8.0, 1.0)                 # Ø × grueso, en la punta de cada aspa
+IMAN_ANILLO = (8.0, 2.0)               # Ø × grueso, en cada diente del anillo de retención
+Z_IMAN = Z_ASPA_PUNTA + 6.5            # 98.5
+GIRO_ANILLO = 15.0                     # grados que gira el anillo (antihorario visto desde arriba) para soltar
+ORING = (86.0, 2.0)                    # Ø interior × sección: centra la electrónica contra los 3 canales
 
 # --- huevos (65 g según la guía; medidas típicas de huevo grande)
 HUEVO = (57.0, 43.0)                   # largo, Ø
@@ -90,6 +105,12 @@ def hexagono(z0, z1, x, y):
 def rot(obj, a):
     return obj.rotate((0, 0, 0), (0, 0, 1), a)
 
+def cuna(r0, r1, a0, a1, z0, z1):
+    """Sector de anillo entre los ángulos a0–a1 (grados)."""
+    n = 24
+    pts = [ang_xy(r1, a0 + (a1 - a0) * i / n) for i in range(n + 1)] + [ang_xy(r0, a1 - (a1 - a0) * i / n) for i in range(n + 1)]
+    return cq.Workplane('XY').workplane(offset=z0).polyline(pts).close().extrude(z1 - z0)
+
 def gancho(x, y, z, hacia_arriba=True):
     """Gancho tipo hongo para amarrar ligas."""
     s = 1 if hacia_arriba else -1
@@ -106,8 +127,15 @@ def perfil_aspa(margen=0.0, z_arriba=None):
          .threePointArc((0, zb - w1 - margen), (-w1, zb)).close())
     return p.extrude(70).translate((20, 0, 0))
 
-def ranura_tubo():
-    return perfil_aspa(margen=0.4, z_arriba=Z_TOP + 5)
+def canal(r0, r1, z0, z1, margen):
+    """Volumen del canal de un aspa (en ángulo 0) entre los radios r0–r1 y las alturas z0–z1."""
+    return anillo(r0, r1, z0, z1).intersect(perfil_aspa(margen=margen, z_arriba=Z_TOP + 5))
+
+def despejar(obj):
+    """Quita de una pieza interior lo que choca con el lado de adentro de los 3 canales."""
+    for a in ANG_ASPAS:
+        obj = obj.cut(rot(canal(RI_CANAL - 0.4, R + 2, Z_ASPA_PUNTA - 8, Z_TUBO_ARRIBA, HOLGURA_ASPA + T + 0.4), a))
+    return obj
 
 # ============================================================ SECUNDARIA ===
 def carcasa_secundaria():
@@ -207,17 +235,21 @@ def piso_primaria():
     # guía del pasador (lado del servo de desacople)
     p = p.union(caja(14.0, 6.0, 6.0, (-18.0, 0, Z_PASADOR)).cut(
         cq.Workplane('YZ').workplane(offset=-30).center(0, Z_PASADOR).circle(1.7).extrude(30)))
-    return p
+    return despejar(p)
 
 def anillo_retencion():
     a = anillo(42.2, 44.3, *Z_ANILLO)
     for ang in ANG_ASPAS:
-        # diente que entra en la lengüeta de la punta del aspa (la detiene hacia afuera)
-        d = caja(2.4, 4.0, 5.0, (45.0, -2.5, Z_ANILLO[0] + 0.4))
+        # diente con un imán: jala el imán de la punta del aspa a través de la pared.
+        # Al girar el anillo GIRO_ANILLO grados, el imán se aleja y el aspa se suelta.
+        x1 = RI_CANAL - 0.45; z1 = Z_IMAN + IMAN_ANILLO[0] / 2 + 1.5
+        d = caja(2.6, 11.0, z1 - Z_ANILLO[0], (x1 - 1.3, 0, (Z_ANILLO[0] + z1) / 2))
+        d = d.cut(cq.Workplane('YZ').workplane(offset=x1 - IMAN_ANILLO[1] - 0.1).center(0, Z_IMAN)
+                  .circle(IMAN_ANILLO[0] / 2 + 0.1).extrude(IMAN_ANILLO[1] + 1.0))
         a = a.union(rot(d, ang))
     brazo = caja(6.0, 4.0, 2.5, (40.0, 0, sum(Z_ANILLO) / 2)).cut(cil(0.8, 0, 300, 38.5, 0))
     a = a.union(rot(brazo, -62.0))
-    return a
+    return despejar(a)
 
 def disco_huevo_base():
     z0, z1 = Z_HUEVO_BASE
@@ -232,12 +264,12 @@ def disco_huevo_base():
     for a in range(0, 360, 60):
         x, y = ang_xy(34.0, a)
         d = d.union(gancho(x, y, z1))
-    for a in ANG_ASPAS:  # muescas para la lengüeta de cada aspa
-        d = d.cut(rot(caja(8.0, 14.0, 10.0, (45.0, 0, (z0 + z1) / 2)), a))
+    for a in ANG_ASPAS:  # paso para el diente del anillo (en su lugar y al girar para soltar)
+        d = d.cut(cuna(41.0, R + 1, a - 9.0, a + GIRO_ANILLO + 9.0, z0 - 1, z1 + 1))
     for a in (0.0, 120.0, 240.0):  # topes de hule (3 puntos contra la pared)
         x, y = ang_xy(RI - 1.0, a + 60)
         d = d.union(cil(1.0, z0, z1, x, y))
-    return d
+    return despejar(d)
 
 def placa_pts():
     dx = PLACA[0] / 2 - AGUJERO_MARGEN; dy = PLACA[1] / 2 - AGUJERO_MARGEN
@@ -252,9 +284,10 @@ def z_placas():
 
 def disco_electronica_base():
     z0, z1 = Z_ELEC_BASE
-    d = anillo(38.0, RI - 0.5, z0, z1).union(cil(38.0, z1 - 3.0, z1))
+    # más chico que el tubo: solo el o-ring toca, contra el lado de adentro de los 3 canales
+    d = anillo(38.0, RI_CANAL - 0.5, z0, z1).union(cil(38.0, z1 - 3.0, z1))
     zc = (z0 + z1) / 2
-    d = d.cut(anillo(RI - 0.5 - 1.2, RI + 1, zc - 1.1, zc + 1.1))      # ranura del o-ring
+    d = d.cut(anillo(ORING[0] / 2, RI + 1, zc - ORING[1] / 2 - 0.1, zc + ORING[1] / 2 + 0.1))      # ranura del o-ring
     # torres más bajas: arriba de cada una va una arandela de hule y luego la placa 1
     d = d.union(cq.Workplane('XY').workplane(offset=z1).pushPoints(placa_pts()).circle(3.6).extrude(ESP_PLACAS[0] - HULE[1]))
     for (x, y) in placa_pts():
@@ -264,8 +297,6 @@ def disco_electronica_base():
     d = d.cut(cil(7.0, z0 - 1, z1 + 1))
     for a in (90.0, 270.0):  # muescas para cables y antena LoRa
         d = d.cut(rot(caja(12.0, 9.0, 20.0, (RI, 0, zc)), a))
-    for a in ANG_ASPAS:      # muesca para la costilla de cada aspa
-        d = d.cut(rot(caja(5.0, 3.0, 20.0, (RI - 0.5, 0, zc)), a))
     # ventanas para aligerar (respetan torres, varillas y ganchos)
     d = d.cut(caja(44.0, 24.0, 20.0, (0, 0, zc)).cut(cil(9.0, z0 - 2, z1 + 2)))
     for sy in (-1, 1):
@@ -292,19 +323,17 @@ def tapa_electronica():
     for a in ANG_COLUMNA:
         x, y = ang_xy(R_COLUMNA, a)
         t = t.cut(cil(M3 / 2, z0 - 1, z1 + 1, x, y)).cut(hexagono(z0 - 0.1, z0 + HEX_ALTO, x, y))
-    for a in ANG_ASPAS:  # muescas de la ceja por donde pasa la raíz de cada aspa
-        t = t.cut(rot(caja(8.0, ASPA_ANCHO[0] + 3.0, 10.0, (R, 0, z1)), a))
+    for a in ANG_ASPAS:  # el canal de cada aspa sigue en el borde de la ceja (2 mm, sin hueco)
+        t = t.cut(rot(canal(R_CANAL, R + 1, Z_TUBO_ARRIBA - 1, z1 + 1, HOLGURA_ASPA), a))
     for a in (90.0, 270.0):
         t = t.cut(rot(caja(10.0, 9.0, 4.0, (RI - 2.0, 0, z0 + 1.0)), a))
-    for a in ANG_ASPAS:
-        t = t.cut(rot(caja(5.0, 3.0, 4.0, (RI - 0.5, 0, z0 + 1.0)), a))
     # ventanas para aligerar
     t = t.cut(caja(9.0, 26.0, 20.0, (-19.5, 0, z0)))
     for sy in (-1, 1):
         t = t.cut(caja(24.0, 10.0, 20.0, (-2.0, sy * 23.0, z0)))
         t = t.cut(caja(12.0, 8.0, 20.0, (-26.0, sy * 31.0, z0)))
     t = t.cut(caja(10.0, 6.0, 20.0, (28.5, 22.5, z0)))
-    return t
+    return despejar(t)
 
 def rotor():
     r = anillo(R - 1.2, R, Z_ROTOR0, Z_TOP).union(cil(R, Z_TOP - 1.8, Z_TOP))
@@ -316,28 +345,33 @@ def rotor():
     r = r.union(perno).cut(cil(1.25, Z_TAPA[1] - 1, Z_ROTOR_PLATO - 2))
     r = r.union(cil(5.2, Z_TAPA[1] + 3.8, Z_ROTOR_PLATO))                       # hombro sobre la pista interior
     for a in ANG_ASPAS:
-        muesca = caja(8.0, ASPA_ANCHO[0] + 3.0, Z_ROTOR_PLATO - Z_ROTOR0 + 0.2, (R - 1.0, 0, (Z_ROTOR0 + Z_ROTOR_PLATO) / 2 - 0.1))
+        muesca = caja(8.0, 24.4, Z_ROTOR_PLATO - Z_ROTOR0 + 0.2, (R - 1.0, 0, (Z_ROTOR0 + Z_ROTOR_PLATO) / 2 - 0.1))
         r = r.cut(rot(muesca, a))
         for s in (-1, 1):  # orejas de la bisagra
-            oreja = (caja(3.0, 2.5, Z_TOP - 1.8 - Z_ROTOR0, (43.5, s * 10.75, (Z_ROTOR0 + Z_TOP - 1.8) / 2))
+            oreja = (caja(3.0, 2.5, Z_TOP - 1.8 - Z_ROTOR0, (R_BISAGRA, s * 10.75, (Z_ROTOR0 + Z_TOP - 1.8) / 2))
                      .cut(cq.Workplane('XZ').workplane(offset=-20).center(R_BISAGRA, Z_BISAGRA).circle(0.8).extrude(40)))
             r = r.union(rot(oreja, a))
     return r
 
 def aspa(a):
-    panel = anillo(RI, R, Z_ASPA_PUNTA - 5, Z_ASPA_RAIZ).intersect(perfil_aspa())
-    lengueta = caja(1.8, 9.0, 4.0, (RI - 0.9, 0, Z_ASPA_PUNTA + 2.5)).cut(caja(2.0, 4.6, 4.0, (RI - 0.9, -2.5, Z_ASPA_PUNTA + 1.5)))
-    nudillo = cq.Workplane('XZ').workplane(offset=-9.0).center(R_BISAGRA, Z_BISAGRA).circle(1.7).extrude(18.0)
-    alma = caja(RI - R_BISAGRA + 0.5, 18.0, 2.4, ((R_BISAGRA + RI) / 2 + 0.2, 0, Z_BISAGRA - 1.0))
-    costilla = caja(1.6, 1.2, Z_ASPA_RAIZ - 8.0 - (Z_ASPA_PUNTA + 10.0), (RI - 0.8, 0, (Z_ASPA_RAIZ - 8.0 + Z_ASPA_PUNTA + 10.0) / 2))
-    b = panel.union(lengueta).union(nudillo).union(alma.intersect(cil(R - 0.05, 0, 300))).union(costilla)
+    # panel curvo de 1.6 mm que va en su canal, al ras del cilindro
+    r_in = R_CANAL + HOLGURA_ASPA
+    panel = anillo(r_in, R, Z_ASPA_PUNTA - 5, Z_BISAGRA - 2.2).intersect(perfil_aspa(z_arriba=Z_BISAGRA - 2.2))
+    # arriba, una lengüeta de 18 mm entre las orejas del rotor, con el nudillo de la bisagra
+    lengueta = anillo(r_in, R, Z_BISAGRA - 2.6, Z_BISAGRA + 1.0).intersect(caja(20.0, 18.0, 10.0, (R - 1.0, 0, Z_BISAGRA)))
+    nudillo = cq.Workplane('XZ').workplane(offset=-9.0).center(R_BISAGRA, Z_BISAGRA).circle(1.5).extrude(18.0)
+    b = panel.union(lengueta).union(nudillo)
+    # alojamiento del imán de la punta (se pega por dentro; afuera quedan 0.5 mm de plástico)
+    b = b.cut(cq.Workplane('YZ').workplane(offset=r_in - 0.05).center(0, Z_IMAN).circle(IMAN_ASPA[0] / 2 + 0.1).extrude(IMAN_ASPA[1] + 0.15))
     b = b.cut(cq.Workplane('XZ').workplane(offset=-12).center(R_BISAGRA, Z_BISAGRA).circle(0.8).extrude(24))
     return rot(b, a)
 
 def carcasa_primaria():
+    # pared de 1.2 mm completa; en cada aspa la pared se hunde 2 mm hacia adentro (canal) y sigue cerrada
     t = anillo(RI, R, Z_PISO1, Z_TUBO_ARRIBA)
     for a in ANG_ASPAS:
-        t = t.cut(rot(ranura_tubo(), a))
+        t = t.union(rot(canal(RI_CANAL, R, Z_PISO1, Z_TUBO_ARRIBA, HOLGURA_ASPA + T), a))
+        t = t.cut(rot(canal(R_CANAL, R + 1, Z_PISO1 - 1, Z_TUBO_ARRIBA + 1, HOLGURA_ASPA), a))
     return t
 
 def espaciador(z0, z1, x, y, r=3.0):
@@ -391,7 +425,7 @@ def componentes():
     comp['balero_608'] = anillo(BALERO[1] / 2, BALERO[0] / 2, Z_TAPA[1] + 3.7 - BALERO[2], Z_TAPA[1] + 3.7)
     # 1/4 de onda (82 mm): baja pegada a la pared desde la Heltec hasta la zona del huevo
     comp['antena_lora'] = cil(0.6, z_placas()[1] + 12.0 - 82.0, z_placas()[1] + 12.0, 0, -(RI - 2.6))
-    comp['oring'] = cq.Solid.makeTorus(RI - 0.5 - 1.2 + 1.0, 1.0, pnt=cq.Vector(0, 0, sum(Z_ELEC_BASE) / 2))
+    comp['oring'] = cq.Solid.makeTorus(ORING[0] / 2 + ORING[1] / 2, ORING[1] / 2, pnt=cq.Vector(0, 0, sum(Z_ELEC_BASE) / 2))
     comp['oring'] = cq.Workplane('XY').add(comp['oring'])
     for j, (x, y) in enumerate(placa_pts()):   # sándwich de hule de la electrónica
         comp[f'hule_abajo_{j}'] = anillo(M3 / 2, HULE[0] / 2, zs[0] - HULE[1], zs[0]).translate((x, y, 0))
@@ -411,11 +445,11 @@ def componentes():
     return comp
 
 MASA_COMPRADOS = {  # g (valores típicos; pesar los reales)
-    'Huevos (2, según la guía)': 130, 'Pilas 9 V alcalinas (2)': 92, 'Servos SG90 (2)': 18,
+    'Huevos (2, según la guía)': 130, 'Pilas 9 V de litio (2; las alcalinas pesan 24 g más)': 68, 'Servos SG90 (2)': 18,
     'Heltec WiFi LoRa 32 V3': 15, 'Placas perforadas 4×6 (3)': 18, 'GY-91 + OpenLog + reguladores': 10,
     'NEO-M8N + antena': 14, 'ESP32-C3 + RFM95W + NEO-6M': 15, 'Balero 688ZZ': 4,
     'Varillas M3 de acero (3) + tornillería': 26, 'Cables, conectores, o-ring y hules': 20, 'Espuma EVA y ligas': 12,
-    'Pasador de acero y alambres': 4,
+    'Pasador de acero y alambres': 4, 'Imanes de neodimio (6)': 4,
 }
 
 # =============================================================== ARMADO ===

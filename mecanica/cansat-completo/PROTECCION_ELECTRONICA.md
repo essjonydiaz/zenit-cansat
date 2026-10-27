@@ -30,7 +30,7 @@ Todo el módulo mide ~61 mm de alto y entra en el tubo, que mide Ø 93.6 mm por 
 
 | Golpe o riesgo | Qué lo absorbe |
 |---|---|
-| Golpe de lado | La carcasa: las placas no tocan la pared. El **o-ring** del disco base frena y centra el módulo |
+| Golpe de lado | La carcasa: las placas no tocan la pared. El **o-ring** del disco base se apoya en los 3 canales de las aspas: frena y centra el módulo |
 | Golpe de arriba a abajo (aterrizaje) | **Sándwich de hule:** 4 arandelas abajo de la placa 1 y 4 arriba de la placa 3 |
 | Vibración y rebotes | El mismo hule; las placas no quedan sueltas |
 | Que algo se mueva | Cada placa va con 4 tornillos M3; nada cuelga |
@@ -95,7 +95,7 @@ Las imágenes son el modelo real en CAD. Para que la pieza impresa se vea igual:
 | Cantidad | Pieza |
 |---|---|
 | 8 | Arandelas de hule o silicón Ø 8 × 3 × 2 mm |
-| 1 | O-ring 88 × 2 mm |
+| 1 | O-ring 86 × 2 mm |
 | 4 | Tuercas M3 con seguro de nylon |
 | — | Silicón, termofit, cinchos chicos y cinta |
 | 1 | Calcomanía de vinil del logo (4.5 × 6 cm) |
