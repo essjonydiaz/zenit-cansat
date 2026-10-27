@@ -76,9 +76,6 @@ function materiales(calidad) {
     huevo: new THREE.MeshStandardMaterial({ color: 0xf3ead9, roughness: 0.62 }),
     espuma: new THREE.MeshStandardMaterial({ color: 0xe0b93f, roughness: 0.95 }),
     cobre: new THREE.MeshStandardMaterial({ color: 0xd08a4a, metalness: 0.9, roughness: 0.3 }),
-    verde: new THREE.MeshBasicMaterial({ color: 0x14975a }),
-    blanco: new THREE.MeshBasicMaterial({ color: 0xf2f5fb }),
-    rojo: new THREE.MeshBasicMaterial({ color: 0xe0283c }),
   };
 }
 
@@ -137,16 +134,6 @@ function servoSg90(M) {
   return g;
 }
 
-function anilloTricolor(M, y) {
-  const g = new THREE.Group();
-  [M.verde, M.blanco, M.rojo].forEach((mat, i) => {
-    const anillo = new THREE.Mesh(new THREE.CylinderGeometry(R + 0.03, R + 0.03, 0.22, 64, 1, true, (i * 2 * Math.PI) / 3 + 0.4, (2 * Math.PI) / 3 - 0.05), mat);
-    anillo.position.y = y;
-    g.add(anillo);
-  });
-  return g;
-}
-
 export function crearCanSat({ calidad = 'alta' } = {}) {
   const M = materiales(calidad);
   const grupo = new THREE.Group();
@@ -178,7 +165,6 @@ export function crearCanSat({ calidad = 'alta' } = {}) {
   letrero.position.y = UNION + 2.2;
   letrero.renderOrder = 3;
   primaria.add(letrero);
-  primaria.add(anilloTricolor(M, UNION + 0.9));
 
   // Aros de aluminio en los extremos
   const aro = (y) => {

@@ -1,17 +1,17 @@
 # Graph Report - zenit-cansat  (2026-10-26)
 
 ## Corpus Check
-- 85 files · ~62,773 words
+- 85 files · ~62,694 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 17 file(s) not represented in the graph (top: (none) 4, .properties 4, .ini 4)
 
 ## Summary
-- 949 nodes · 1488 edges · 54 communities (47 shown, 7 thin omitted)
+- 948 nodes · 1486 edges · 51 communities (45 shown, 6 thin omitted)
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 82 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9f256317`
+- Built from commit: `a044d64f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -41,7 +41,7 @@
 - Prueba P6 servos
 - Registro de sesión (logs CSV)
 - Checksums: protocolo y UBX
-- Parametros
+- ZenitPantalla.cpp
 - Reproducción de sesiones
 - 6. Día del lanzamiento — checklist
 - SimuladorVuelo.cpp
@@ -57,18 +57,16 @@
 - 7. Requisitos y riesgos
 - 10. Pendientes del equipo antes de la primera prueba
 - README.md
-- math
+- dependencies
 - AGENTS.md — Guía para asistentes de IA (Claude Code, Copilot, Codex, Cursor…)
 - GRAPHIFY.md — Mapa de conocimiento del repositorio
 - documentos/README.md
 - mecanica/README.md
+- Sensores
 - DESIGN.md — Zénit
-- MaquinaEstados.cpp
+- scripts
 - PRODUCT.md — Zénit
-- MaquinaEstados.h
 - intro.js
-- Estado
-- Evento
 
 ## God Nodes (most connected - your core abstractions)
 1. `Simulador` - 23 edges
@@ -97,7 +95,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (54 total, 7 thin omitted)
+## Communities (51 total, 6 thin omitted)
 
 ### Community 0 - "Panel web: dibujo, alertas y diagnóstico (app.js)"
 Cohesion: 0.07
@@ -112,8 +110,8 @@ Cohesion: 0.09
 Nodes (45): abrirAutogiro(), abrirDesacople(), actualizarGps(), actualizarIndicadores(), actualizarLocalizacionRelativa(), actualizarPantalla(), actualizarSeparacion(), apagarServosInactivos() (+37 more)
 
 ### Community 3 - "MaquinaEstados"
-Cohesion: 0.18
-Nodes (8): MaquinaEstados, alturaMax_, cuentaDesacople_, p_, tInicioCondicion_, tInicioQuieto_, test_no_desacopla_si_no_se_armo(), test_pausa_del_dron_no_es_aterrizaje()
+Cohesion: 0.05
+Nodes (34): Entrada, altura, gTotal, t, velocidad, Estado, ASCENSO, ATERRIZADO (+26 more)
 
 ### Community 4 - "Orientacion"
 Cohesion: 0.07
@@ -124,8 +122,8 @@ Cohesion: 0.08
 Nodes (25): encolar(), enviarTrama(), escribirLinea(), Estado, archivo, crcMalos, descartadas, errorLora (+17 more)
 
 ### Community 6 - "ZenitComun.h"
-Cohesion: 0.07
-Nodes (11): Pantalla, texto_, actualizarPantalla(), loop(), procesarLineaPc(), buzzer(), enviarBaliza(), led() (+3 more)
+Cohesion: 0.06
+Nodes (22): Evento, EV_ASCENSO, EV_ATERRIZAJE, EV_DESACOPLE, EV_LIBERACION, EV_NINGUNO, Accion, ABRIR_AUTOGIRO (+14 more)
 
 ### Community 7 - "Enlace LoRa RadioLib (ZenitRadio)"
 Cohesion: 0.10
@@ -140,16 +138,16 @@ Cohesion: 0.16
 Nodes (9): analizar(), cumple(), elegir_vuelo(), escribir_resumen(), graficar(), leer_datos(), main(), numero_en() (+1 more)
 
 ### Community 10 - "Protocolo de tramas en JavaScript"
-Cohesion: 0.16
+Cohesion: 0.15
 Nodes (18): BANDERAS, checksum(), decodificarBanderas(), enmarcar(), ESTADOS, FUENTE, parsearCarga(), procesarLinea() (+10 more)
 
 ### Community 11 - "Secuencia"
 Cohesion: 0.08
-Nodes (19): Accion, ABRIR_AUTOGIRO, ABRIR_DESACOPLE, CERRAR_DESACOPLE, CONFIRMADA, NINGUNA, NO_CONFIRMADA, Parametros (+11 more)
+Nodes (16): distanciaMetros(), grad(), rad(), rumboGrados(), Parametros, cambioMinimoG, duracionReintentoMs, retardoAutogiroMs (+8 more)
 
 ### Community 12 - "Datos de sensores de la primaria"
-Cohesion: 0.06
-Nodes (26): DatosSensores, ax, ay, az, baroOk, gpsSimulado, gx, gy (+18 more)
+Cohesion: 0.10
+Nodes (21): DatosSensores, ax, ay, az, baroOk, gpsSimulado, gx, gy (+13 more)
 
 ### Community 13 - "Parte B — Primera prueba con el hardware (en este orden)"
 Cohesion: 0.11
@@ -165,11 +163,11 @@ Nodes (17): Lectura, alturaReal, ax, ay, az, fase, gx, gy (+9 more)
 
 ### Community 16 - "cansat3d.js"
 Cohesion: 0.08
-Nodes (42): anilloTricolor(), caja(), crearCanSat(), actualizar(), en(), huevo(), lerp(), materiales() (+34 more)
+Nodes (41): caja(), crearCanSat(), actualizar(), en(), huevo(), lerp(), materiales(), pila9v() (+33 more)
 
 ### Community 17 - "package.json"
-Cohesion: 0.06
-Nodes (29): dependencies, chart.js, express, @fontsource-variable/archivo, @fontsource-variable/jetbrains-mono, serialport, @serialport/parser-readline, three (+21 more)
+Cohesion: 0.10
+Nodes (15): description, engines, node, main, name, private, version, PuertoSerie (+7 more)
 
 ### Community 18 - "Pruebas de separación (Unity)"
 Cohesion: 0.13
@@ -184,7 +182,7 @@ Cohesion: 0.15
 Nodes (13): SimuladorVuelo, este_, esteSec_, gImpacto_, h_, hSec_, p_, secSuelta_ (+5 more)
 
 ### Community 21 - "Prueba P2 calibración GY-91"
-Cohesion: 0.23
+Cohesion: 0.21
 Nodes (6): calibrarMagnetometro(), Estadistica, n, suma, suma2, setup()
 
 ### Community 22 - "Prueba P6 servos"
@@ -199,12 +197,8 @@ Nodes (6): CAMPOS, { CAMPOS }, fs, marcaTiempo(), path, Registro
 Cohesion: 0.23
 Nodes (6): checksum(), enmarcar(), validar(), valorHex(), checksum(), mensajeModeloDinamico()
 
-### Community 25 - "Parametros"
-Cohesion: 0.15
-Nodes (13): Parametros, alturaArmado, alturaDesacople, alturaDeteccionAscenso, alturaMaxAterrizaje, gCaidaLibre, lecturasDesacople, tiempoConfirmacionAscenso (+5 more)
-
 ### Community 26 - "Reproducción de sesiones"
-Cohesion: 0.17
+Cohesion: 0.18
 Nodes (4): { EventEmitter }, fs, readline, Reproduccion
 
 ### Community 27 - "6. Día del lanzamiento — checklist"
@@ -255,9 +249,9 @@ Nodes (14): 10. Pendientes del equipo antes de la primera prueba, 1. Componentes
 Cohesion: 0.21
 Nodes (4): Solo para Claude Code, 5. Plan de pruebas (CoDR P1–P9 + plan del PDR), Bitácora, Pruebas de software (automáticas)
 
-### Community 41 - "math"
-Cohesion: 0.27
-Nodes (4): distanciaMetros(), grad(), rad(), rumboGrados()
+### Community 41 - "dependencies"
+Cohesion: 0.22
+Nodes (9): dependencies, chart.js, express, @fontsource-variable/archivo, @fontsource-variable/jetbrains-mono, serialport, @serialport/parser-readline, three (+1 more)
 
 ### Community 42 - "AGENTS.md — Guía para asistentes de IA (Claude Code, Copilot, Codex, Cursor…)"
 Cohesion: 0.22
@@ -267,36 +261,32 @@ Nodes (9): 1. Ahorra tokens: lee el mapa antes que el código, 2. Qué es cada c
 Cohesion: 0.40
 Nodes (5): Actualizar, Consultar (sin costo de API), GRAPHIFY.md — Mapa de conocimiento del repositorio, Qué entra y qué no, Qué hay en `graphify-out/`
 
+### Community 46 - "Sensores"
+Cohesion: 0.14
+Nodes (5): Sensores, autogiro_, dirBaro_, tJalon_, tUltimoMag_
+
 ### Community 47 - "DESIGN.md — Zénit"
 Cohesion: 0.22
 Nodes (9): Colors, Components, DESIGN.md — Zénit, Do's and Don'ts, Elevation & Depth, Layout, Overview, Shapes (+1 more)
+
+### Community 48 - "scripts"
+Cohesion: 0.40
+Nodes (5): scripts, replay, simular, start, test
 
 ### Community 49 - "PRODUCT.md — Zénit"
 Cohesion: 0.29
 Nodes (7): Lo que no se negocia, Marca, PRODUCT.md — Zénit, Quién lo usa y dónde, Qué es, Superficies, Voz
 
-### Community 50 - "MaquinaEstados.h"
-Cohesion: 0.33
-Nodes (5): Entrada, altura, gTotal, t, velocidad
-
-### Community 52 - "Estado"
-Cohesion: 0.33
-Nodes (6): Estado, ASCENSO, ATERRIZADO, CAIDA_LIBRE, DESCENSO_AUTOGIRO, PREVUELO
-
-### Community 53 - "Evento"
-Cohesion: 0.33
-Nodes (6): Evento, EV_ASCENSO, EV_ATERRIZAJE, EV_DESACOPLE, EV_LIBERACION, EV_NINGUNO
-
 ## Knowledge Gaps
 - **192 isolated node(s):** `@fontsource-variable/archivo`, `@fontsource-variable/jetbrains-mono`, `chart.js`, `k1_`, `k2_` (+187 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 487 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Consecuencias` connect `decisiones/README.md` to `cansat3d.js`?**
-  _High betweenness centrality (0.326) - this node is a cross-community bridge._
+  _High betweenness centrality (0.325) - this node is a cross-community bridge._
 - **Are the 4 inferred relationships involving `SimuladorVuelo` (e.g. with `Modos de compilación` and `test_frenon_del_autogiro_no_confirma_separacion()`) actually correct?**
   _`SimuladorVuelo` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `@fontsource-variable/archivo`, `@fontsource-variable/jetbrains-mono`, `chart.js` to the rest of the system?**
@@ -304,8 +294,8 @@ _Questions this graph is uniquely positioned to answer:_
 - **Should `Panel web: dibujo, alertas y diagnóstico (app.js)` be split into smaller, more focused modules?**
   _Cohesion score 0.07082494969818913 - nodes in this community are weakly interconnected._
 - **Why does `crearCanSat()` connect `cansat3d.js` to `decisiones/README.md`?**
-  _High betweenness centrality (0.326) - this node is a cross-community bridge._
+  _High betweenness centrality (0.325) - this node is a cross-community bridge._
 - **Should `Drivers GY-91 y GPS (ZenitSensores)` be split into smaller, more focused modules?**
-  _Cohesion score 0.06509803921568627 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06612244897959184 - nodes in this community are weakly interconnected._
 - **Should `Firmware de vuelo de la primaria (main.cpp)` be split into smaller, more focused modules?**
   _Cohesion score 0.08953900709219859 - nodes in this community are weakly interconnected._

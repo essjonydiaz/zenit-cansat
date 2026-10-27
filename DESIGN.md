@@ -176,8 +176,9 @@ si alguien recarga en pleno vuelo.
 - **Negro espacial (#03060C):** fondo. Nunca negro puro: lleva un poco de azul.
 - **Vidrio ahumado (#17171B):** las piezas de la portada (MeshPhysicalMaterial con
   iridiscencia) y, en CSS, paneles translúcidos con desenfoque.
-- **Tricolor (#14975A / blanco / #E0283C):** firma, nunca relleno. Una línea de 2 px bajo
-  la marca, en la intro, en el pie y como anillo en el modelo 3D.
+- **Tricolor (#14975A / blanco / #E0283C):** firma, nunca relleno. Solo la línea de 2 px
+  bajo la marca del panel y las líneas junto a "MÉXICO" en la intro. No va en el pie ni en
+  el modelo 3D.
 - **Estados:** ok #34D58A, aviso #F6B73C, crítico #FF5D5D. Siempre acompañados de texto o
   símbolo (✓ ⚠ ✕), nunca solo color.
 - **Fases del vuelo:** prevuelo, ascenso, caída libre, autogiro y aterrizado tienen color
