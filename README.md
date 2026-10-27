@@ -51,6 +51,7 @@ Hardware tal como quedó en el **PDR (etapa 3)**. Pines y diferencias encontrada
 | [docs/08-git-y-github.md](docs/08-git-y-github.md) | Trabajo en equipo con Git |
 | [docs/09-guia-primera-prueba.md](docs/09-guia-primera-prueba.md) | Dejar la PC lista y primera prueba con hardware |
 | [docs/10-pendientes-del-equipo.md](docs/10-pendientes-del-equipo.md) | Pendientes y preguntas al equipo |
+| [docs/11-servidor-local.md](docs/11-servidor-local.md) | Prender y apagar el servidor del panel, y qué hacer con «Cannot GET» |
 | [docs/decisiones/](docs/decisiones/README.md) | Por qué se decidió cada cosa (ADR) |
 | [DESIGN.md](DESIGN.md) · [PRODUCT.md](PRODUCT.md) | Sistema visual de la interfaz y a quién sirve |
 | [AGENTS.md](AGENTS.md) · [CLAUDE.md](CLAUDE.md) · [GRAPHIFY.md](GRAPHIFY.md) | Reglas para asistentes de IA y uso del grafo de conocimiento |

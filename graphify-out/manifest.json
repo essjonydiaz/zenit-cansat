@@ -18,9 +18,9 @@
     "semantic_hash": ""
   },
   "estacion-terrena/server.js": {
-    "mtime": 1793071606.493515,
-    "seen": 1793072085.8826275,
-    "ast_hash": "f2b50e7e13d49c3f8a56a3e2c104d2ca",
+    "mtime": 1793077964.3677912,
+    "seen": 1793078193.3135662,
+    "ast_hash": "ba1a582226f80f795b12da1c60f75844",
     "semantic_hash": ""
   },
   "estacion-terrena/src/fuentes.js": {
@@ -354,9 +354,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1793071606.7394915,
-    "seen": 1793072085.8826275,
-    "ast_hash": "6979521f7b1027cfd3cbf6b02ea583d3",
+    "mtime": 1793078181.3250055,
+    "seen": 1793078193.3135662,
+    "ast_hash": "4125051e790e1a67c2743a3076bf33db",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -366,9 +366,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1793066104.9218466,
-    "seen": 1793066129.5385845,
-    "ast_hash": "0a417553e1a757c112317aab18421d03",
+    "mtime": 1793078179.698874,
+    "seen": 1793078193.3135662,
+    "ast_hash": "b9533b23447deaf36a8725a2c53d2af8",
     "semantic_hash": ""
   },
   "docs/01-arquitectura.md": {
@@ -510,9 +510,9 @@
     "semantic_hash": ""
   },
   "PRODUCT.md": {
-    "mtime": 1793071606.9580796,
-    "seen": 1793072085.8826275,
-    "ast_hash": "fc6352bedfe254b1e0206aacc4388f81",
+    "mtime": 1793077832.952153,
+    "seen": 1793077844.6454523,
+    "ast_hash": "e555d7a703055e6be3253fd97c56b7e8",
     "semantic_hash": ""
   },
   "docs/10-pendientes-del-equipo.md": {
@@ -561,6 +561,36 @@
     "mtime": 1793071605.7973714,
     "seen": 1793072085.8826275,
     "ast_hash": "bd7fffd569d589bb0ecfe7f9d924b523",
+    "semantic_hash": ""
+  },
+  "estacion-terrena/public/mision3d.js": {
+    "mtime": 1793077556.3635926,
+    "seen": 1793077844.6454523,
+    "ast_hash": "56cf4a7581a3c488064f96f313b58662",
+    "semantic_hash": ""
+  },
+  "estacion-terrena/public/v3.js": {
+    "mtime": 1793077668.400957,
+    "seen": 1793077844.6454523,
+    "ast_hash": "b329590bb9a866ca013f0f97978279dc",
+    "semantic_hash": ""
+  },
+  "estacion-terrena/public/v3.html": {
+    "mtime": 1793077565.8895266,
+    "seen": 1793077844.6454523,
+    "ast_hash": "1ec0d0142524737de27f835ff5fe204b",
+    "semantic_hash": ""
+  },
+  "estacion-terrena/test/rutas.test.js": {
+    "mtime": 1793077965.1504536,
+    "seen": 1793078193.3135662,
+    "ast_hash": "0a4fdaa8e325c496345364306525cd4e",
+    "semantic_hash": ""
+  },
+  "docs/11-servidor-local.md": {
+    "mtime": 1793078178.836138,
+    "seen": 1793078193.3135662,
+    "ast_hash": "1d95fe94e338f3e85442b5c7891c8a76",
     "semantic_hash": ""
   }
 }

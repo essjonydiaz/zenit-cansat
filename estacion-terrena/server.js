@@ -47,9 +47,17 @@ const CARPETA_LOGS = path.join(__dirname, 'logs');
 // ------------------------------------------------------------- Servidor --
 const app = express();
 app.use(express.json());
+// Una URL copiada de un texto o de la terminal a veces trae el punto o la coma
+// de la oración ("…/v3."): se redirige a la ruta sin esa puntuación.
+app.use((req, res, next) => {
+  const limpia = req.path.replace(/[.,;:)]+$/, '');
+  if (limpia && limpia !== req.path) return res.redirect(302, limpia);
+  next();
+});
 app.use(express.static(path.join(__dirname, 'public')));
-// Segunda edición del panel (para compararla con la primera en /).
+// Segunda y tercera edición del panel (para compararlas con la primera en /).
 app.get('/v2', (req, res) => res.sendFile(path.join(__dirname, 'public', 'v2.html')));
+app.get('/v3', (req, res) => res.sendFile(path.join(__dirname, 'public', 'v3.html')));
 // Chart.js servido localmente: en la cancha NO hay internet.
 app.use('/vendor', express.static(path.join(__dirname, 'node_modules', 'chart.js', 'dist')));
 // Lo mismo para el modelo 3D (three.js) y las tipografías del panel.
