@@ -5,3 +5,4 @@
 *.jpg binary
 *.pdf binary
 *.stl binary
+graphify-out/graph.json merge=graphify

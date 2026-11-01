@@ -1,12 +1,8 @@
 {
   "0": "Panel web: dibujo, alertas y diagnóstico (app.js)",
-  "1": "Drivers GY-91 y GPS (ZenitSensores)",
   "2": "Firmware de vuelo de la primaria (main.cpp)",
-  "5": "Radio + OpenLog en tarea aparte (Comunicaciones)",
-  "7": "Enlace LoRa RadioLib (ZenitRadio)",
   "8": "Servidor de la estación terrena (server.js)",
   "9": "Análisis de vuelo para el RAM (Python)",
-  "10": "Protocolo de tramas en JavaScript",
   "12": "Datos de sensores de la primaria",
   "14": "Pruebas del servidor (node:test)",
   "15": "Lecturas del simulador de vuelo",
@@ -16,6 +12,5 @@
   "22": "Prueba P6 servos",
   "23": "Registro de sesión (logs CSV)",
   "24": "Checksums: protocolo y UBX",
-  "26": "Reproducción de sesiones",
   "30": "Fases del simulador"
 }
