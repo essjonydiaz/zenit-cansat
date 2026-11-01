@@ -51,7 +51,7 @@ static zsensores::Imu imu;
 static zsensores::Barometro baro;
 
 bool Sensores::iniciar() {
-  // GY-91 en el bus Wire (GPIO 41/42). 400 kHz: leer IMU + barómetro tarda <1 ms.
+  // GY-91 en el bus Wire (GPIO 47/48). 400 kHz: leer IMU + barómetro tarda <1 ms.
   baroOk_ = baro.iniciar(Wire);
   dirBaro_ = baro.direccion();
   modeloBaro_ = baro.modelo();

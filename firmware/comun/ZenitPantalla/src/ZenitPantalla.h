@@ -2,7 +2,7 @@
 //  ZenitPantalla.h — OLED 0.96" (SSD1306, 128x64) integrada en el Heltec V3.
 //
 //  Usa su propio bus I2C (Wire1, GPIO 17/18), así que NO interfiere con el
-//  GY-91 (Wire, GPIO 41/42). La pantalla se alimenta por "Vext" (GPIO 36):
+//  GY-91 (Wire, GPIO 47/48). La pantalla se alimenta por "Vext" (GPIO 36):
 //  apagarla en vuelo ahorra unos 10-20 mA de la pila de 9 V.
 //
 //  Muestra hasta 5 renglones de texto (≈21 caracteres cada uno).

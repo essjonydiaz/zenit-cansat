@@ -23,19 +23,19 @@ Parámetros del radio (deben ser iguales en las 3 placas, ya están en el softwa
 | Módulo | Pin del módulo | Pin de la Heltec | Notas |
 |---|---|---|---|
 | GY-91 | VIN / GND | 3.3 V del AMS1117 / GND | El GY-91 acepta de 3.3 a 5 V |
-| GY-91 | SDA / SCL | GPIO41 / GPIO42 | IMU en 0x68, barómetro en 0x76, brújula en 0x0C |
+| GY-91 | SDA / SCL | GPIO47 / GPIO48 | IMU en 0x68, barómetro en 0x76, brújula en 0x0C |
 | GPS NEO-M8N | VCC / GND | 3.3 V o 5 V según el módulo / GND | Antena del GPS mirando hacia arriba |
-| GPS NEO-M8N | TX del GPS | GPIO47 | La placa recibe aquí |
-| GPS NEO-M8N | RX del GPS | GPIO48 | La placa manda aquí la configuración de vuelo |
+| GPS NEO-M8N | TX del GPS | GPIO5 | La placa recibe aquí |
+| GPS NEO-M8N | RX del GPS | GPIO6 | La placa manda aquí la configuración de vuelo |
 | OpenLog | VCC / GND | 3.3 V / GND | microSD en FAT32 |
 | OpenLog | RXI | GPIO4 | La placa escribe aquí los datos |
-| OpenLog | TXO | GPIO5 | Para saber si el OpenLog está vivo |
+| OpenLog | TXO | GPIO41 | Para saber si el OpenLog está vivo |
 | Servo de desacople (SG90) | Rojo / Café | 5 V del MP1584EN / GND | Nunca del 3.3 V de la placa |
 | Servo de desacople (SG90) | Naranja (señal) | GPIO2 | |
 | Servo del autogiro (SG90) | Rojo / Café | 5 V del MP1584EN / GND | |
 | Servo del autogiro (SG90) | Naranja (señal) | GPIO3 | |
-| Pila 9 V (medición) | Divisor 100 kΩ / 33 kΩ | GPIO6 | No aparece en el PDR; ver sección 4 |
-| Buzzer activo (opcional) | + / - | GPIO7 / GND | Para encontrar el CanSat en el pasto |
+| Pila 9 V (medición) | Divisor 100 kΩ / 33 kΩ | GPIO7 | No aparece en el PDR; ver sección 4 |
+| Buzzer activo (opcional) | + / - | GPIO42 / GND | Para encontrar el CanSat en el pasto |
 | Radio SX1262 | Interno | GPIO 8 a 14 | Ya viene conectado. Antena IPEX de 915 MHz |
 | Pantalla OLED | Interno | GPIO 17, 18, 21 y 36 | Muestra el estado en tierra; se apaga en vuelo |
 | LED blanco | Interno | GPIO35 | Lento en tierra, rápido en vuelo, fijo al aterrizar |
@@ -49,7 +49,7 @@ Pila 9V -- interruptor --+--> MP1584EN ajustado a 5.0 V --+--> pin 5V de la Helt
                          |                                +--> servo de desacople
                          |                                +--> servo del autogiro (470 uF junto)
                          |                                +--> AMS1117-3.3 --> GY-91, NEO-M8N, OpenLog
-                         +--> 100 kOhm --+-- GPIO6
+                         +--> 100 kOhm --+-- GPIO7
                                        33 kOhm
                                          +-- GND
 ```
@@ -82,8 +82,8 @@ La secundaria transmite su posición cada 2 segundos. El C3 se programa por su U
    cuando se conecta el USB para programar.
 4. No alimentar sensores desde los pines "Ve" de la Heltec: el software los apaga en vuelo
    para ahorrar pila.
-5. Agregar el divisor para medir la pila, que no aparece en el PDR: 100 kΩ de la pila a GPIO6
-   y 33 kΩ de GPIO6 a GND en la primaria; lo mismo hacia GPIO1 en la secundaria. Con una pila
+5. Agregar el divisor para medir la pila, que no aparece en el PDR: 100 kΩ de la pila a GPIO7
+   y 33 kΩ de GPIO7 a GND en la primaria; lo mismo hacia GPIO1 en la secundaria. Con una pila
    nueva de 9.6 V el pin recibe 2.38 V, que es seguro. Si no se pone, todo funciona pero la
    estación terrena dice "batería sin medir".
 6. Conectar con los pines de las tablas de las secciones 2 y 3, no con los del diagrama de la

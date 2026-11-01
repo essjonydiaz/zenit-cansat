@@ -81,6 +81,7 @@ bool Imu::iniciar(TwoWire& bus) {
   escribir(dir_, reg::GYRO_CONFIG, 0x18);  // ±2000 °/s
   escribir(dir_, reg::ACCEL_CONFIG, 0x18); // ±16 g
   if (whoAmI_ != 0x68) escribir(dir_, reg::ACCEL_CONFIG2, 0x03);  // acel ~41 Hz
+  delay(50);  // la primera muestra aún viene en ±2 g y se leería 8 veces más grande
   ok_ = true;
   if (whoAmI_ == 0x71 || whoAmI_ == 0x73) magOk_ = iniciarMag();
   return ok_;

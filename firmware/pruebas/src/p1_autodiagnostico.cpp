@@ -54,7 +54,7 @@ static void diagnosticar() {
   if (n == 0) {
     resultado("Cables del GY-91", false, "ningun dispositivo en el bus I2C",
               "el GY-91 no contesta nada. 1) VIN del GY-91 con 3.3 V y GND a GND (medir con "
-              "multimetro). 2) SDA -> GPIO41 y SCL -> GPIO42 (no invertidos). 3) soldaduras.");
+              "multimetro). 2) SDA -> GPIO47 y SCL -> GPIO48 (no invertidos). 3) soldaduras.");
   }
 
   zsensores::Barometro baro;
@@ -119,7 +119,7 @@ static void diagnosticar() {
   resultado("GPS NEO-M8N", dolares > 0, det,
             caracteres == 0
                 ? "no llega nada. 1) el GPS debe tener su LED encendido/parpadeando (si no: VCC y "
-                  "GND). 2) el TX del GPS va a GPIO47 (si esta en GPIO48 estan invertidos)."
+                  "GND). 2) el TX del GPS va a GPIO5 (si esta en GPIO6 estan invertidos)."
                 : "llegan datos basura: velocidad distinta de 9600 baudios o cable con ruido.");
 
   // --- OpenLog: al reiniciarse imprime '<' cuando ya abrió su archivo ---
@@ -136,17 +136,17 @@ static void diagnosticar() {
   resultado("OpenLog (microSD)", openlogVisto,
             openlogVisto ? "respondio '<' (archivo abierto)" : "no respondio",
             "1) LED del OpenLog: si parpadea rapido, la microSD falta o no es FAT32. 2) RXI del "
-            "OpenLog <- GPIO4 y TXO -> GPIO5. 3) config.txt en la microSD (115200).");
+            "OpenLog <- GPIO4 y TXO -> GPIO41. 3) config.txt en la microSD (115200).");
 
   // --- Batería ---
   uint32_t mv = 0;
   for (int i = 0; i < 16; ++i) mv += analogReadMilliVolts(heltec::BATERIA_ADC);
   const float vPin = mv / 16000.0f;
   const float vBat = vPin * (100.0f + 33.0f) / 33.0f;  // divisor 100k/33k (pila 9 V)
-  snprintf(det, sizeof(det), "pin GPIO6 = %.2f V -> pila ~%.2f V", vPin, vBat);
+  snprintf(det, sizeof(det), "pin GPIO7 = %.2f V -> pila ~%.2f V", vPin, vBat);
   const char* arregloBat =
-      vPin < 0.3f ? "no hay divisor: soldar 100k de la pila a GPIO6 y 33k de GPIO6 a GND."
-      : vPin > 3.0f ? "PELIGRO: llega demasiado voltaje al GPIO6. Revisar que las resistencias "
+      vPin < 0.3f ? "no hay divisor: soldar 100k de la pila a GPIO7 y 33k de GPIO7 a GND."
+      : vPin > 3.0f ? "PELIGRO: llega demasiado voltaje al GPIO7. Revisar que las resistencias "
                       "sean 100k (arriba) y 33k (abajo), no al reves."
                     : "pila baja: cambiarla por una nueva (minimo 8.5 V para volar).";
   resultado("Pila 9 V", vPin >= 0.3f && vPin <= 3.0f && vBat >= 8.5f, det, arregloBat);

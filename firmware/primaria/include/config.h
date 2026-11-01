@@ -78,7 +78,7 @@
 #define OPENLOG_BAUDIOS  115200
 
 // --------------------------------------------------------------- Batería ----
-// Divisor resistivo hacia GPIO6: V_bat -> R_ARRIBA -> GPIO6 -> R_ABAJO -> GND
+// Divisor resistivo hacia GPIO7: V_bat -> R_ARRIBA -> GPIO7 -> R_ABAJO -> GND
 // Pila 9 V : R_ARRIBA = 100k, R_ABAJO = 33k  -> 9.6 V entran como 2.38 V
 // (el diagrama del PDR no trae divisor: hay que agregar estas 2 resistencias;
 //  sin ellas el panel muestra "sin medir" y NO da falsa alarma).

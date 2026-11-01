@@ -7,7 +7,7 @@
 //
 //  IMPORTANTE: el OpenLog viene a 9600 baudios. Copiar a la microSD el archivo
 //  documentos/openlog/config.txt (115200 baudios) ANTES de esta prueba.
-//  Conexión: GPIO4 -> RXI del OpenLog, TXO del OpenLog -> GPIO5, VCC 3.3 V, GND.
+//  Conexión: GPIO4 -> RXI del OpenLog, TXO del OpenLog -> GPIO41, VCC 3.3 V, GND.
 //  Criterio: 1000 de 1000 líneas en el archivo.
 // =============================================================================
 #include <Arduino.h>

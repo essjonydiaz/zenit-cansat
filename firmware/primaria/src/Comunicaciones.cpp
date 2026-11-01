@@ -35,7 +35,7 @@ bool iniciarRegistro() {
   openlog.setTxBufferSize(4096);  // 25 líneas/s sin bloquear
   openlog.begin(OPENLOG_BAUDIOS, SERIAL_8N1, heltec::OPENLOG_RX, heltec::OPENLOG_TX);
   // El OpenLog, al encender, imprime "12<" cuando ya abrió su archivo. Si el
-  // cable TXO -> GPIO5 está conectado lo vemos; si no, se escribe "a ciegas".
+  // cable TXO -> GPIO41 está conectado lo vemos; si no, se escribe "a ciegas".
   const uint32_t inicio = millis();
   while (millis() - inicio < 2500) {
     while (openlog.available()) {

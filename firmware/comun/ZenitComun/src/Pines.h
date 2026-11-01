@@ -21,7 +21,7 @@
 //   - GPIO 0, 45, 46: afectan el arranque. 35 = LED blanco. 36 = Vext.
 //   - GPIO 22-25 NO EXISTEN en el ESP32-S3 (el diagrama del PDR usa 25/26).
 //   - Libres en los pines de la placa: 2-7 (con ADC), 39-42, 47, 48.
-//   - Entradas analógicas: usar ADC1 = GPIO 1-10 (aquí: 6).
+//   - Entradas analógicas: usar ADC1 = GPIO 1-10 (aquí: 7).
 // -----------------------------------------------------------------------------
 namespace heltec {
 
@@ -45,21 +45,21 @@ constexpr int8_t BOTON = 0;   // botón PRG
 
 // ---- Conexiones externas de la CARGA PRIMARIA ----
 // GY-91 (MPU9250 en 0x68 + BMP280 en 0x76) por I2C (bus "Wire")
-constexpr int8_t I2C_SDA = 41;
-constexpr int8_t I2C_SCL = 42;
+constexpr int8_t I2C_SDA = 47;
+constexpr int8_t I2C_SCL = 48;
 
 // GPS NEO-M8N por UART1  (TX del GPS -> GPS_RX de la placa)
-constexpr int8_t GPS_RX = 47;  // la placa RECIBE aquí  <- TX del GPS
-constexpr int8_t GPS_TX = 48;  // la placa ENVÍA aquí   -> RX del GPS
+constexpr int8_t GPS_RX = 5;   // la placa RECIBE aquí  <- TX del GPS
+constexpr int8_t GPS_TX = 6;   // la placa ENVÍA aquí   -> RX del GPS
 
 // OpenLog (registro en microSD) por UART2
 constexpr int8_t OPENLOG_TX = 4;  // la placa ENVÍA aquí  -> RXI del OpenLog
-constexpr int8_t OPENLOG_RX = 5;  // la placa RECIBE aquí <- TXO del OpenLog (para saber si está vivo)
+constexpr int8_t OPENLOG_RX = 41; // la placa RECIBE aquí <- TXO del OpenLog (para saber si está vivo)
 
 // Alternativa si se usa un lector microSD SPI en lugar del OpenLog
 // (bus SPI propio, separado del radio). Ver REGISTRO_TIPO en config.h.
 constexpr int8_t SD_CS   = 4;
-constexpr int8_t SD_SCK  = 5;
+constexpr int8_t SD_SCK  = 41;
 constexpr int8_t SD_MISO = 39;
 constexpr int8_t SD_MOSI = 40;
 
@@ -67,11 +67,11 @@ constexpr int8_t SD_MOSI = 40;
 constexpr int8_t SERVO_DESACOPLE = 2;  // suelta la carga secundaria
 constexpr int8_t SERVO_AUTOGIRO  = 3;  // libera las palas del autogiro
 
-// Voltaje de la pila de 9 V: divisor 100k / 33k hacia este pin (ADC1_CH5)
-constexpr int8_t BATERIA_ADC = 6;
+// Voltaje de la pila de 9 V: divisor 100k / 33k hacia este pin (ADC1_CH6)
+constexpr int8_t BATERIA_ADC = 7;
 
 // Buzzer de localización (opcional; si no se instala, no pasa nada)
-constexpr int8_t BUZZER = 7;
+constexpr int8_t BUZZER = 42;
 
 }  // namespace heltec
 

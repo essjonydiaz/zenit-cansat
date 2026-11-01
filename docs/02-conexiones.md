@@ -16,19 +16,19 @@ Componentes (PDR, diapositivas 10 y 12):
 | Módulo | Pin del módulo | Pin de la Heltec | Notas |
 |---|---|---|---|
 | **GY-91** | VIN / GND | 3.3 V del AMS1117 / GND | El GY-91 trae su propio regulador: acepta 3.3–5 V |
-| | SDA / SCL | **GPIO41 / GPIO42** | Bus `Wire`. MPU9250 en 0x68, BMP280 en 0x76, magnetómetro en 0x0C |
+| | SDA / SCL | **GPIO47 / GPIO48** | Bus `Wire`. IMU en 0x68, BMP280 en 0x76. El GY-91 de la torre trae MPU6500: no tiene brújula (0x0C) |
 | **GPS NEO-M8N** | VCC / GND | 3.3 V o 5 V según el módulo / GND | Antena cerámica mirando hacia arriba |
-| | TX del GPS | **GPIO47** | La placa recibe aquí |
-| | RX del GPS | **GPIO48** | Para mandarle el modo "aerotransportado" |
+| | TX del GPS | **GPIO5** | La placa recibe aquí |
+| | RX del GPS | **GPIO6** | Para mandarle el modo "aerotransportado" |
 | **OpenLog** | VCC / GND | 3.3 V / GND | microSD FAT32 con `documentos/openlog/config.txt` (115200 baudios) |
 | | RXI | **GPIO4** | La placa escribe aquí |
-| | TXO | **GPIO5** | Para saber si el OpenLog está vivo (responde `<`) |
+| | TXO | **GPIO41** | Para saber si el OpenLog está vivo (responde `<`) |
 | **Servo DESACOPLE (SG90)** | Rojo / Café | **5 V del MP1584EN** / GND | Nunca del 3.3 V de la placa. Capacitor 470 µF entre 5 V y GND |
 | | Naranja (señal) | **GPIO2** | |
 | **Servo AUTOGIRO (SG90)** | Rojo / Café | 5 V del MP1584EN / GND | |
 | | Naranja (señal) | **GPIO3** | |
-| **Pila 9 V (medición)** | divisor 100 kΩ / 33 kΩ | **GPIO6** | **Falta en el PDR**: ver abajo |
-| Buzzer activo (opcional) | + / − | **GPIO7** / GND | Para encontrar el CanSat en el pasto |
+| **Pila 9 V (medición)** | divisor 100 kΩ / 33 kΩ | **GPIO7** | **Falta en el PDR**: ver abajo |
+| Buzzer activo (opcional) | + / − | **GPIO42** / GND | Para encontrar el CanSat en el pasto |
 | Radio SX1262 | — | GPIO 8–14 (internos) | Ya viene conectado. Antena IPEX de 915 MHz, **nunca transmitir sin antena** |
 | Pantalla OLED | — | GPIO 17, 18, 21 y Vext (36) (internos) | Muestra el estado en tierra; se apaga en vuelo |
 | LED blanco | — | GPIO35 (interno) | Parpadeo lento en tierra, rápido en vuelo, fijo al aterrizar |
@@ -40,7 +40,7 @@ Pila 9V ─ reed switch ─┬─> MP1584EN ajustado a 5.0 V ─┬─> pin 5V d
                        │                              ├─> servo DESACOPLE  (470 µF junto a los servos)
                        │                              ├─> servo AUTOGIRO
                        │                              └─> AMS1117-3.3 ─> GY-91, NEO-M8N, OpenLog
-                       └─> 100 kΩ ─┬─ GPIO6
+                       └─> 100 kΩ ─┬─ GPIO7
                                    33 kΩ
                                    └─ GND
 ```
@@ -51,7 +51,7 @@ Pila 9V ─ reed switch ─┬─> MP1584EN ajustado a 5.0 V ─┬─> pin 5V d
   para ahorrar batería (corta la pantalla) y se quedarían sin energía.
 - Ajustar el MP1584EN a 5.0 V con el multímetro **antes** de conectar la placa (de fábrica
   puede venir a más de 10 V).
-- Con 9.6 V (pila nueva) el GPIO6 recibe 2.38 V: dentro del rango del ADC. Si se usa otro
+- Con 9.6 V (pila nueva) el GPIO7 recibe 2.38 V: dentro del rango del ADC. Si se usa otro
   divisor, cambiar `BATERIA_R_ARRIBA_KOHM` y `BATERIA_R_ABAJO_KOHM` en
   `firmware/primaria/include/config.h`. Sin divisor el firmware funciona igual y el panel dice
   "sin medir" (no da falsas alarmas).
@@ -96,7 +96,7 @@ correcta o para ambas, pero conviene corregirlas en el documento y en el armado:
 | 6 | Diap. 8/11 vs 10 | OpenLog vs "Módulo MicroSD" | Son distintos (UART vs SPI) | OpenLog por defecto; `REGISTRO_TIPO` en `config.h` cambia a lector SPI |
 | 7 | Diap. 5, requisito 3 | "Diámetro máximo ≤ 600 cm" | Error de captura: el CanSat mide Ø 9–10 cm | — |
 | 8 | Diap. 26 | "Batería + TP4056" | El TP4056 carga Li-Po; no se usa con pila de 9 V | — |
-| 9 | Diap. 24 | "Voltaje de batería, 0.01 V" | El diagrama no trae divisor para medirlo | Agregar 100k/33k a GPIO6 (primaria) y GPIO1 (secundaria) |
+| 9 | Diap. 24 | "Voltaje de batería, 0.01 V" | El diagrama no trae divisor para medirlo | Agregar 100k/33k a GPIO7 (primaria) y GPIO1 (secundaria) |
 | 10 | Diap. 11 | 3.3 V del AMS1117 al pin 3V3 de la Heltec | Funciona, pero se pelea con el USB al programar | Recomendado: Heltec por su pin 5V |
 
 ## Antena

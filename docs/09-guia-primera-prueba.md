@@ -195,8 +195,8 @@ instrucción concreta para cada pieza, por ejemplo:
 ```
   ---------------- QUE ARREGLAR (en este orden) ----------------
   1) GPS NEO-M8N: no llega nada. 1) el GPS debe tener su LED encendido/parpadeando (si no: VCC y
-     GND). 2) el TX del GPS va a GPIO47 (si esta en GPIO48 estan invertidos).
-  2) Pila 9 V: no hay divisor: soldar 100k de la pila a GPIO6 y 33k de GPIO6 a GND.
+     GND). 2) el TX del GPS va a GPIO5 (si esta en GPIO6 estan invertidos).
+  2) Pila 9 V: no hay divisor: soldar 100k de la pila a GPIO7 y 33k de GPIO7 a GND.
 ```
 
 Esa lista es lo que le pasas a electrónica. Se arregla una cosa a la vez y la prueba se
@@ -204,7 +204,7 @@ repite sola cada 10 s hasta que todo diga PASA. La pantalla de la placa muestra 
 Los servos no se prueban aquí (para no soltar nada por accidente): eso es el Paso 6. Notas:
 - *Magnetómetro: no hay* con un GY-91 que trae **MPU6500** es normal (no trae brújula); todo lo
   demás funciona.
-- *Pila 9 V sin divisor*: faltan las resistencias 100k/33k hacia GPIO6 (no está en el PDR).
+- *Pila 9 V sin divisor*: faltan las resistencias 100k/33k hacia GPIO7 (no está en el PDR).
 - El GPS adentro de un edificio puede no mandar posición, pero sí debe mandar caracteres.
 
 ### Paso 4 — La secundaria

@@ -6,7 +6,7 @@
 //  estables a los servos).
 //  Criterio: autonomía >= 60 min (espera en la mesa de lanzamiento + subida
 //  del dron + vuelo + 10 min de transmisión en tierra, con margen).
-//  Requiere el divisor 100k/33k hacia GPIO6.
+//  Requiere el divisor 100k/33k hacia GPIO7.
 // =============================================================================
 #include <Arduino.h>
 #include <ZenitRadio.h>

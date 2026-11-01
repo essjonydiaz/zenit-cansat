@@ -10,8 +10,8 @@ flowchart LR
       ESP2 -- SPI --> LORA2[RFM95W / SX1276]
     end
     subgraph Primaria["Carga primaria (16 cm) · Heltec WiFi LoRa 32 V3"]
-      GY[GY-91<br/>MPU9250 + BMP280] -- I2C 41/42 --> ESP1[ESP32-S3]
-      GPS1[GPS NEO-M8N] -- UART1 47/48 --> ESP1
+      GY[GY-91<br/>MPU9250 + BMP280] -- I2C 47/48 --> ESP1[ESP32-S3]
+      GPS1[GPS NEO-M8N] -- UART1 5/6 --> ESP1
       ESP1 -- PWM 2 --> SD1[Servo desacople]
       ESP1 -- PWM 3 --> SA[Servo autogiro]
       ESP1 -- UART2 4/5 --> OL[OpenLog + microSD]
