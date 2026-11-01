@@ -9,3 +9,4 @@ nuevo que la reemplaza (no se borra el viejo).
 | [0001](0001-recursos-locales-sin-internet.md) | three.js, fuentes y Chart.js se sirven desde `node_modules` | Vigente |
 | [0002](0002-sistema-visual-design-md.md) | Sistema visual "Vidrio en órbita" documentado en `DESIGN.md` | Vigente |
 | [0003](0003-modelo-3d-procedural-ilustrativo.md) | Modelo 3D del CanSat hecho en código e ilustrativo | Vigente |
+| [0004](0004-un-solo-panel-modo-mision.md) | Un solo panel («modo misión»); se quitan la 1.ª y la 2.ª edición | Vigente |

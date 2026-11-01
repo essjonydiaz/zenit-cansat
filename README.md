@@ -89,8 +89,8 @@ Abrir **http://localhost:3000** → primero se ve el prototipo: un recorrido 3D 
 **«Abrir panel»** lleva al panel en vivo (también en **http://localhost:3000/panel**): un
 vuelo completo con ascenso, liberación, desacople a 200 m, autogiro y aterrizaje, con el
 CanSat en 3D siguiendo la orientación, y se pueden probar los botones de comandos. Esa es la
-3.ª edición del panel («modo misión»); con el selector «Edición 1 · 2 · 3» del encabezado se
-cambia a las otras (`/v1`, `/v2`) para compararlas. Todo funciona sin internet.
+panel «modo misión», el único que hay (ver `docs/decisiones/0004-un-solo-panel-modo-mision.md`).
+Todo funciona sin internet.
     
 Deja esa terminal abierta mientras usas el panel. Para detenerlo y liberar el puerto,
 presiona **Ctrl+C** en esa misma terminal. Si aparece «puerto 3000 ocupado», ya hay

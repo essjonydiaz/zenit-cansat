@@ -72,15 +72,13 @@ app.use((req, res, next) => {
   if (limpia && limpia !== req.path) return res.redirect(302, limpia);
   next();
 });
-// En / se ve primero el prototipo 3D; sus botones «Abrir panel» llevan a la
-// 3.ª edición («modo misión»), que también está en /panel. Las otras ediciones
-// siguen a la mano para compararlas (selector «Edición 1 · 2 · 3»).
-const edicion = (archivo) => (req, res) => res.sendFile(path.join(__dirname, 'public', archivo));
-app.get('/', edicion('prototipo.html'));
-app.get('/panel', edicion('v3.html'));
-app.get('/v1', edicion('index.html'));
-app.get('/v2', edicion('v2.html'));
-app.get('/v3', edicion('v3.html'));
+// En / se ve primero el prototipo 3D; sus botones «Abrir panel» llevan al
+// panel «modo misión» (v3.html), que también está en /panel y /v3. La 1.ª y la
+// 2.ª edición se quitaron: sus direcciones viejas llevan al panel.
+const pagina = (archivo) => (req, res) => res.sendFile(path.join(__dirname, 'public', archivo));
+app.get('/', pagina('prototipo.html'));
+app.get(['/panel', '/v3'], pagina('v3.html'));
+app.get(['/v1', '/v2', '/index.html', '/v2.html'], (req, res) => res.redirect(302, '/panel'));
 app.use(express.static(path.join(__dirname, 'public')));
 // Chart.js servido localmente: en la cancha NO hay internet.
 app.use('/vendor', express.static(path.join(__dirname, 'node_modules', 'chart.js', 'dist')));
@@ -133,6 +131,10 @@ async function usarFuente(nueva, info) {
   if (fuente) fuente.detener();
   if (registro) registro.cerrar();
   historial.length = 0;
+  // Los navegadores abiertos borran lo anterior ANTES de que llegue lo nuevo: el
+  // simulador manda ARRANQUE y CALIBRADO en cuanto inicia, y si el aviso llegara
+  // después se perderían (el reloj T+ se quedaba en --:--).
+  difundir({ tipo: 'reinicio' });
   fuente = nueva;
   registro = new Registro(CARPETA_LOGS);
   fuente.on('linea', alRecibirLinea);
@@ -140,7 +142,6 @@ async function usarFuente(nueva, info) {
   fuente.on('error', (e) => avisarEstado({ conectado: false, error: e.message }));
   await fuente.iniciar();
   avisarEstado({ ...info, conectado: true, error: null, archivoLog: path.basename(registro.base) });
-  difundir({ tipo: 'reinicio' });
   console.log(`[fuente] ${info.modo}${info.ruta ? ' ' + info.ruta : ''} -> registro ${registro.base}.txt`);
 }
 

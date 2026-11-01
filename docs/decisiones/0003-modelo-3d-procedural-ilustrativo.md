@@ -15,7 +15,8 @@ secuencia de separación con dos servos.
   archivos externos): primaria de 15 cm arriba, secundaria de 6.5 cm abajo, Ø 9.6 cm, tres
   aspas pasivas plegadas por fuera, componentes del PDR por dentro.
 - Un solo módulo para las dos vistas: `visor3d.js` (panel, orientación en vivo) y
-  `prototipo.js` (vista explotada, desacople, autogiro).
+  `prototipo.js` (vista explotada, desacople, autogiro). Desde el ADR 0004 el panel usa
+  `mision3d.js` y `visor3d.js` ya no existe; el modelo sigue saliendo de `cansat3d.js`.
 - La interfaz lo marca como **ilustrativo** ("Acomodo ilustrativo: se actualiza cuando
   mecánica suba el CAD").
 

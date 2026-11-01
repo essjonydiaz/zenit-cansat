@@ -21,5 +21,5 @@ cargarlas desde jsDelivr o Google Fonts.
 
 - `npm install` una vez con internet basta; después todo funciona desconectado.
 - Actualizar three.js es una decisión explícita (cambiar la versión en `package.json` y
-  revisar `cansat3d.js`, `visor3d.js` y `prototipo.js`).
+  revisar `cansat3d.js`, `mision3d.js` y `prototipo.js`).
 - Prohibido agregar CDNs o Google Fonts a `public/`.

@@ -29,7 +29,7 @@ Idioma del proyecto: **español** (código, comentarios, commits y respuestas).
 | `firmware/comun/ZenitComun` | **C++ puro** (sin Arduino): pines, radio, protocolo, filtros, máquina de estados, separación, Haversine, UBX, tiempo en el aire, simulador | C++ |
 | `firmware/comun/ZenitRadio` · `ZenitSensores` · `ZenitPantalla` | Drivers solo-ESP32 (RadioLib, GY-91, OLED) | C++ |
 | `estacion-terrena/` | Node.js: `server.js` + `src/` (protocolo, simulador, registro) + `public/` (panel web) | JavaScript |
-| `estacion-terrena/public/` | En `/` se abre primero el prototipo; su «Abrir panel» y `/panel` llevan a la 3.ª edición (la predeterminada del panel); las tres se cambian con el selector «Edición 1 · 2 · 3» (`.ediciones` en `estilos.css`). Primera edición en `/v1`: `index.html` · `app.js` · `estilos.css`. Segunda edición en `/v2`: `v2.html` · `v2.css` · `v2.js` (se carga después de `app.js` y solo agrega o corrige encima; misma lógica y mismos IDs). Tercera edición «modo misión» en `/v3`: `v3.html` · `v3.css` · `v3.js` (HUD, igual que la v2 sobre `app.js`) · `mision3d.js` (vuelo en 3D que solo lee `window.zenit.estado()`). Compartido: `base.css` (tokens + intro) · `intro.js` (logo al inicio) · `cansat3d.js` (modelo 3D). `visor3d.js` (orientación en vivo) · `diagnostico.js` (botón «Diagnóstico» de la consola: qué falla y qué revisar, en .txt o PDF). Prototipo: `prototipo.html/.css/.js` | HTML/CSS/JS + three.js |
+| `estacion-terrena/public/` | En `/` se abre primero el prototipo; su «Abrir panel», `/panel` y `/v3` llevan al **único panel, «modo misión»**: `v3.html` · `app.js` (lógica, telemetría, comandos) · `estilos.css` (panel) · `v3.css` · `v3.js` (HUD; se carga después de `app.js` y reutiliza su estado) · `mision3d.js` (vuelo en 3D que solo lee `window.zenit.estado()`). `/v1` y `/v2` redirigen a `/panel` (ADR 0004). Compartido: `base.css` (tokens + intro) · `intro.js` (logo al inicio) · `cansat3d.js` (modelo 3D) · `diagnostico.js` (botón «Diagnóstico» de la consola: qué falla y qué revisar, en .txt o PDF). Prototipo: `prototipo.html/.css/.js` | HTML/CSS/JS + three.js |
 | `herramientas/analisis_vuelo.py` | Tabla y gráficas para el documento RAM | Python |
 | `docs/` | 01 arquitectura · 02 conexiones · 03 protocolo · 04 máquina de estados · 05 pruebas · 06 lanzamiento · 07 requisitos/riesgos · 08 git · 09 primera prueba · 10 pendientes · 11 servidor local | Markdown |
 | `docs/decisiones/` | ADR: el *por qué* de cada decisión (recursos locales, sistema visual, modelo 3D) | Markdown |
@@ -45,7 +45,7 @@ LoRa **915 MHz**, alcance **≥ 1 km** (PDR).
 |---|---|
 | Pruebas de la lógica (16) | `firmware/primaria`: `pio test -e native` |
 | Compilar | `pio run -d firmware/primaria -e primaria -e primaria_sim` · `pio run -d firmware/secundaria` · `pio run -d firmware/receptor` · `pio run -d firmware/pruebas` |
-| Estación terrena | `estacion-terrena`: `npm install` · `npm test` (11) · `npm run simular` → http://localhost:3000 (prototipo 3D) · `/panel` (panel, 3.ª edición «modo misión») · `/v1` y `/v2` (1.ª y 2.ª edición). Detalle: `docs/11-servidor-local.md` |
+| Estación terrena | `estacion-terrena`: `npm install` · `npm test` (12) · `npm run simular` → http://localhost:3000 (prototipo 3D) · `/panel` (panel «modo misión»). Detalle: `docs/11-servidor-local.md` |
 | Análisis | `python herramientas/analisis_vuelo.py herramientas/ejemplos/VUELO_SIMULADO.CSV` |
 
 GitHub Actions (`.github/workflows/ci.yml`) corre todo esto en cada push.
@@ -78,8 +78,8 @@ GitHub Actions (`.github/workflows/ci.yml`) corre todo esto en cada push.
     (0.169.0 exacta), fuentes y Chart.js se sirven desde `node_modules` vía `/vendor` en
     `server.js` (ADR 0001).
 12. **La telemetría manda** en el panel: la intro del logo sale una vez por pestaña y se
-    salta; el 3D es opcional (sin WebGL queda el horizonte SVG); `visor3d.js` solo lee
-    `window.zenit.estado()`. Los IDs de `index.html` los usa `app.js`. Reglas visuales y
+    salta; el 3D es opcional (sin WebGL queda el horizonte SVG); `mision3d.js` solo lee
+    `window.zenit.estado()`. Los IDs de `v3.html` los usa `app.js`. Reglas visuales y
     tokens: `DESIGN.md` + `base.css` (cámbialos juntos).
 
 ## 5. Antes de dar algo por terminado
@@ -96,5 +96,5 @@ GitHub Actions (`.github/workflows/ci.yml`) corre todo esto en cada push.
 
 Alcance real a 1 km (antena dentro), interoperabilidad SX1262 ↔ RFM95W en campo, ángulos de
 los servos (P6), centros de la brújula (P2), velocidad del autogiro (P5), autonomía (P4) y el
-divisor de la pila (100k/33k a GPIO6) que no aparece en el PDR. Diferencias del PDR: tabla en
+divisor de la pila (100k/33k a GPIO7) que no aparece en el PDR. Diferencias del PDR: tabla en
 `docs/02-conexiones.md`.

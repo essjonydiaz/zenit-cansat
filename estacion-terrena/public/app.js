@@ -88,7 +88,7 @@ function estadoInicial() {
   };
 }
 S = estadoInicial();
-// El visor 3D (visor3d.js, módulo aparte) lee el estado desde aquí; solo lectura.
+// El vuelo en 3D (mision3d.js, módulo aparte) lee el estado desde aquí; solo lectura.
 window.zenit = { estado: () => S };
 let fuente = { modo: 'ninguna', conectado: false };
 let wsAbierto = false;
@@ -185,6 +185,11 @@ function procesarSinProteccion(msg) {
       alerta(`reinicio-${msg.pc_ms}`, 'critico', 'La carga primaria se reinició en pleno vuelo', 'Revisa la batería y el interruptor: pudo haber un corte de energía.', true);
     }
     reiniciarVuelo();
+    // Firmware de prueba (env:primaria_prueba): desacopla al caer 1.5 m. Jamás en el concurso.
+    if (/\bPRUEBA\b/.test(d.detalle || '')) {
+      alerta('modo-prueba', 'aviso', 'Primaria en MODO PRUEBA (techo)',
+        'Desacopla al caer 1.5 m desde lo más alto. Para el concurso sube env:primaria (no primaria_prueba).', true);
+    }
   }
   if (d.fuente === 'primaria') { S.tPriPc = msg.pc_ms; contarSecuencia('primaria', d.seq); }
   if (d.fuente === 'secundaria') { S.tSecPc = msg.pc_ms; contarSecuencia('secundaria', d.seq); }
@@ -373,9 +378,9 @@ function evaluarAlertas(c) {
   condicion('s-imu', b && !b.imu, 'critico', 'IMU (MPU9250 del GY-91) sin respuesta', 'Sin IMU no hay orientación ni aceleración.');
   condicion('s-sd', b && !b.sd, 'aviso', 'microSD no detectada', 'No se guardará el respaldo del vuelo en la tarjeta.');
   condicion('s-sd-conf', b && b.sd && b.sd_sin_confirmar, 'aviso', 'OpenLog sin confirmar',
-    'Se escribe al OpenLog pero no respondió. Revisa el cable TXO -> GPIO5, la microSD (FAT32) y config.txt a 115200.');
+    'Se escribe al OpenLog pero no respondió. Revisa el cable TXO -> GPIO41, la microSD (FAT32) y config.txt a 115200.');
   condicion('bat-sin-medir', b && b.bateria_sin_medir && !b.simulacion, 'aviso', 'Voltaje de la pila sin medir',
-    'Falta el divisor 100k/33k hacia GPIO6. Mide la pila con multímetro antes del vuelo (mínimo 8.5 V).');
+    'Falta el divisor 100k/33k hacia GPIO7. Mide la pila con multímetro antes del vuelo (mínimo 8.5 V).');
   const sinAutogiro = S.marcas.desacople && !S.marcas.autogiro && hace(S.marcas.desacople.pc) > 2;
   condicion('no-autogiro', sinAutogiro && enVuelo(), 'critico', 'El autogiro no reportó despliegue',
     'Pasaron 2 s del desacople sin evento AUTOGIRO. Revisa la velocidad: debe bajar a 8–12 m/s.');

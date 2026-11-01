@@ -1,13 +1,12 @@
 // =============================================================================
-//  v3.js — Tercera edición del panel: "modo misión" (v3.html)
+//  v3.js — Panel "modo misión" (v3.html)
 //
-//  Se carga DESPUÉS de app.js y reutiliza su estado y sus funciones (como v2.js).
+//  Se carga DESPUÉS de app.js y reutiliza su estado y sus funciones.
 //  Aquí solo va el HUD que flota sobre la escena 3D (mision3d.js):
 //   1. Fase en grande y reloj T+ desde el arranque de la primaria.
 //   2. "Siguiente": el próximo hito de la misión con su barra de avance.
 //   3. Anuncio grande cuando ocurre un momento clave EN VIVO (no al abrir la
 //      página con historial): despegue, liberación, desacople, autogiro…
-//  El panel original (index.html) y la v2 no cambian.
 // =============================================================================
 'use strict';
 
@@ -50,8 +49,10 @@
   function dibujarHud() {
     const T = S.T;
     $('v3Fase').textContent = T ? NOMBRES_FASE[T.estado] || '—' : 'Sin datos';
-    const t0 = S.hitos.ARRANQUE;
-    $('v3Reloj').textContent = T && t0 !== undefined ? mmss(T.t_ms / 1000 - t0) : '--:--';
+    // t_ms cuenta desde que se encendió la primaria; si el evento ARRANQUE no llegó
+    // (el panel se conectó tarde o se perdió el paquete) se cuenta desde ahí.
+    const t0 = S.hitos.ARRANQUE !== undefined ? S.hitos.ARRANQUE : 0;
+    $('v3Reloj').textContent = T ? mmss(T.t_ms / 1000 - t0) : '--:--';
     const sig = siguiente(T);
     $('v3Sig').textContent = sig.titulo;
     $('v3SigDet').textContent = sig.detalle;

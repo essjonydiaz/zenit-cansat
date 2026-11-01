@@ -25,13 +25,11 @@ Cuando aparezca `Abrir en el navegador: http://localhost:3000`, abre la página 
 | Página | Dirección |
 |---|---|
 | Portada: recorrido 3D del prototipo (lo primero que se ve) | `http://localhost:3000` |
-| Panel en vivo, 3.ª edición «modo misión» (la predeterminada) | `http://localhost:3000/panel` (o `/v3`) |
-| Panel, 1.ª edición (clásica) | `http://localhost:3000/v1` |
-| Panel, 2.ª edición | `http://localhost:3000/v2` |
+| Panel en vivo «modo misión» | `http://localhost:3000/panel` (o `/v3`) |
 
-Desde el prototipo, el botón **«Abrir panel»** lleva al panel. Dentro del panel, el selector
-**«Edición 1 · 2 · 3»** del encabezado cambia de una edición a otra. El día del vuelo, quien
-opera puede entrar directo a `/panel`.
+Desde el prototipo, el botón **«Abrir panel»** lleva al panel. El día del vuelo, quien opera
+puede entrar directo a `/panel`. La 1.ª y la 2.ª edición se quitaron: `/v1` y `/v2` llevan
+al panel (ver `docs/decisiones/0004-un-solo-panel-modo-mision.md`).
 
 **Para apagarlo:** presiona `Ctrl+C` en la terminal donde lo prendiste.
 
@@ -64,21 +62,21 @@ Y entonces la dirección es `http://localhost:3001/v3`
 
 | Lo que pasa | Por qué | Qué hacer |
 |---|---|---|
-| Una página nueva (`/v2`, `/v3`…) dice «Cannot GET», o el panel avisa **«Reinicia el servidor»** | El servidor se prendió **antes** de que se agregara esa ruta. Node no vuelve a leer `server.js` mientras corre | Apágalo (`Ctrl+C`) y vuelve a correr el comando. `npm run simular` ya se reinicia solo; `npm start` no, a propósito: en pleno vuelo no debe reiniciarse |
-| El selector «Edición 1 · 2 · 3» no cambia de página | Mismo caso: servidor viejo | Igual que arriba. El selector usa `/index.html`, `/v2.html` y `/v3.html`, que abren aun con un servidor viejo |
+| Una página nueva dice «Cannot GET», o el panel avisa **«Reinicia el servidor»** | El servidor se prendió **antes** de que se agregara esa ruta. Node no vuelve a leer `server.js` mientras corre | Apágalo (`Ctrl+C`) y vuelve a correr el comando. `npm run simular` ya se reinicia solo; `npm start` no, a propósito: en pleno vuelo no debe reiniciarse |
 | La dirección termina en punto o coma (`/v3.`) | Se copió el punto de la oración junto con el enlace | El servidor ya lo corrige y te manda a `/v3`. Si no, bórralo de la barra de direcciones |
 | `npm error enoent … package.json` | Corriste `npm` en la raíz del repositorio | `cd estacion-terrena` y repite |
 | «El puerto 3000 está ocupado» | Ya hay otro servidor prendido | Apágalo (sección de arriba) o usa `--http 3001` |
 
-La prueba `estacion-terrena/test/rutas.test.js` (dentro de `npm test`) revisa que `/v1`, `/v2`, `/v3` y
-`/prototipo.html` respondan, que `/` abra el prototipo y que `/panel` abra la 3.ª edición. Si agregas otra edición del panel, súmala a esa prueba.
+La prueba `estacion-terrena/test/rutas.test.js` (dentro de `npm test`) revisa que `/panel`, `/v3` y
+`/prototipo.html` respondan, que `/` abra el prototipo, que `/panel` abra el modo misión y que
+`/v1` y `/v2` lleven a `/panel`. Si agregas otra página, súmala a esa prueba.
 
 ## ¿Qué está fallando? Botón «Diagnóstico»
 
-En la tarjeta **Consola** (en las tres ediciones) está el botón **Diagnóstico**. Abre un reporte con:
+En la tarjeta **Consola** del panel está el botón **Diagnóstico**. Abre un reporte con:
 
 1. **Qué pasa:** la causa más grave en una frase y qué revisar. Si es un sensor, dice el cable
-   y el pin (por ejemplo «Barómetro: SDA → GPIO 41, SCL → GPIO 42»).
+   y el pin (por ejemplo «Barómetro: SDA → GPIO 47, SCL → GPIO 48»).
 2. **Cadena de conexión:** navegador → servidor → receptor → radio → primaria → secundaria.
 3. **Sensores de la primaria:** barómetro, IMU, radio, microSD, GPS y pila.
 4. **Enlace:** paquetes recibidos y perdidos, tramas con checksum malo, señal y archivo de registro.

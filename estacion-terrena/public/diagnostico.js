@@ -1,5 +1,5 @@
 // =============================================================================
-//  diagnostico.js — Botón «Diagnóstico» de la consola (las tres ediciones)
+//  diagnostico.js — Botón «Diagnóstico» de la consola (panel modo misión)
 //
 //  Junta en un solo reporte lo que el panel ya sabe (app.js) para decir QUÉ
 //  falla y QUÉ revisar, no solo "error":
@@ -20,15 +20,15 @@
   // Qué revisar si falla cada sensor (pines de firmware/comun/ZenitComun/src/Pines.h).
   const SENSORES = [
     { bandera: 'baro', nombre: 'Barómetro BMP280 (GY-91)', falla: 'critico',
-      revisar: 'Cable I2C del GY-91: SDA → GPIO 41, SCL → GPIO 42, VCC a 3.3 V y GND. Dirección 0x76. Sin barómetro no hay altitud ni desacople automático.' },
+      revisar: 'Cable I2C del GY-91: SDA → GPIO 47, SCL → GPIO 48, VCC a 3.3 V y GND. Dirección 0x76. Sin barómetro no hay altitud ni desacople automático.' },
     { bandera: 'imu', nombre: 'IMU MPU9250 (GY-91)', falla: 'critico',
-      revisar: 'Mismo cable I2C del GY-91: SDA → GPIO 41, SCL → GPIO 42. Dirección 0x68. Sin IMU no hay orientación ni aceleración.' },
+      revisar: 'Mismo cable I2C del GY-91: SDA → GPIO 47, SCL → GPIO 48. Dirección 0x68. Sin IMU no hay orientación ni aceleración.' },
     { bandera: 'lora', nombre: 'Radio LoRa SX1262 de la primaria', falla: 'critico',
       revisar: 'Antena de 915 MHz bien enroscada antes de prender la Heltec. Reinicia la placa (RST).' },
     { bandera: 'sd', nombre: 'microSD (OpenLog)', falla: 'aviso',
-      revisar: 'OpenLog: GPIO 4 → RXI y TXO → GPIO 5; microSD en FAT32 con config.txt a 115200. Sin ella no queda respaldo del vuelo.' },
+      revisar: 'OpenLog: GPIO 4 → RXI y TXO → GPIO 41; microSD en FAT32 con config.txt a 115200. Sin ella no queda respaldo del vuelo.' },
     { bandera: 'gps', nombre: 'GPS NEO-M8N de la primaria', falla: 'aviso',
-      revisar: 'TX del GPS → GPIO 47 y RX del GPS ← GPIO 48. Necesita cielo abierto 1–2 minutos para tener posición.' },
+      revisar: 'TX del GPS → GPIO 5 y RX del GPS ← GPIO 6. Necesita cielo abierto 1–2 minutos para tener posición.' },
   ];
 
   // Las ayudas de diagnosticar() traen <b>: aquí se pasan a texto plano.
@@ -39,7 +39,7 @@
     const b = T && T.banderas;
     if (!T) return null;
     if (b && b.bateria_sin_medir && !b.simulacion) {
-      return { estado: 'aviso', texto: 'Sin medir', revisar: 'Falta el divisor 100k/33k hacia GPIO 6. Mide la pila con multímetro (mínimo 8.5 V).' };
+      return { estado: 'aviso', texto: 'Sin medir', revisar: 'Falta el divisor 100k/33k hacia GPIO 7. Mide la pila con multímetro (mínimo 8.5 V).' };
     }
     if (T.bat < 7.5) return { estado: 'critico', texto: `${fmt(T.bat, 2)} V`, revisar: 'Pila casi agotada: cámbiala por una nueva de 9 V antes del vuelo.' };
     if (T.bat < 8.5) return { estado: 'aviso', texto: `${fmt(T.bat, 2)} V`, revisar: 'Pila por debajo de 8.5 V: mejor cambiarla antes del vuelo.' };
@@ -58,7 +58,7 @@
       : [];
     if (sensoresVigentes && b.sd && b.sd_sin_confirmar) {
       sensores.find((s) => s.nombre.startsWith('microSD')).estado = 'aviso';
-      sensores.find((s) => s.nombre.startsWith('microSD')).revisar = 'Se escribe al OpenLog pero no contesta: revisa TXO → GPIO 5, la microSD (FAT32) y config.txt a 115200.';
+      sensores.find((s) => s.nombre.startsWith('microSD')).revisar = 'Se escribe al OpenLog pero no contesta: revisa TXO → GPIO 41, la microSD (FAT32) y config.txt a 115200.';
     }
     const bat = sensoresVigentes ? bateria(T) : null;
     if (bat) sensores.push({ nombre: 'Pila de 9 V', estado: bat.estado, revisar: bat.revisar, valor: bat.texto });

@@ -17,10 +17,10 @@
   <script type="module" src="mision3d.js"></script>
 </head>
 <!-- =============================================================================
-     Tercera edición del panel: "modo misión" para la pantalla grande.
+     Panel de la estación terrena: "modo misión" para la pantalla grande.
      Arriba, el vuelo en 3D a pantalla completa con el HUD encima (mision3d.js,
-     v3.js); abajo, el panel completo. Usa app.js tal cual: mismos IDs que
-     index.html, generados desde ahí. El panel original y la v2 no cambian.
+     v3.js); abajo, el panel completo. Usa app.js tal cual: los IDs de esta
+     página son los que app.js busca.
      ========================================================================== -->
 <body data-fase="-1" class="v3">
 <script src="intro.js" data-duracion="3500" data-una-vez="sesion"></script>
@@ -167,12 +167,6 @@
 
   <div class="lema-final" aria-hidden="true">CIENCIA<br>DISCIPLINA<br>PROPÓSITO</div>
 
-  <nav class="ediciones" aria-label="Edición del panel">
-    <span class="ediciones-etiqueta">Edición</span>
-    <a href="/index.html" title="Edición 1: panel clásico">1</a>
-    <a href="/v2.html" title="Edición 2">2</a>
-    <a href="/v3.html" aria-current="page" title="Edición 3: modo misión (predeterminada)">3</a>
-  </nav>
   <a class="btn enlace-prototipo" href="/prototipo.html" title="Recorrido 3D del prototipo">
     <svg class="ico"><use href="#i-cubo"/></svg><span>Prototipo 3D</span>
   </a>
