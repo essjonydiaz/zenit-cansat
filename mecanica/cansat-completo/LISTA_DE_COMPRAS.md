@@ -17,6 +17,7 @@ la guía pone un **máximo de $100 USD** (≈ $1,800 MXN) para todo el CanSat y 
 | ☐ | 50 cm | **Alambre de acero de 1 mm** (cuerda de piano) | Varilla en Z del servo de desacople y alambre del autogiro | |
 | ☐ | 20 cm | Alambre o clavo de acero de 1.5 mm | Ejes de las 3 bisagras de las aspas (3 de 18 mm) | |
 | ☐ | 12 | Separadores hexagonales de nylon M3 (16 y 18 mm) | Entre las placas (o se imprimen) | |
+| ☐ | (opcional) | Varilla roscada M3 de **nylon o aluminio** | Solo si el CanSat pesa más de 595 g: ahorra ~15 g frente a la de acero | |
 
 ## 2. Piezas especiales (tienda de baleros, electrónica o Mercado Libre)
 
@@ -72,4 +73,4 @@ la guía pone un **máximo de $100 USD** (≈ $1,800 MXN) para todo el CanSat y 
 **Total gastado:** $ __________ (máximo $100 USD ≈ $1,800 MXN)
 
 **Antes de imprimir y armar:** pesen un servo y una pila de litio. El diseño calcula unos 10.5 g por
-servo y 34 g por pila, y con eso el CanSat queda en ~597 g de 600.
+servo y 34 g por pila, y con eso el CanSat queda en ~587 g de 600.

@@ -153,7 +153,7 @@ def carcasa_secundaria():
 
 def tapa_secundaria():
     z0, z1 = H_SEC - 3.0, H_SEC
-    t = anillo(38.0, RI - 0.2, z0, z1).union(cil(10.0, z0, z1))
+    t = anillo(40.5, RI - 0.2, z0, z1).union(cil(10.0, z0, z1))      # aro angosto: solo lleva los 3 tornillos
     for a in (0.0, 90.0, 180.0, 270.0):
         t = t.union(rot(caja(30.0, 6.0, 3.0, (24.0, 0, (z0 + z1) / 2)), a))
     t = t.union(caja(25.0, 21.0, 3.0, (-20.0, -22.0, (z0 + z1) / 2)))   # base del ESP32-C3
@@ -325,12 +325,21 @@ def tapa_electronica():
         t = t.cut(rot(canal(R_CANAL, R + 1, Z_TUBO_ARRIBA - 1, z1 + 1, HOLGURA_ASPA), a))
     for a in (90.0, 270.0):
         t = t.cut(rot(caja(10.0, 9.0, 4.0, (RI - 2.0, 0, z0 + 1.0)), a))
-    # ventanas para aligerar
-    t = t.cut(caja(9.0, 26.0, 20.0, (-19.5, 0, z0)))
-    for sy in (-1, 1):
-        t = t.cut(caja(24.0, 10.0, 20.0, (-2.0, sy * 23.0, z0)))
-        t = t.cut(caja(12.0, 8.0, 20.0, (-26.0, sy * 31.0, z0)))
-    t = t.cut(caja(10.0, 6.0, 20.0, (28.5, 22.5, z0)))
+    # tapa tipo araña (aligera ~8 g): se queda solo lo que carga o sujeta algo.
+    # El jalón del dron va del balero (centro) a las 3 varillas por los rayos.
+    alto = z1 + 4.0
+    queda = anillo(41.0, R + 1, z0 - 1, alto)                          # borde: asiento en el tubo y ceja
+    queda = queda.union(cil(13.0, z0 - 1, alto))                          # centro: torre del balero
+    for a in ANG_COLUMNA:                                                  # rayos a las varillas + su torre
+        queda = queda.union(rot(caja(R_COLUMNA, 7.0, alto - z0 + 1, (R_COLUMNA / 2, 0, (z0 + alto) / 2)), a))
+        x, y = ang_xy(R_COLUMNA, a); queda = queda.union(cil(5.5, z0 - 1, alto, x, y))
+    for (x, y) in placa_pts():                                             # torres de las placas + rayo al centro
+        queda = queda.union(cil(5.0, z0 - 1, alto, x, y))
+        ang = math.degrees(math.atan2(y, x)); r = math.hypot(x, y)
+        queda = queda.union(rot(caja(r, 5.0, alto - z0 + 1, (r / 2, 0, (z0 + alto) / 2)), ang))
+    gx, gy = GPS_POS; lado = GPS_ANT[0] + 0.6
+    queda = queda.union(caja(lado + 4.0, lado + 4.0, alto - z0 + 1, (gx, gy, (z0 + alto) / 2)))   # marco de la antena GPS
+    t = t.intersect(queda)
     return despejar(t)
 
 def rotor():

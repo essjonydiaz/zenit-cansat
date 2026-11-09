@@ -22,7 +22,7 @@ completa y se sujetan con imanes a través de ella, así que al abrirse no queda
 | Un solo orificio de Ø 9–10 mm y ≥ 3 mm de profundo en la tapa superior | Ø 9.5 × 3.5 mm | Sí |
 | Autogiro embebido, pasivo, sin motor | 3 aspas sobre balero; las suelta un servo | Sí |
 | Antenas por dentro | LoRa y GPS por dentro de la carcasa | Sí |
-| ≤ 600 g con los 2 huevos de 65 g | ~596 g estimados con pilas de litio (sección 5) | Justo: hay que pesar |
+| ≤ 600 g con los 2 huevos de 65 g | ~587 g estimados con pilas de litio (sección 5) | Sí (margen ~13 g): hay que pesar |
 
 La revisión automática del archivo no encontró **ningún choque** entre piezas
 (`salida/reporte.txt`).
@@ -116,32 +116,41 @@ se puede probar en TPU, porque cae libre y así no se rompe. Tiempo total aproxi
 | 2 | Pilas de 9 V **de litio** (las alcalinas pesan 12 g más cada una y el CanSat pasaría de 600 g) | Energía |
 | 3 | Placas perforadas 4 × 6 cm y separadores de nylon | Ya las tienen |
 
-## 5. Peso estimado
+## 5. Peso estimado (presupuesto de masa)
 
 | Grupo | Peso |
 |---|---|
-| Piezas impresas | 238 g |
+| Piezas impresas | 226 g |
 | Huevos (2 × 65 g, como manda la guía) | 130 g |
 | Pilas de 9 V **de litio** (2) | 68 g |
 | Electrónica (Heltec, placas, sensores, GPS, secundaria) | 72 g |
-| Servos, balero, varillas, tornillos, cables, hules, imanes, espuma y ligas | 88 g |
-| **Total** | **~596 g** (límite 600 g) |
+| Servos, balero, varillas, tornillos, cables, hules, imanes, espuma y ligas | 91 g |
+| **Total estimado** | **~587 g** (límite 600 g, margen ~13 g) |
 
-Queda **justo**. La pared completa pesa 16 g más que la de la versión 1, por eso las pilas
-**tienen que ser de litio** (con alcalinas serían ~620 g). Además:
-1. Pesar cada pieza real en una báscula de cocina y anotarla. Mis números son estimados (±10 %).
-2. Si aun así pasa, cambiar las 3 varillas M3 de acero por varillas de nylon o aluminio (−15 a −18 g;
-   probar que aguanten el jalón del dron) o adelgazar la tapa de la electrónica.
+La tapa de la electrónica es tipo araña (−8 g) y el aro de la tapa de la secundaria es más angosto
+(−1.6 g): solo se quitó plástico que no carga nada. Las pilas **tienen que ser de litio** (con
+alcalinas serían ~611 g).
+
+**Cómo confirmar el peso antes del concurso:**
+1. Pedirle al que imprime los **gramos de cada pieza** que marca su programa (Cura, Bambu Studio):
+   es el dato exacto de lo impreso.
+2. Pesar cada componente comprado en una báscula de cocina (de 1 g) y anotarlo.
+3. Pesar el CanSat completo con 2 "huevos" de 65 g (plastilina o arena en una bolsa).
+
+**Si pasa de 595 g**, en este orden:
+1. Cables más cortos y delgados (de silicón, calibre 26): −5 g aprox.
+2. Varillas M3 de nylon o aluminio en lugar de acero: −15 g aprox. (probar que aguanten el jalón).
+3. Imprimir las piezas internas (discos, piso, bandeja) con 10 % de relleno: −5 g aprox.
 
 ## 6. Velocidad del autogiro (8–12 m/s)
 
-Después del desacople, la primaria pesa ~408 g. La cuenta de un rotor en autorrotación
+Después del desacople, la primaria pesa ~400 g. La cuenta de un rotor en autorrotación
 (v = √(2·m·g / (ρ·C·A)), con C de 0.8 a 1.3) da:
 
 | Largo del aspa | Ø del rotor | Velocidad estimada |
 |---|---|---|
 | 130 mm | 35 cm | 7.3–9.4 m/s (puede quedar **abajo** de 8) |
-| **110 mm (el diseño)** | **31 cm** | **8.3–10.5 m/s** |
+| **110 mm (el diseño)** | **31 cm** | **8.2–10.4 m/s** |
 
 Por eso las aspas son de **110 mm**: en todo el rango de la cuenta quedan entre 8 y 12 m/s. El largo
 está amarrado al canal del tubo y al imán del anillo: si se cambia `L_ASPA`, hay que volver a imprimir
