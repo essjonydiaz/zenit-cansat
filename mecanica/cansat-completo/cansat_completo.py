@@ -267,6 +267,9 @@ def disco_huevo_base():
     for a in (0.0, 120.0, 240.0):  # topes de hule (3 puntos contra la pared)
         x, y = ang_xy(RI - 1.0, a + 60)
         d = d.union(cil(1.0, z0, z1, x, y))
+    for a in ANG_COLUMNA:  # agujeros de las varillas al final (los rayos los tapaban)
+        x, y = ang_xy(R_COLUMNA, a)
+        d = d.cut(cil(M3 / 2, z0 - 1, z1 + 1, x, y))
     return despejar(d)
 
 def placa_pts():
@@ -545,7 +548,7 @@ if __name__ == '__main__':
 
     # ---- choques
     log(''); log('=== REVISIÓN DE CHOQUES (volumen compartido > 0.5 mm³) ===')
-    todos = {**{k: v[0] for k, v in impresas.items()}, **{k: v for k, v in comp.items() if not k.startswith(('varilla', 'oring', 'pasador'))}}
+    todos = {**{k: v[0] for k, v in impresas.items()}, **{k: v for k, v in comp.items() if not k.startswith(('varilla_placas', 'oring', 'pasador'))}}
     choques = 0
     nombres = list(todos.keys())
     cajas = {k: todos[k].val().BoundingBox() for k in nombres}

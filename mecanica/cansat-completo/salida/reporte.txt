@@ -21,7 +21,7 @@ Total de choques: 0
   espaciador_huevo                    4.4 g
   separadores de placas (12)          3.3 g
   espaciador_base                     1.6 g
-  PIEZAS IMPRESAS                   226.4 g
+  PIEZAS IMPRESAS                   226.3 g
   Huevos (2, según la guía)         130.0 g
   Pilas 9 V de litio (2; las alcalinas pesan 24 g más)   68.0 g
   Servos SG90 (2, con cable)         21.0 g
@@ -37,4 +37,4 @@ Total de choques: 0
   Pasador de acero y alambres         4.0 g
   Imanes de neodimio (6)              4.0 g
   COMPRADOS                         361.0 g
-  TOTAL                             587.4 g   (límite 600 g)
+  TOTAL                             587.3 g   (límite 600 g)

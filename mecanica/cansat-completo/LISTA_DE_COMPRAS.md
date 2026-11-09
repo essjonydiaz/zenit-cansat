@@ -8,7 +8,7 @@ la guía pone un **máximo de $100 USD** (≈ $1,800 MXN) para todo el CanSat y 
 
 | ☐ | Cant. | Qué pedir | Para qué | Precio |
 |---|---|---|---|---|
-| ☐ | 1 m | **Varilla roscada de 3 mm (M3)**, de acero | Cortar 3 pedazos de 16 cm: la "columna" que carga el peso del piso a la tapa | |
+| ☐ | 1 m | **Varilla roscada de 3 mm (M3)**, de acero | Cortar 3 pedazos de 14.8 cm: la "columna" que carga el peso del piso a la tapa | |
 | ☐ | 20 | Tuercas M3 | Columna, placas, tapa de la secundaria | |
 | ☐ | 4 | Tuercas M3 **con seguro de nylon** | Placas de electrónica (no se aflojan) | |
 | ☐ | 6 | Tornillos M3 × 10 mm | Tapa de la secundaria y rotor | |

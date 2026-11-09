@@ -102,7 +102,7 @@ se puede probar en TPU, porque cae libre y así no se rompe. Tiempo total aproxi
 | Cantidad | Pieza | Para qué |
 |---|---|---|
 | 1 | Balero 688ZZ (8 × 16 × 5 mm) | Giro del rotor |
-| 1 m | Varilla roscada M3 (cortar 3 de ~150 mm) | Columna de la primaria |
+| 1 m | Varilla roscada M3 (cortar 3 de 148 mm) | Columna de la primaria |
 | 20 | Tuercas M3 · 6 tornillos M3 × 10 | Columna, placas, tapa de la secundaria, rotor |
 | 1 | Tornillo M3 × 12 con rondana | Detiene el rotor por abajo del balero |
 | 10 cm | Varilla o clavo de acero de 3 mm | Pasador del desacople |
