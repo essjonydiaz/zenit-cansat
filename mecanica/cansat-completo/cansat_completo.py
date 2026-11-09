@@ -55,9 +55,9 @@ Z_TAPA = (ZU + 145.8, ZU + 150.8)      # tapa de la electrónica (con ceja Ø96 
 Z_ROTOR0 = ZU + 151.3                  # falda del rotor
 Z_ROTOR_PLATO = ZU + 155.0             # plato superior del rotor (hasta Z_TOP)
 Z_BISAGRA = ZU + 153.0                 # eje de las bisagras (su radio, R_BISAGRA, va abajo)
-L_ASPA = 130.0
+L_ASPA = 110.0                         # 110: bajada estimada 8.3–10.5 m/s (130 daba 7.3–9.4)
 Z_ASPA_RAIZ = Z_BISAGRA - 1.0          # 222
-Z_ASPA_PUNTA = Z_ASPA_RAIZ - L_ASPA    # 92
+Z_ASPA_PUNTA = Z_ASPA_RAIZ - L_ASPA    # 112
 ASPA_ANCHO = (26.0, 20.0)              # raíz, punta
 ORIFICIO_DRON = (9.5, 3.5)             # Ø y profundidad
 BALERO = (16.0, 8.0, 5.0)              # 688ZZ: Ø ext, Ø int, ancho (4 g)
@@ -73,7 +73,7 @@ R_BISAGRA = R_CANAL + HOLGURA_ASPA     # 46.4: eje en la cara de adentro del asp
 # Retención con imanes a través de la pared (no hay que perforarla):
 IMAN_ASPA = (8.0, 1.0)                 # Ø × grueso, en la punta de cada aspa
 IMAN_ANILLO = (8.0, 2.0)               # Ø × grueso, en cada diente del anillo de retención
-Z_IMAN = Z_ASPA_PUNTA + 6.5            # 98.5
+Z_IMAN = Z_ASPA_PUNTA + 6.5            # 118.5
 GIRO_ANILLO = 15.0                     # grados que gira el anillo (antihorario visto desde arriba) para soltar
 ORING = (86.0, 2.0)                    # Ø interior × sección: centra la electrónica contra los 3 canales
 
@@ -221,10 +221,11 @@ def piso_primaria():
     # cunas de los 2 servos SG90 (acostados, eje hacia +Y)
     for sx in (-1, 1):
         cx = sx * 18.6; y0, y1 = -34.2, -11.3
-        eje_x = cx + 5.9 * (1 if cx < 0 else -1)
+        eje_x = cx + 5.9 * (1 if cx > 0 else -1)          # la flecha va hacia afuera
         u = (caja(25.8, 26.0, 7.0, (cx, (y0 + y1) / 2, Z_PISO2 + 3.5))
              .cut(caja(23.2, 22.9, 8.0, (cx, (y0 + y1) / 2, Z_PISO2 + 4.0)))
-             .cut(caja(8.0, 30.0, 8.0, (eje_x, (y0 + y1) / 2, Z_PISO2 + 5.0))))
+             .cut(caja(13.0, 30.0, 10.0, (eje_x, (y0 + y1) / 2, Z_PISO2 + 5.0)))      # paso de la torre de engranes
+             .cut(caja(34.0, 3.0, 9.0, (cx, y0 + 18.65, Z_PISO2 + 4.5))))             # ranuras de las orejas
         p = p.union(u.intersect(cil(RI - 0.3, Z_PISO2, ZU + 20)))
     # guías del anillo de retención (dedos con ceja)
     for a in ANG_GUIAS:
@@ -232,9 +233,6 @@ def piso_primaria():
              .union(caja(3.6, 5.0, 1.5, (44.3, 0, Z_ANILLO[1] + 1.25)))
              .union(caja(3.6, 5.0, 1.5, (44.3, 0, Z_ANILLO[0] - 0.75))))
         p = p.union(rot(d, a))
-    # guía del pasador (lado del servo de desacople)
-    p = p.union(caja(14.0, 6.0, 6.0, (-18.0, 0, Z_PASADOR)).cut(
-        cq.Workplane('YZ').workplane(offset=-30).center(0, Z_PASADOR).circle(1.7).extrude(30)))
     return despejar(p)
 
 def anillo_retencion():
@@ -398,9 +396,24 @@ def pila_9v(c, parada=False):
     p = caja(48.5, 26.5, 17.5, (0, 0, 0)) if not parada else caja(17.5, 26.5, 48.5, (0, 0, 0))
     return p.translate(c)
 
-def servo(cx, cy, cz):
-    return (caja(22.8, 22.5, 12.2, (cx, cy, cz))
-            .union(cq.Workplane('XZ').workplane(offset=-(cy + 11.25 + 4.0)).center(cx + 5.9 * (1 if cx < 0 else -1), cz).circle(2.5).extrude(4.0)))
+def cil_y(r, y0, y1, x, z):
+    """Cilindro con eje en Y, de y0 a y1."""
+    return cq.Workplane('XZ').workplane(offset=-y1).center(x, z).circle(r).extrude(y1 - y0)
+
+def servo(cx, cy, cz, giro_cuerno=0.0, largo_cuerno=12.0):
+    """SG90 acostado (medidas de la hoja de datos: A 32, B 23, C 28.5, D 12, E 32, F 19.5).
+    La altura del servo va en +Y (fondo en cy - 11.25). La flecha queda hacia AFUERA (lejos del
+    centro) para no chocar con la torre del poste. giro_cuerno: grados del cuerno desde la vertical (+Z) hacia el centro."""
+    sx = 1 if cx > 0 else -1
+    fondo, arriba = cy - 11.25, cy + 11.25
+    xs = cx + 5.9 * sx                                   # flecha, 5.9 mm fuera del centro del cuerpo
+    s = caja(22.8, 22.5, 12.2, (cx, cy, cz))             # cuerpo B × altura × D
+    s = s.union(caja(32.0, 2.5, 12.2, (cx, fondo + 18.25, cz)))      # orejas E (de 17 a 19.5 mm)
+    s = s.union(cil_y(5.9, arriba, arriba + 6.0, xs, cz))             # torre de engranes (hasta C)
+    s = s.union(cil_y(3.5, arriba + 6.0, arriba + 9.6, xs, cz))       # flecha y cubo del cuerno (hasta A)
+    brazo = caja(5.0, 1.6, largo_cuerno, (xs, arriba + 8.8, cz + largo_cuerno / 2))
+    brazo = brazo.rotate((xs, 0, cz), (xs, 1, cz), -sx * giro_cuerno)
+    return s.union(brazo)
 
 def componentes():
     comp = {}
@@ -408,9 +421,14 @@ def componentes():
     comp['huevo_secundaria'] = huevo(HUEVO2_C, 'y')
     comp['pila_primaria'] = pila_9v((0, 25.0, Z_PISO2 + 8.75))
     comp['pila_secundaria'] = pila_9v((30.75, 0, 3.6 + 24.25 + 0.05), parada=True)
-    comp['servo_desacople'] = servo(-18.6, -22.75, Z_PISO2 + 6.1 + 0.05)
-    comp['servo_autogiro'] = servo(18.6, -22.75, Z_PISO2 + 6.1 + 0.05)
-    comp['pasador'] = cq.Workplane('YZ').workplane(offset=-24.0).center(0, Z_PASADOR).circle(1.5).extrude(31.0)
+    # desacople: cuerno de 12 mm a 45° hacia el centro; al girar 90° hacia afuera jala el pasador
+    # ~13 mm con una varilla de alambre de 1 mm doblada en Z (cuerno -> ojo del pasador)
+    comp['servo_desacople'] = servo(-18.6, -22.75, Z_PISO2 + 6.1 + 0.05, 45.0, 12.0)
+    # autogiro: cuerno de 16 mm hacia arriba; al girar 90° hacia afuera jala con alambre el brazo
+    # del anillo ~8.5 mm = el anillo gira 15° antihorario
+    comp['servo_autogiro'] = servo(18.6, -22.75, Z_PISO2 + 6.1 + 0.05, 0.0, 16.0)
+    # pasador de acero de 3 mm × 18.5: cruza la torre y el poste de x = -13 a +5.5
+    comp['pasador'] = cq.Workplane('YZ').workplane(offset=-13.0).center(0, Z_PASADOR).circle(1.5).extrude(18.5)
     zs = z_placas()
     for i, z in enumerate(zs, 1):
         comp[f'placa_{i}'] = caja(PLACA[0], PLACA[1], PLACA[2], (0, 0, z + PLACA[2] / 2)).cut(
@@ -445,7 +463,7 @@ def componentes():
     return comp
 
 MASA_COMPRADOS = {  # g (valores típicos; pesar los reales)
-    'Huevos (2, según la guía)': 130, 'Pilas 9 V de litio (2; las alcalinas pesan 24 g más)': 68, 'Servos SG90 (2)': 18,
+    'Huevos (2, según la guía)': 130, 'Pilas 9 V de litio (2; las alcalinas pesan 24 g más)': 68, 'Servos SG90 (2, con cable)': 21,
     'Heltec WiFi LoRa 32 V3': 15, 'Placas perforadas 4×6 (3)': 18, 'GY-91 + OpenLog + reguladores': 10,
     'NEO-M8N + antena': 14, 'ESP32-C3 + RFM95W + NEO-6M': 15, 'Balero 688ZZ': 4,
     'Varillas M3 de acero (3) + tornillería': 26, 'Cables, conectores, o-ring y hules': 20, 'Espuma EVA y ligas': 12,

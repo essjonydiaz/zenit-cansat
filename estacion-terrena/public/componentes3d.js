@@ -360,7 +360,8 @@ const CONSTRUCTORES = {
   esp32_c3: esp32c3, rfm95w: rfm95, pila_primaria: pila, pila_secundaria: pila,
 };
 
-export function hayDetalle(nombre) { return nombre in CONSTRUCTORES || nombre.startsWith('servo_'); }
+// Los servos ya vienen del CAD con su forma real (orejas, torre y cuerno), así que se usan tal cual.
+export function hayDetalle(nombre) { return nombre in CONSTRUCTORES; }
 
 export function crearComponente(nombre, cajaWeb, { calidad = 'alta' } = {}) {
   const M = materiales(calidad);

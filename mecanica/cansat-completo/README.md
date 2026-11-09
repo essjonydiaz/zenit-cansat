@@ -54,10 +54,10 @@ La revisión automática del archivo no encontró **ningún choque** entre pieza
 8. **Columna:** 3 varillas roscadas M3 van del piso a la tapa. Por ahí pasa el peso cuando el
    dron lo carga. La carcasa es solo la piel.
 
-**Autogiro.** Cada aspa mide 130 mm y es una lámina curva de 1.6 mm que va en un canal de 2 mm
+**Autogiro.** Cada aspa mide 110 mm y es una lámina curva de 1.6 mm que va en un canal de 2 mm
 por fuera de la pared, al ras del cilindro. La pared detrás del canal está completa: **no hay
 ranuras ni agujeros**. Cuelga de una bisagra en el rotor. Al soltarlas, una liga en cada bisagra
-las empuja hacia afuera y el aire termina de abrirlas (rotor de ~35 cm). Después solo quedan los 3
+las empuja hacia afuera y el aire termina de abrirlas (rotor de ~31 cm). Después solo quedan los 3
 canales poco profundos.
 
 ![Corte desde arriba](salida/imagenes/aspas_dentro_del_cilindro.png)
@@ -135,27 +135,28 @@ Queda **justo**. La pared completa pesa 16 g más que la de la versión 1, por e
 
 ## 6. Velocidad del autogiro (8–12 m/s)
 
-Después del desacople, la primaria pesa ~395 g. Con aspas de 130 mm el rotor mide ~35 cm de
-diámetro, y la cuenta de un rotor en autorrotación (v = √(2·m·g / (ρ·C·A)), con C de 1.0 a 1.3) da:
+Después del desacople, la primaria pesa ~408 g. La cuenta de un rotor en autorrotación
+(v = √(2·m·g / (ρ·C·A)), con C de 0.8 a 1.3) da:
 
 | Largo del aspa | Ø del rotor | Velocidad estimada |
 |---|---|---|
-| 130 mm | 35 cm | 7.4–8.4 m/s (puede quedar **abajo** de 8) |
-| 115 mm | 32 cm | 8.0–9.2 m/s |
-| 100 mm | 29 cm | 8.9–10.2 m/s |
+| 130 mm | 35 cm | 7.3–9.4 m/s (puede quedar **abajo** de 8) |
+| **110 mm (el diseño)** | **31 cm** | **8.3–10.5 m/s** |
 
-La recomendación es imprimir dos juegos de aspas (130 y 110 mm, cambiando `L_ASPA`) y elegir con
-caídas de prueba. Si baja muy lento, se acortan las aspas; si baja muy rápido, se alargan.
+Por eso las aspas son de **110 mm**: en todo el rango de la cuenta quedan entre 8 y 12 m/s. El largo
+está amarrado al canal del tubo y al imán del anillo: si se cambia `L_ASPA`, hay que volver a imprimir
+la carcasa primaria, las aspas y el anillo. Midan la velocidad real en las caídas de prueba.
 
 ## 7. Armado
 
 ![Explosivo](salida/imagenes/cansat_explosivo.png)
 
 1. **Piso:** meter las 3 tuercas en los hexágonos de abajo y atornillar las 3 varillas. Poner la
-   pila con un cincho y los 2 servos en sus cunas. Pegar los 3 imanes de Ø 8 × 2 en los dientes del
-   anillo de retención, montarlo en sus guías y unir con alambre el brazo del servo del autogiro
-   con el brazo del anillo. El servo debe girar el anillo **15° antihorario** (visto desde arriba)
-   para soltar.
+   pila con un cincho y los 2 servos en sus cunas (acostados, las orejas en sus ranuras, con cincho
+   y una gota de silicón). Pegar los 3 imanes de Ø 8 × 2 en los dientes del anillo de retención y
+   montarlo en sus guías. Meter el pasador y unirlo al cuerno del servo de desacople con la varilla
+   en Z; unir con alambre el cuerno del servo del autogiro con el brazo del anillo. Detalle en
+   `Zenit_despliegue_y_servos.pdf`.
 2. Pasar los espaciadores de la base, el disco del huevo, la espuma y los espaciadores del huevo.
 3. Deslizar la **carcasa** desde arriba hasta asentarla en el piso (antes de la electrónica: la
    ceja de la tapa no deja pasar el tubo).
