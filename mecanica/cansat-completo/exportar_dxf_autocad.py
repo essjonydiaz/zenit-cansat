@@ -1,7 +1,8 @@
 # Archivos para AutoCAD: ensamble 3D (mallas) y plano 2D con cotas, en milímetros.
 #   Uso: python exportar_dxf_autocad.py   (después de cansat_completo.py)
-# En AutoCAD se abren y se guardan como .dwg (Archivo > Guardar como > DWG).
-import os, struct, math
+# Escribe los .dxf y, si está compilada la herramienta herramientas/hacer_dwg (LibreDWG),
+# también los .dwg (R2000). Ver herramientas/hacer_dwg.c para compilarla.
+import os, struct, math, subprocess, shutil
 import numpy as np
 import ezdxf
 from ezdxf.render import MeshBuilder
@@ -10,6 +11,10 @@ from ezdxf.enums import TextEntityAlignment
 AQUI = os.path.dirname(os.path.abspath(__file__))
 VIS = os.path.join(AQUI, 'salida', '_vista')
 OUT = os.path.join(AQUI, 'salida', 'autocad'); os.makedirs(OUT, exist_ok=True)
+HACER_DWG = os.environ.get('HACER_DWG') or os.path.join(AQUI, 'herramientas', 'hacer_dwg')
+
+def poli(pts, fmt='xy', close=True, layer='CONTORNO'):
+    msp.add_lwpolyline(pts, format=fmt, close=close, dxfattribs={'layer': layer})
 
 def nuevo():
     doc = ezdxf.new('R2018', setup=True)
@@ -35,6 +40,7 @@ def color(n):
 
 # ------------------------------------------------ 1) ensamble 3D (piezas impresas)
 doc = nuevo(); msp = doc.modelspace()
+caras_dwg = []                                      # (capa, color, triángulos) para el .dwg
 for f in sorted(os.listdir(VIS)):
     if not (f.startswith('imp__') and f.endswith('.stl')): continue
     n = f[5:-4]
@@ -43,6 +49,7 @@ for f in sorted(os.listdir(VIS)):
     pts, caras = leer_stl(os.path.join(VIS, f))
     mb = MeshBuilder(); mb.vertices = [tuple(p) for p in pts]; mb.faces = [tuple(int(i) for i in c) for c in caras]
     mb.render_mesh(msp, dxfattribs={'layer': capa})
+    caras_dwg.append((capa, color(n), pts[caras]))
 doc.saveas(os.path.join(OUT, 'Zenit_CanSat_ensamble_3D.dxf'))
 print('ensamble 3D listo')
 
@@ -52,7 +59,7 @@ for capa, c in (('CONTORNO', 7), ('COTAS', 1), ('EJES', 8), ('TEXTO', 3)):
     doc.layers.add(capa, color=c)
 R = 48.0; H_SEC = 70.0; H_PRI = 159.0; Z_TOP = H_SEC + H_PRI; L_ASPA = 110.0; Z_BIS = H_SEC + 153.0
 def rect(x0, y0, x1, y1, capa='CONTORNO'):
-    msp.add_lwpolyline([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], close=True, dxfattribs={'layer': capa})
+    poli([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], layer=capa)
 def cota_h(p1, p2, y, txt=None):
     d = msp.add_linear_dim(base=(0, y), p1=p1, p2=p2, angle=0, dimstyle='EZDXF', override={'dimtxt': 3.5, 'dimasz': 2.5}, dxfattribs={'layer': 'COTAS'})
     if txt: d.dimension.dxf.text = txt
@@ -71,7 +78,7 @@ msp.add_line((-R, Z_TOP - 8), (R, Z_TOP - 8), dxfattribs={'layer': 'EJES'})     
 msp.add_line((0, -10), (0, Z_TOP + 10), dxfattribs={'layer': 'EJES', 'linetype': 'CENTER'})
 w0, w1 = 13.0, 10.0                                     # aspa: 26 mm en la raíz, 20 mm en la punta
 yb = Z_BIS - L_ASPA + w1                                # aspa plegada, vista de frente (punta redonda)
-msp.add_lwpolyline([(-w1, yb, 0, 0, 0), (-w0, Z_BIS, 0, 0, 0), (w0, Z_BIS, 0, 0, 0), (w1, yb, 0, 0, -1.0)], format='xyseb', close=True, dxfattribs={'layer': 'CONTORNO'})
+poli([(-w1, yb, 0, 0, 0), (-w0, Z_BIS, 0, 0, 0), (w0, Z_BIS, 0, 0, 0), (w1, yb, 0, 0, -1.0)], fmt='xyseb')
 texto('aspa plegada (al ras)', -w1 + 1, yb + 20, 2.5)
 rect(-4.75, Z_TOP - 3.5, 4.75, Z_TOP, 'EJES')       # orificio del dron
 cota_h((-R, 0), (R, 0), -14, '%%c96')
@@ -97,3 +104,54 @@ for i, t in enumerate(['CanSat Zénit 2026 - diseño v2 (unidades: milímetros)'
     texto(t, cx - R, 40 - i * 8, 3.5)
 doc.saveas(os.path.join(OUT, 'Zenit_CanSat_plano_cotas.dxf'))
 print('plano listo')
+
+# ------------------------------------------------ 3) los mismos dibujos en .dwg (R2000)
+def fmt(*v): return ' '.join(f'{x:.4f}' for x in v)
+
+def txt_dwg(t):
+    """Texto en ASCII para el .dwg: Ø como %%c y los acentos como \\U+XXXX (AutoCAD los entiende)."""
+    return ''.join('%%c' if c in 'Øø⌀' else (c if ord(c) < 128 else f'\\U+{ord(c):04X}') for c in t)
+
+def primitivas(e, out):
+    """Pasa una entidad del plano a líneas, arcos, círculos, caras y textos sencillos."""
+    t = e.dxftype(); capa = e.dxf.layer
+    if t == 'LINE':
+        out.append((capa, 'N ' + fmt(*e.dxf.start, *e.dxf.end)))
+    elif t == 'CIRCLE':
+        out.append((capa, 'I ' + fmt(e.dxf.center.x, e.dxf.center.y, e.dxf.radius)))
+    elif t == 'ARC':
+        out.append((capa, 'A ' + fmt(e.dxf.center.x, e.dxf.center.y, e.dxf.radius, e.dxf.start_angle, e.dxf.end_angle)))
+    elif t == 'SOLID':                                   # flechas de las cotas: el contorno
+        v = [e.dxf.vtx0, e.dxf.vtx1, e.dxf.vtx3, e.dxf.vtx2]
+        for a, b in zip(v, v[1:] + v[:1]):
+            if (a - b).magnitude > 1e-6: out.append((capa, 'N ' + fmt(*a, *b)))
+    elif t == 'TEXT':
+        h = {0: 0, 1: 1, 2: 1, 4: 1}.get(e.dxf.get('halign', 0), 0); v = e.dxf.get('valign', 0)
+        p = e.dxf.align_point if (h or v) and e.dxf.hasattr('align_point') else e.dxf.insert
+        out.append((capa, 'T ' + fmt(p.x, p.y, e.dxf.height, e.dxf.get('rotation', 0.0)) + f' {h} {v} ' + txt_dwg(e.dxf.text)))
+    elif t == 'MTEXT':                                   # texto de las cotas (centrado)
+        p = e.dxf.insert
+        out.append((capa, 'T ' + fmt(p.x, p.y, e.dxf.char_height, e.dxf.get('rotation', 0.0)) + ' 1 2 ' + txt_dwg(e.plain_text())))
+    elif t in ('LWPOLYLINE', 'POLYLINE', 'DIMENSION', 'INSERT'):
+        for sub in e.virtual_entities():
+            if not sub.dxf.hasattr('layer') or sub.dxf.layer == '0': sub.dxf.layer = capa
+            primitivas(sub, out)
+
+if os.path.exists(HACER_DWG):
+    capas_plano = [(l.dxf.name, l.dxf.color) for l in doc.layers if l.dxf.name not in ('0', 'Defpoints')]
+    prim = []
+    for e in msp: primitivas(e, prim)
+    trabajos = {'Zenit_CanSat_plano_cotas': [f'L {c} {k}' for c, k in capas_plano] +
+                [ln for capa in [c for c, _ in capas_plano] for ln in (['C ' + capa] + [x for cc, x in prim if cc == capa])],
+                'Zenit_CanSat_ensamble_3D': [ln for capa, col, tri in caras_dwg for ln in
+                                             ([f'L {capa} {col}'] + ['F ' + fmt(*t.ravel()) for t in tri])]}
+    for nombre, lineas in trabajos.items():
+        txt = os.path.join(OUT, nombre + '.txt')
+        with open(txt, 'w', encoding='utf-8') as fo: fo.write('\n'.join(lineas) + '\n')
+        dwg = os.path.join(OUT, nombre + '.dwg')
+        if os.path.exists(dwg): os.remove(dwg)          # LibreDWG no sobrescribe
+        r = subprocess.run([HACER_DWG, txt, dwg], capture_output=True, text=True)
+        os.remove(txt)
+        print(nombre + '.dwg:', r.stderr.strip())
+else:
+    print('(no se hicieron los .dwg: falta compilar herramientas/hacer_dwg)')
