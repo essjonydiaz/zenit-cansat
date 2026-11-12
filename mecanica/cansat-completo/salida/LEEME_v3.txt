@@ -1,0 +1,42 @@
+CanSat Zénit - piezas para imprimir (versión 3)
+16 archivos STL, 31 piezas en total. Medidas en milímetros.
+
+QUÉ CAMBIÓ DESDE LA VERSIÓN 2 (hay que imprimir de nuevo estas 8):
+  aspa (las 3) ............ 2.0 mm de grueso (antes 1.6); bisagra para tornillo M2
+  rotor ................... orejas de la bisagra de 3.6 mm, para tornillo M2 x 25
+  carcasa_primaria ........ ventana del interruptor (9 x 4.2 mm) y canales de 2.4 mm
+  carcasa_secundaria ...... ventana del interruptor (9 x 4.2 mm)
+  tapa_electronica ........ cunita del interruptor y pestaña guía
+  tapa_secundaria ......... cunita del interruptor y pestaña guía
+  disco_electronica_base .. ranura para o-ring de 85 x 2
+  anillo_retencion ........ dientes ajustados a los canales nuevos
+El rotor y el aspa que ya se imprimieron (versión 2) ya no sirven.
+Las otras 8 piezas no cambiaron: si ya están impresas, se quedan.
+
+Cuántas de cada una:
+  carcasa_primaria ........ 1   (parada; 3 perímetros, sin relleno)
+  carcasa_secundaria ...... 1   (parada, fondo en la cama) -> se puede probar en TPU 95A
+  aspa .................... 3   (acostada, cara curva hacia abajo; 5 perímetros = sólida)
+  rotor ................... 1   (boca abajo, el plato en la cama; 4 perímetros)
+  tapa_electronica ........ 1   (ceja en la cama)
+  disco_electronica_base .. 1
+  disco_huevo_base ........ 1
+  piso_primaria ........... 1   (ceja en la cama)
+  anillo_retencion ........ 1
+  tapa_secundaria ......... 1   (poste hacia arriba)
+  bandeja_secundaria ...... 1
+  espaciador_base ......... 3
+  espaciador_huevo ........ 3
+  separador_placas_0 ...... 4   (los 12 separadores se pueden comprar de nylon M3)
+  separador_placas_1 ...... 4
+  separador_placas_2 ...... 4
+
+Material:
+  - Aspas y rotor: PLA (es más rígido que el PETG: el aspa no se dobla con el aire).
+  - Todo lo demás: PLA o PETG. Solo la carcasa_secundaria puede ir en TPU.
+  - Capa 0.2 mm, 3 perímetros, 15-20 % de relleno (aspas: 5 perímetros, quedan sólidas).
+Colores sugeridos: azul marino o gris oscuro (carcasas y rotor), blanco o el mismo azul (aspas).
+Primero imprimir 1 aspa y el rotor y probar la bisagra con el tornillo M2 x 25.
+
+Peso total aproximado: 231 g de filamento (sin soportes).
+Por favor, avísennos los gramos y el tiempo que marque su programa por pieza.

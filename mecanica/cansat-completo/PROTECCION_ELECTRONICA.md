@@ -95,7 +95,7 @@ Las imágenes son el modelo real en CAD. Para que la pieza impresa se vea igual:
 | Cantidad | Pieza |
 |---|---|
 | 8 | Arandelas de hule o silicón Ø 8 × 3 × 2 mm |
-| 1 | O-ring 86 × 2 mm |
+| 1 | O-ring 85 × 2 mm |
 | 4 | Tuercas M3 con seguro de nylon |
 | — | Silicón, termofit, cinchos chicos y cinta |
 | 1 | Calcomanía de vinil del logo (4.5 × 6 cm) |

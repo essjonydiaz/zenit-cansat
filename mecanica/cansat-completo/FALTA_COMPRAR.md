@@ -1,6 +1,6 @@
 # Lo que falta comprar · e instrucciones
 
-CanSat Zénit, diseño v2. Solo lo **extra**: no incluye la impresión 3D ni la electrónica que ya tienen.
+CanSat Zénit, diseño v3. Solo lo **extra**: no incluye la impresión 3D ni la electrónica que ya tienen.
 Las imágenes son ilustrativas. Los precios son aproximados: confírmenlos en la tienda.
 
 | ☐ | # | Qué | Cant. | Aprox. |
@@ -8,14 +8,15 @@ Las imágenes son ilustrativas. Los precios son aproximados: confírmenlos en la
 | ☐ | 1 | Varilla roscada M3 + tuercas y tornillos | 1 m + 20 + 6 | $60–100 |
 | ☐ | 2 | Balero 688ZZ | 1 | $30–60 |
 | ☐ | 3 | Imanes de neodimio Ø 8 mm | 4 de 1 mm + 4 de 2 mm | $60–120 |
-| ☐ | 4 | O-ring 86 × 2 mm | 1 | $10–30 |
+| ☐ | 4 | O-ring 85 × 2 mm | 1 | $10–30 |
 | ☐ | 5 | Arandelas de hule M3 | 8 | $10–30 |
 | ☐ | 6 | Alambre de acero 1 mm + clavo de 3 mm | 50 cm + 1 | $20–50 |
 | ☐ | 7 | Ligas chicas | 1 bolsa | $15–30 |
 | ☐ | 8 | Foamy de 5 mm | 1 hoja | $20–40 |
-| ☐ | 9 | Interruptor deslizable chico | 2 | $10–30 |
+| ☐ | 9 | Interruptor deslizable SPDT con orejas | 2 + 1 | $15–45 |
 | ☐ | 10 | Capacitor de 470 µF | 2 | $5–20 |
-| | | **Total aproximado** | | **$240–510** |
+| ☐ | 11 | Tornillos M2 × 20 | 3 + 1 | $10–30 |
+| | | **Total aproximado** | | **$255–565** |
 
 ---
 
@@ -29,7 +30,8 @@ Las imágenes son ilustrativas. Los precios son aproximados: confírmenlos en la
 - **Cómo:** cortar 3 pedazos de **14.8 cm** (148 mm) con segueta y limar las puntas para que entre la tuerca. Van del piso
   a la tapa de la electrónica, con una tuerca abajo (en el hexágono del piso) y otra arriba.
   **No las dejen más largas:** si sobresalen de la tapa, chocan con el rotor y las aspas no giran.
-- **No cambia el tamaño:** van por dentro del cilindro, y su peso (unos 21 g las 3) ya está contado en los 587 g.
+- **No cambia el tamaño:** van por dentro del cilindro, y su peso (unos 21 g las 3) ya está contado en los 595 g.
+- **Mejor de aluminio:** si encuentran varilla roscada M3 de aluminio, úsenla: pesa 11 g menos y aguanta de sobra.
 
 ## 2. Balero 688ZZ
 
@@ -55,12 +57,12 @@ Las imágenes son ilustrativas. Los precios son aproximados: confírmenlos en la
   3. Pegar con una gota de Kola Loca y dejar secar 24 h.
 - Cuidado: son muy fuertes y se rompen si chocan entre sí. Guárdenlos lejos de tarjetas y celulares.
 
-## 4. O-ring de 86 × 2 mm
+## 4. O-ring de 85 × 2 mm
 
 <img src="salida/imagenes/compras/04_oring.png" style="width:42%;display:block;margin:4px 0 6px 0">
 
-- **Pedir en una tienda de empaques o sellos (o en Mercado Libre):** "o-ring de 86 mm de diámetro
-  interior por 2 mm de grueso". Si no hay de 86, sirve uno de 85.
+- **Pedir en una tienda de empaques o sellos (o en Mercado Libre):** "o-ring de 85 mm de diámetro
+  interior por 2 mm de grueso". Si no hay de 85, sirve uno de 84.
 - **Para qué:** centra el módulo de electrónica dentro del tubo y amortigua golpes de lado.
 - **Cómo:** se pone en la ranura del disco base de la electrónica. Al meter el módulo en el tubo, roza los
   3 canales de las aspas: es normal.
@@ -89,7 +91,6 @@ Las imágenes son ilustrativas. Los precios son aproximados: confírmenlos en la
   2. Con pinzas, doblar un pedazo de alambre en forma de **Z** (unos 10 mm): un extremo al agujero del cuerno
      del servo de desacople y el otro enrollado en la muesca del pasador.
   3. Otro pedazo de alambre une el cuerno del servo del autogiro con el brazo del anillo.
-  4. Del mismo alambre (o uno de 1.5 mm) se cortan los 3 ejes de las bisagras de las aspas (18 mm cada uno).
 
 ## 7. Ligas chicas
 
@@ -111,14 +112,25 @@ Las imágenes son ilustrativas. Los precios son aproximados: confírmenlos en la
 - **Para qué:** la cama y el techo de cada huevo, para que no se mueva.
 - **Cómo:** cortar 2 círculos por huevo (uno abajo y uno arriba) del tamaño del disco donde va.
 
-## 9. Interruptor deslizable chico
+## 9. Interruptor deslizable con orejas
 
-<img src="salida/imagenes/compras/09_interruptor.png" style="width:42%;display:block;margin:4px 0 6px 0">
+<img src="salida/imagenes/detalles/ventana.png" style="width:42%;display:block;margin:4px 0 6px 0">
 
-- **Pedir en una tienda de electrónica:** "interruptor deslizable miniatura de 3 patas" (tipo SS12D00).
-- **Para qué:** la guía pide un interruptor para prender y apagar el CanSat sin abrirlo. Va uno en cada carga.
-- **Cómo:** se conecta en el cable **positivo (rojo)** de la pila, antes del regulador. **Todavía falta definir
-  dónde va**, para que no sobresalga de la pared; avísenme cuando lo tengan y lo agrego al diseño.
+- **Pedir en Unit Electronics (o similar):** "interruptor deslizable SPDT 1 polo 2 tiros con soporte de
+  fijación" (placa de 19.6 × 5.8 mm, barrenos de 2.5 mm, 0.5 A). Compren 3 (uno de repuesto).
+- **Para qué:** la guía pide un interruptor para prender y apagar el CanSat. Va uno en cada carga, hundido
+  detrás de una ventana de 9 × 4.2 mm (el profesor autorizó el hoyo). Se mueve con la punta de una pluma.
+- **Cómo:**
+  1. **Cortar la palanca** con cúter o segueta para que sobresalga solo **2.3 mm** de la placa metálica.
+     Así queda medio milímetro adentro de la pared y no sobresale.
+  2. Soldar 2 cables: la pata del **centro** al **positivo (rojo)** de la pila y una pata de un **lado** a la
+     entrada del regulador. La otra pata queda libre.
+  3. Meter la placa por abajo en las **2 ranuras de la cunita** de la tapa (no lleva tornillos) y poner una
+     gota de silicón para que no se baje.
+  4. Al cerrar, la **pestaña de la tapa** solo entra en la muesca del tubo si el interruptor quedó frente a la
+     ventana.
+- **Ojo:** aguanta 0.5 A. Diego debe medir el consumo de la primaria cuando arrancan los servos; si pasa de
+  0.5 A, el capacitor de 470 µF ayuda con el pico.
 
 ## 10. Capacitor electrolítico de 470 µF
 
@@ -129,6 +141,15 @@ Las imágenes son ilustrativas. Los precios son aproximados: confírmenlos en la
   golpe de corriente.
 - **Cómo:** uno junto a cada servo, entre **5 V y GND**. **Tiene polaridad:** la pata del lado de la franja
   blanca (−) va a GND. Si se conecta al revés, se puede dañar.
+
+## 11. Tornillos M2 × 20 (bisagras de las aspas)
+
+- **Pedir en la tornillería o en Mercado Libre:** "tornillo M2 × 20 mm cabeza allen" (o cabeza de gota). 4 piezas.
+- **Para qué:** son el eje de cada bisagra. Antes era un alambre de 1.5 mm; el tornillo es más fuerte y no
+  se sale con el aire.
+- **Cómo:** el aspa va entre las 2 orejas del rotor. El tornillo entra por la oreja que tiene el **avellanado**
+  (el hueco para la cabeza) y **rosca en la otra oreja** (no lleva tuerca). Apretar hasta que el aspa gire sin
+  juego, sin trabarla. Si se afloja, una gota de barniz de uñas en la rosca.
 
 ---
 

@@ -493,7 +493,7 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461356.7407060186
+2461356.812175926
   9
 $TDUCREATE
  40
@@ -501,7 +501,7 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2461356.7407060186
+2461356.812175926
   9
 $TDUUPDATE
  40
@@ -553,7 +553,7 @@ $SPLINESEGS
   9
 $HANDSEED
   5
-100
+106
   9
 $SURFTAB1
  70
@@ -933,11 +933,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{B1C632FB-9169-4500-98D7-8B9D1D6825B8}
+{5D1CFE6F-4E71-445D-95EB-9735D178EA49}
   9
 $VERSIONGUID
   2
-{80E7D543-6D56-4381-ABB1-8B7F69EBDD7D}
+{BAC84ABF-CCEB-4180-8CBA-08F3F9C5BD79}
   9
 $EXTNAMES
 290
@@ -3185,7 +3185,7 @@ ACAD
   0
 APPID
   5
-FD
+103
 330
 3
 100
@@ -3199,7 +3199,7 @@ HATCHBACKGROUNDCOLOR
   0
 APPID
   5
-FE
+104
 330
 3
 100
@@ -6435,13 +6435,13 @@ AcDbLine
  10
 -13.125
  20
-223.0
+224.0
  30
 0.0
  11
 -62.375
  21
-223.0
+224.0
  31
 0.0
   0
@@ -6485,7 +6485,7 @@ _ARCHTICK
  10
 -62.0
  20
-223.0
+224.0
  30
 0.0
  41
@@ -6535,7 +6535,7 @@ AcDbLine
  10
 -62.0
  20
-223.0
+224.0
  30
 0.0
  11
@@ -6559,7 +6559,7 @@ AcDbMText
  10
 -60.15
  20
-168.0
+168.5
  30
 0.0
  40
@@ -6567,7 +6567,7 @@ AcDbMText
  71
 5
   1
-110 aspa
+111 aspa
   7
 OpenSansCondensed-Light
  50
@@ -6587,7 +6587,7 @@ AcDbPoint
  10
 -62.0
  20
-223.0
+224.0
  30
 0.0
   0
@@ -6605,7 +6605,7 @@ AcDbPoint
  10
 -13.0
  20
-223.0
+224.0
  30
 0.0
   0
@@ -7021,11 +7021,11 @@ AcDbPolyline
  10
 -13.0
  20
-223.0
+224.0
  10
 13.0
  20
-223.0
+224.0
  10
 10.0
  20
@@ -7395,13 +7395,13 @@ EZDXF
  10
 -62.0
  20
-223.0
+224.0
  30
 0.0
  11
 -60.15
  21
-168.0
+168.5
  31
 0.0
  70
@@ -7409,13 +7409,13 @@ EZDXF
  71
 5
   1
-110 aspa
+111 aspa
 100
 AcDbAlignedDimension
  13
 -13.0
  23
-223.0
+224.0
  33
 0.0
  14
@@ -7593,6 +7593,114 @@ F2
 100
 AcDbEntity
   8
+COTAS
+100
+AcDbLine
+ 10
+141.78630788996128
+ 20
+158.8328157299975
+ 30
+0.0
+ 11
+137.08402587162152
+ 21
+165.30495168499706
+ 31
+0.0
+  0
+TEXT
+  5
+F3
+330
+17
+100
+AcDbEntity
+  8
+TEXTO
+100
+AcDbText
+ 10
+106.49624061932903
+ 20
+166.11396867937202
+ 30
+0.0
+ 40
+2.5
+  1
+interruptor primaria (126°)
+ 11
+106.49624061932903
+ 21
+166.11396867937202
+ 31
+0.0
+100
+AcDbText
+  0
+LINE
+  5
+F4
+330
+17
+100
+AcDbEntity
+  8
+COTAS
+100
+AcDbLine
+ 10
+187.20166157817442
+ 20
+164.81186047186569
+ 30
+0.0
+ 11
+190.06860517453683
+ 21
+172.2805038838433
+ 31
+0.0
+  0
+TEXT
+  5
+F5
+330
+17
+100
+AcDbEntity
+  8
+TEXTO
+100
+AcDbText
+ 10
+190.4269731240821
+ 20
+173.2140843103405
+ 30
+0.0
+ 40
+2.5
+  1
+interruptor secundaria (69°)
+ 11
+190.4269731240821
+ 21
+173.2140843103405
+ 31
+0.0
+100
+AcDbText
+  0
+LINE
+  5
+F6
+330
+17
+100
+AcDbEntity
+  8
 EJES
 100
 AcDbLine
@@ -7611,7 +7719,7 @@ AcDbLine
   0
 TEXT
   5
-F3
+F7
 330
 17
 100
@@ -7641,7 +7749,7 @@ AcDbText
   0
 LINE
   5
-F4
+F8
 330
 17
 100
@@ -7665,7 +7773,7 @@ AcDbLine
   0
 TEXT
   5
-F5
+F9
 330
 17
 100
@@ -7695,7 +7803,7 @@ AcDbText
   0
 LINE
   5
-F6
+FA
 330
 17
 100
@@ -7719,7 +7827,7 @@ AcDbLine
   0
 TEXT
   5
-F7
+FB
 330
 17
 100
@@ -7749,7 +7857,7 @@ AcDbText
   0
 TEXT
   5
-F8
+FC
 330
 17
 100
@@ -7779,7 +7887,7 @@ AcDbText
   0
 TEXT
   5
-F9
+FD
 330
 17
 100
@@ -7797,7 +7905,7 @@ AcDbText
  40
 3.5
   1
-CanSat Zénit 2026 - diseño v2 (unidades: milímetros)
+CanSat Zénit 2026 - diseño v3 (unidades: milímetros)
  11
 122.0
  21
@@ -7809,7 +7917,7 @@ AcDbText
   0
 TEXT
   5
-FA
+FE
 330
 17
 100
@@ -7827,7 +7935,7 @@ AcDbText
  40
 3.5
   1
-Pared de 1.2 mm; aspas de 1.6 mm en canales de 2 mm, al ras
+Pared de 1.2 mm; aspas de 2.0 mm (PLA) en canales de 2.4 mm, al ras
  11
 122.0
  21
@@ -7839,7 +7947,7 @@ AcDbText
   0
 TEXT
   5
-FB
+FF
 330
 17
 100
@@ -7852,6 +7960,66 @@ AcDbText
 122.0
  20
 24.0
+ 30
+0.0
+ 40
+3.5
+  1
+Bisagras: eje = tornillo M2 x 25; orejas del rotor de 3.6 mm
+ 11
+122.0
+ 21
+24.0
+ 31
+0.0
+100
+AcDbText
+  0
+TEXT
+  5
+100
+330
+17
+100
+AcDbEntity
+  8
+TEXTO
+100
+AcDbText
+ 10
+122.0
+ 20
+16.0
+ 30
+0.0
+ 40
+3.5
+  1
+Interruptores: ventana de 9 x 4.2 mm en cada carga (único hoyo extra)
+ 11
+122.0
+ 21
+16.0
+ 31
+0.0
+100
+AcDbText
+  0
+TEXT
+  5
+101
+330
+17
+100
+AcDbEntity
+  8
+TEXTO
+100
+AcDbText
+ 10
+122.0
+ 20
+8.0
  30
 0.0
  40
@@ -7861,7 +8029,7 @@ Debe entrar en el cilindro de revisión de 110 mm de diámetro
  11
 122.0
  21
-24.0
+8.0
  31
 0.0
 100
@@ -7869,7 +8037,7 @@ AcDbText
   0
 TEXT
   5
-FC
+102
 330
 17
 100
@@ -7881,17 +8049,17 @@ AcDbText
  10
 122.0
  20
-16.0
+0.0
  30
 0.0
  40
 3.5
   1
-Masa estimada: 587 g de 600 g (con pilas de litio y 2 huevos de 65 g)
+Masa estimada: 595 g de 600 g (con pilas de litio y 2 huevos de 65 g)
  11
 122.0
  21
-16.0
+0.0
  31
 0.0
 100
@@ -8987,7 +9155,7 @@ CREATED_BY_EZDXF
   3
 WRITTEN_BY_EZDXF
 350
-FF
+105
   0
 DICTIONARYVAR
   5
@@ -8999,7 +9167,7 @@ DictionaryVariables
 280
 0
   1
-1.4.5 @ 2026-11-11T23:46:37.316869+00:00
+1.4.5 @ 2026-11-12T01:29:32.762891+00:00
   0
 VISUALSTYLE
   5
@@ -15553,7 +15721,7 @@ strokes_ogs.tif
   0
 DICTIONARYVAR
   5
-FF
+105
 330
 2D
 100
@@ -15561,7 +15729,7 @@ DictionaryVariables
 280
 0
   1
-1.4.5 @ 2026-11-11T23:46:37.324190+00:00
+1.4.5 @ 2026-11-12T01:29:32.770896+00:00
   0
 ENDSEC
   0

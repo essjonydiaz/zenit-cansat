@@ -37,7 +37,7 @@ def material_de(n):
     if n.startswith('hule'): return MAT['goma']
     for k, m in (('huevo_', 'huevo'), ('pila', 'pila'), ('servo', 'servo'), ('placa', 'pcb'), ('heltec', 'negro'), ('gy91', 'morado'),
                  ('openlog', 'rojo'), ('neo', 'pcb'), ('antena_gps', 'ceramica'), ('balero', 'metal'), ('antena_lora', 'cobre'),
-                 ('oring', 'goma'), ('espuma', 'espuma'), ('esp32', 'negro'), ('rfm', 'pcb'), ('varilla', 'metal'), ('pasador', 'metal')):
+                 ('oring', 'goma'), ('espuma', 'espuma'), ('esp32', 'negro'), ('rfm', 'pcb'), ('varilla', 'metal'), ('pasador', 'metal'), ('tornillo', 'metal'), ('interruptor', 'metal')):
         if k in n: return MAT[m]
     return MAT['interior']
 

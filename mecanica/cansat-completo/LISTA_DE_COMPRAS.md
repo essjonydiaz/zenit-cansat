@@ -1,7 +1,7 @@
-# Lista de compras · CanSat Zénit (diseño v2)
+# Lista de compras · CanSat Zénit (diseño v3)
 
 Todo lo que **no** sale de la impresora 3D. Las piezas impresas son los 16 archivos de
-`Zenit_STL_v2.zip`. La columna "Qué pedir" dice cómo pedirlo en la tienda. Anoten el precio real:
+`Zenit_STL_v3.zip`. La columna "Qué pedir" dice cómo pedirlo en la tienda. Anoten el precio real:
 la guía pone un **máximo de $100 USD** (≈ $1,800 MXN) para todo el CanSat y hay que reportarlo.
 
 ## 1. Tornillería y mecánica (ferretería o tornillería)
@@ -15,7 +15,7 @@ la guía pone un **máximo de $100 USD** (≈ $1,800 MXN) para todo el CanSat y 
 | ☐ | 1 | Tornillo M3 × 12 mm con rondana | Detiene el rotor por abajo del balero | |
 | ☐ | 10 cm | Varilla o clavo de **acero de 3 mm** | El pasador del desacople (cortar a 18.5 mm) | |
 | ☐ | 50 cm | **Alambre de acero de 1 mm** (cuerda de piano) | Varilla en Z del servo de desacople y alambre del autogiro | |
-| ☐ | 20 cm | Alambre o clavo de acero de 1.5 mm | Ejes de las 3 bisagras de las aspas (3 de 18 mm) | |
+| ☐ | 3 + 1 | **Tornillos M2 × 20** (cabeza allen o de gota) | Ejes de las 3 bisagras de las aspas (roscan en el plástico) | |
 | ☐ | 12 | Separadores hexagonales de nylon M3 (16 y 18 mm) | Entre las placas (o se imprimen) | |
 | ☐ | (opcional) | Varilla roscada M3 de **nylon o aluminio** | Solo si el CanSat pesa más de 595 g: ahorra ~15 g frente a la de acero | |
 
@@ -26,7 +26,7 @@ la guía pone un **máximo de $100 USD** (≈ $1,800 MXN) para todo el CanSat y 
 | ☐ | 1 | **Balero 688ZZ** (8 × 16 × 5 mm) | Para que gire el rotor del autogiro | |
 | ☐ | 3 + 1 | **Imán de neodimio N52 de Ø 8 × 1 mm** | Punta de cada aspa (+1 de repuesto) | |
 | ☐ | 3 + 1 | **Imán de neodimio N52 de Ø 8 × 2 mm** | Dientes del anillo (+1 de repuesto) | |
-| ☐ | 1 | **O-ring de 86 × 2 mm** (Ø interior × grueso) | Centra el módulo de electrónica | |
+| ☐ | 1 | **O-ring de 85 × 2 mm** (Ø interior × grueso) | Centra el módulo de electrónica | |
 | ☐ | 8 | Arandelas de hule o silicón de Ø 8 × 3 × 2 mm | Amortiguan las 3 placas | |
 
 ## 3. Energía y electrónica que falta
@@ -37,7 +37,7 @@ la guía pone un **máximo de $100 USD** (≈ $1,800 MXN) para todo el CanSat y 
 | ☐ | 2 | Broche para pila de 9 V | Conectar cada pila | |
 | ☐ | 2 | **Servo SG90** | Desacople y autogiro (si ya los tienen, pesen uno) | |
 | ☐ | 2 | Capacitor electrolítico de 470 µF, 10 V o más | Junto a cada servo, para que no reinicie la Heltec | |
-| ☐ | 2 | Interruptor de encendido chico (deslizable) | La guía lo pide; **falta definir dónde va** sin sobresalir | |
+| ☐ | 2 + 1 | **Interruptor deslizable SPDT con orejas** (Unit Electronics: placa 19.6 × 5.8 mm, barrenos Ø 2.5, 0.5 A) | Encendido de cada carga; va hundido detrás de una ventana | |
 
 ## 4. Armado y protección (papelería o ferretería)
 
@@ -54,7 +54,7 @@ la guía pone un **máximo de $100 USD** (≈ $1,800 MXN) para todo el CanSat y 
 
 | ☐ | Qué | Detalle | Precio |
 |---|---|---|---|
-| ☐ | Impresión 3D | 16 archivos (31 piezas), ~240 g de PLA, 12–14 h · cotizado a $0.33/min | $240–280 |
+| ☐ | Impresión 3D | 16 archivos (31 piezas), ~231 g de PLA, 12–14 h · cotizado a $0.33/min | $240–280 |
 | ☐ | Calcomanía del logo | Vinil blanco con laminado mate, 4.5 × 6 cm (hoja de 6) | |
 
 ## 6. Electrónica que ya deberían tener (revisar)
@@ -73,4 +73,5 @@ la guía pone un **máximo de $100 USD** (≈ $1,800 MXN) para todo el CanSat y 
 **Total gastado:** $ __________ (máximo $100 USD ≈ $1,800 MXN)
 
 **Antes de imprimir y armar:** pesen un servo y una pila de litio. El diseño calcula unos 10.5 g por
-servo y 34 g por pila, y con eso el CanSat queda en ~587 g de 600.
+servo y 34 g por pila, y con eso el CanSat queda en ~595 g de 600. **Recomendado:** varilla M3 de aluminio
+en lugar de acero (−11 g).

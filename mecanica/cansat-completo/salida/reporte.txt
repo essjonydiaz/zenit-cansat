@@ -1,27 +1,27 @@
 === MEDIDAS (guía: Ø 90–100 mm, alto 200–230 mm, primaria ≤ 160, secundaria ≤ 70) ===
 Ø máximo: 96.2 mm · alto total: 229.2 mm
 Primaria: 159 mm · Secundaria: 70 mm · orificio dron Ø 9.5 × 3.5 mm
-Aspas: 110 mm · Ø del rotor abierto ≈ 313 mm
+Aspas: 111 mm · Ø del rotor abierto ≈ 313 mm
 
 === REVISIÓN DE CHOQUES (volumen compartido > 0.5 mm³) ===
 Total de choques: 0
 
 === MASA ESTIMADA ===
-  carcasa_primaria                   67.2 g
-  carcasa_secundaria                 43.5 g
-  rotor                              16.0 g
+  carcasa_primaria                   67.5 g
+  carcasa_secundaria                 43.4 g
+  aspa                               18.8 g
+  rotor                              16.3 g
   piso_primaria                      15.5 g
-  aspa                               14.8 g
   bandeja_secundaria                 13.9 g
-  disco_electronica_base             12.5 g
+  disco_electronica_base             12.1 g
+  tapa_secundaria                    11.4 g
   tapa_electronica                   11.4 g
-  tapa_secundaria                    11.2 g
   disco_huevo_base                    6.6 g
   anillo_retencion                    4.6 g
   espaciador_huevo                    4.4 g
   separadores de placas (12)          3.3 g
   espaciador_base                     1.6 g
-  PIEZAS IMPRESAS                   226.3 g
+  PIEZAS IMPRESAS                   230.8 g
   Huevos (2, según la guía)         130.0 g
   Pilas 9 V de litio (2; las alcalinas pesan 24 g más)   68.0 g
   Servos SG90 (2, con cable)         21.0 g
@@ -33,8 +33,10 @@ Total de choques: 0
   Balero 688ZZ                        4.0 g
   Varillas M3 de acero (3) + tornillería   26.0 g
   Cables, conectores, o-ring y hules   20.0 g
+  Interruptores deslizables (2)       2.0 g
+  Tornillos M2 × 20 de las bisagras (3)    1.2 g
   Espuma EVA y ligas                 12.0 g
   Pasador de acero y alambres         4.0 g
   Imanes de neodimio (6)              4.0 g
-  COMPRADOS                         361.0 g
-  TOTAL                             587.3 g   (límite 600 g)
+  COMPRADOS                         364.2 g
+  TOTAL                             595.0 g   (límite 600 g)

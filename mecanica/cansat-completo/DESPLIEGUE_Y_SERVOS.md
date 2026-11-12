@@ -1,6 +1,6 @@
 # Despliegue del autogiro y de la carga secundaria · dónde van los servos
 
-CanSat Zénit, diseño v2 (aspas de 110 mm). Para Mecánica y Electrónica: explica paso a paso qué pasa
+CanSat Zénit, diseño v3 (aspas de 111 mm, de 2 mm, con bisagra de tornillo M2). Para Mecánica y Electrónica: explica paso a paso qué pasa
 a 200 m, qué mueve cada servo y dónde va cada pieza. Todas las medidas salen del CAD
 (`mecanica/cansat-completo/cansat_completo.py`).
 
@@ -69,7 +69,7 @@ separación. Así la primaria nunca cae sin aspas.
 - El **servo del autogiro** tiene un cuerno de 16 mm hacia arriba, unido con **alambre** al brazo del
   anillo (agujero a 38.5 mm del centro).
 - 0.4 s después del desacople el cuerno **gira 90° hacia afuera**, jala el alambre ~8.5 mm y el anillo
-  **gira 15° antihorario** (visto desde arriba). Los imanes se separan y una **liga en cada bisagra**
+  **gira 15° antihorario** (visto desde arriba). Los imanes se separan y una **liga en cada bisagra** (eje: tornillo M2 × 20)
   abre el aspa; el aire termina de abrirla.
 - Mientras las aspas están cerradas, el rotor no puede girar (están metidas en sus canales). Ya
   abiertas, el rotor gira libre sobre el balero 688.

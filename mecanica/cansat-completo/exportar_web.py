@@ -15,7 +15,7 @@ WEB = os.path.join(AQUI, '..', '..', 'estacion-terrena', 'public', 'modelos', 'c
 H_SEC, H_PRI = 70.0, 159.0
 ZU = H_SEC; Z_TOP = ZU + H_PRI
 ANG_ASPAS = (90.0, 210.0, 330.0)
-Z_BISAGRA, R_BISAGRA, GIRO_ASPA = ZU + 153.0, 46.4, -96.0     # R_BISAGRA = R_CANAL + HOLGURA_ASPA
+Z_BISAGRA, R_BISAGRA, GIRO_ASPA = ZU + 154.0, 45.3, -96.0     # igual que en cansat_completo.py
 Z_CENTRO = Z_TOP / 2
 
 def a_web(p):

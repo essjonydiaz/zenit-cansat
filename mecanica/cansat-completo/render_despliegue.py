@@ -9,7 +9,7 @@ bpy.ops.wm.read_factory_settings(use_empty=True)
 sc = bpy.context.scene
 
 # medidas (mm) de cansat_completo.py
-ZU = 70.0; Z_BISAGRA = ZU + 153.0; R_BISAGRA = 46.4; ANG_ASPAS = (90.0, 210.0, 330.0); GIRO_ASPA = -96.0
+ZU = 70.0; Z_BISAGRA = ZU + 154.0; R_BISAGRA = 45.3; ANG_ASPAS = (90.0, 210.0, 330.0); GIRO_ASPA = -96.0
 
 def lin(h):
     h = h.lstrip('#'); c = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
@@ -37,7 +37,7 @@ def material_de(n):
     if n.startswith(('piso', 'disco', 'tapa_electronica', 'bandeja', 'espaciador', 'separador')): return MAT['interior']
     for k, m in (('huevo_', 'huevo'), ('pila', 'pila'), ('servo', 'servo'), ('placa', 'pcb'), ('heltec', 'negro'), ('gy91', 'pcb'),
                  ('openlog', 'pcb'), ('neo', 'pcb'), ('antena_gps', 'blanco'), ('balero', 'metal'), ('antena_lora', 'cobre'),
-                 ('oring', 'goma'), ('hule', 'goma'), ('espuma', 'espuma'), ('esp32', 'negro'), ('rfm', 'pcb'), ('varilla', 'metal')):
+                 ('oring', 'goma'), ('hule', 'goma'), ('espuma', 'espuma'), ('esp32', 'negro'), ('rfm', 'pcb'), ('varilla', 'metal'), ('tornillo', 'metal'), ('interruptor', 'metal')):
         if k in n: return MAT[m]
     return MAT['interior']
 

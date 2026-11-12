@@ -54,7 +54,7 @@ print('ensamble 3D listo')
 doc = nuevo(); msp = doc.modelspace()
 for capa, c in (('CONTORNO', 7), ('COTAS', 1), ('EJES', 8), ('TEXTO', 3)):
     doc.layers.add(capa, color=c)
-R = 48.0; H_SEC = 70.0; H_PRI = 159.0; Z_TOP = H_SEC + H_PRI; L_ASPA = 110.0; Z_BIS = H_SEC + 153.0
+R = 48.0; H_SEC = 70.0; H_PRI = 159.0; Z_TOP = H_SEC + H_PRI; L_ASPA = 111.0; Z_BIS = H_SEC + 154.0
 def rect(x0, y0, x1, y1, capa='CONTORNO'):
     poli([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], layer=capa)
 def cota_h(p1, p2, y, txt=None):
@@ -82,22 +82,28 @@ cota_h((-R, 0), (R, 0), -14, '%%c96')
 cota_v((R, 0), (R, Z_TOP), R + 28, '229')
 cota_v((R, H_SEC), (R, Z_TOP), R + 14, '159 primaria')
 cota_v((R, 0), (R, H_SEC), R + 14, '70 secundaria')
-cota_v((-w0, Z_BIS), (-w0, Z_BIS - L_ASPA), -R - 14, '110 aspa')
+cota_v((-w0, Z_BIS), (-w0, Z_BIS - L_ASPA), -R - 14, '111 aspa')
 cota_h((-4.75, Z_TOP), (4.75, Z_TOP), Z_TOP + 12, '%%c9.5')
 texto('VISTA DE FRENTE (mm)', -R, Z_TOP + 30, 5)
 # vista superior
 cx = 170
 msp.add_circle((cx, 120), R, dxfattribs={'layer': 'CONTORNO'})
 msp.add_circle((cx, 120), 4.75, dxfattribs={'layer': 'CONTORNO'})
+for a, z, nom in ((126, Z_TOP - 10.8, 'interruptor primaria (126°)'), (69, 67 - 3.1, 'interruptor secundaria (69°)')):
+    r0 = math.radians(a)                                # ventanas de 9 × 4.2 mm de los interruptores
+    msp.add_line((cx + R * math.cos(r0), 120 + R * math.sin(r0)), (cx + (R + 8) * math.cos(r0), 120 + (R + 8) * math.sin(r0)), dxfattribs={'layer': 'COTAS'})
+    texto(nom, cx + (R + 9) * math.cos(r0) - (30 if math.cos(r0) < 0 else 0), 120 + (R + 9) * math.sin(r0), 2.5)
 for a in (90, 210, 330):
     r0 = math.radians(a)
     msp.add_line((cx + 40 * math.cos(r0), 120 + 40 * math.sin(r0)), (cx + 52 * math.cos(r0), 120 + 52 * math.sin(r0)), dxfattribs={'layer': 'EJES'})
     texto('aspa', cx + 56 * math.cos(r0) - 5, 120 + 56 * math.sin(r0), 3)
 texto('VISTA SUPERIOR: %%c96, orificio del dron %%c9.5 x 3.5 de profundidad', cx - R, 120 + R + 16, 4)
-for i, t in enumerate(['CanSat Zénit 2026 - diseño v2 (unidades: milímetros)',
-                       'Pared de 1.2 mm; aspas de 1.6 mm en canales de 2 mm, al ras',
+for i, t in enumerate(['CanSat Zénit 2026 - diseño v3 (unidades: milímetros)',
+                       'Pared de 1.2 mm; aspas de 2.0 mm (PLA) en canales de 2.4 mm, al ras',
+                       'Bisagras: eje = tornillo M2 x 25; orejas del rotor de 3.6 mm',
+                       'Interruptores: ventana de 9 x 4.2 mm en cada carga (único hoyo extra)',
                        'Debe entrar en el cilindro de revisión de 110 mm de diámetro',
-                       'Masa estimada: 587 g de 600 g (con pilas de litio y 2 huevos de 65 g)']):
+                       'Masa estimada: 595 g de 600 g (con pilas de litio y 2 huevos de 65 g)']):
     texto(t, cx - R, 40 - i * 8, 3.5)
 doc.saveas(os.path.join(OUT, 'Zenit_CanSat_plano_cotas.dxf'))
 print('plano listo')

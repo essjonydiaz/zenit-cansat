@@ -54,9 +54,9 @@ Z_TUBO_ARRIBA = ZU + 148.8             # borde de arriba del tubo
 Z_TAPA = (ZU + 145.8, ZU + 150.8)      # tapa de la electrónica (con ceja Ø96 arriba)
 Z_ROTOR0 = ZU + 151.3                  # falda del rotor
 Z_ROTOR_PLATO = ZU + 155.0             # plato superior del rotor (hasta Z_TOP)
-Z_BISAGRA = ZU + 153.0                 # eje de las bisagras (su radio, R_BISAGRA, va abajo)
-L_ASPA = 110.0                         # 110: bajada estimada 8.3–10.5 m/s (130 daba 7.3–9.4)
-Z_ASPA_RAIZ = Z_BISAGRA - 1.0          # 222
+Z_BISAGRA = ZU + 154.0                 # eje de las bisagras (su radio, R_BISAGRA, va abajo)
+L_ASPA = 111.0                         # 111: la punta queda donde estaba (bajada estimada 8.2–10.4 m/s)
+Z_ASPA_RAIZ = Z_BISAGRA - 1.0          # 223
 Z_ASPA_PUNTA = Z_ASPA_RAIZ - L_ASPA    # 112
 ASPA_ANCHO = (26.0, 20.0)              # raíz, punta
 ORIFICIO_DRON = (9.5, 3.5)             # Ø y profundidad
@@ -65,17 +65,38 @@ GPS_ANT = (25.4, 4.5); GPS_POS = (28.5, 0.0)
 
 # --- canales de las aspas: la pared del tubo es CONTINUA (sin huecos). Cada aspa va en un
 #     canal poco profundo por fuera, al ras; al abrirse, la pared queda entera.
-T_ASPA = 1.6                           # grueso del aspa (4 perímetros)
+T_ASPA = 2.0                           # grueso del aspa (5 perímetros de 0.4, PLA)
 HOLGURA_ASPA = 0.4
 R_CANAL = R - T_ASPA - HOLGURA_ASPA    # 46.0: fondo del canal (cara de afuera de la pared)
 RI_CANAL = R_CANAL - T                 # 44.8: cara de adentro de la pared en los canales
-R_BISAGRA = R_CANAL + HOLGURA_ASPA     # 46.4: eje en la cara de adentro del aspa (al abrir no choca con el rotor)
+R_BISAGRA = R_CANAL + HOLGURA_ASPA - 0.7   # 45.3: eje 0.7 mm adentro de la cara interior del aspa
+TORNILLO_BISAGRA = (2.0, 20.0)         # M2 × 20: eje de cada bisagra (entra roscando en la segunda oreja)
+LENGUETA = 15.0                        # ancho de la lengüeta del aspa entre las 2 orejas
+OREJA = (3.6, 1.5)                     # grueso de cada oreja del rotor y hondo del avellanado de la cabeza
 # Retención con imanes a través de la pared (no hay que perforarla):
 IMAN_ASPA = (8.0, 1.0)                 # Ø × grueso, en la punta de cada aspa
 IMAN_ANILLO = (8.0, 2.0)               # Ø × grueso, en cada diente del anillo de retención
 Z_IMAN = Z_ASPA_PUNTA + 6.5            # 118.5
 GIRO_ANILLO = 15.0                     # grados que gira el anillo (antihorario visto desde arriba) para soltar
-ORING = (86.0, 2.0)                    # Ø interior × sección: centra la electrónica contra los 3 canales
+ORING = (85.0, 2.0)                    # Ø interior × sección: centra la electrónica contra los 3 canales
+
+# --- interruptor de encendido (deslizable SPDT con orejas, Unit Electronics: placa 19.6 × 5.8 mm,
+#     barrenos Ø 2.5, 0.5 A). Uno por carga. La placa entra por abajo en 2 ranuras de una cuna que
+#     cuelga de la tapa (no lleva tornillos). La palanca se corta para que quede 0.5 mm adentro de la
+#     pared, detrás de una ventana: no sobresale y se mueve con la punta de una pluma.
+SW_PLACA = (19.6, 5.8, 0.8)            # largo, ancho (va vertical), grueso máx. de la placa metálica
+SW_CUERPO = (12.0, 5.8, 7.0)           # largo, ancho, fondo (estimado, solo para revisar choques)
+SW_PALANCA = (2.5, 2.0)                # ancho (a lo largo), grueso (estimado)
+SW_RECORRIDO = 3.0                     # lo que se desliza la palanca (estimado)
+SW_OREJA = 2.2                         # lo que entra cada oreja en su ranura
+SW_PUNTA = RI - 0.5                    # radio de la punta de la palanca ya cortada
+SW_R_PLACA = SW_PUNTA - 2.3            # cara de afuera de la placa → la palanca se corta a 2.3 mm
+SW_VENTANA = (9.0, 4.2)                # hoyo en la pared: largo × alto
+ANG_INT_PRI = 126.0                    # primaria: entre el aspa de 90° y la varilla de 150°
+Z_INT_PRI = Z_TAPA[0] - SW_PLACA[1] / 2 - 0.2
+ANG_INT_SEC = 69.0                     # secundaria: entre la torre de 30° y el gancho de 107°
+Z_INT_SEC = H_SEC - 3.0 - SW_PLACA[1] / 2 - 0.2
+GUIA = (4.0, 3.0, 0.4)                 # pestaña de la tapa / muesca del tubo: ancho, alto, cuánto entra en la pared
 
 # --- huevos (65 g según la guía; medidas típicas de huevo grande)
 HUEVO = (57.0, 43.0)                   # largo, Ø
@@ -137,6 +158,47 @@ def despejar(obj):
         obj = obj.cut(rot(canal(RI_CANAL - 0.4, R + 2, Z_ASPA_PUNTA - 8, Z_TUBO_ARRIBA, HOLGURA_ASPA + T + 0.4), a))
     return obj
 
+# ======================================================= interruptor ===
+def cuna_interruptor(ang, zc, z_techo):
+    """Dos postes con ranura que cuelgan de una tapa; la placa del interruptor entra por abajo."""
+    L, W, tp = SW_PLACA; m = 1.4
+    r0, r1 = SW_R_PLACA - tp - 0.4 - 1.6, SW_PUNTA            # radios del poste
+    zb = zc - W / 2 - 1.2
+    c = None
+    for s in (-1, 1):
+        y_in, y_out = s * (L / 2 - SW_OREJA), s * (L / 2 + 0.2 + m)
+        poste = caja(r1 - r0, abs(y_out - y_in), z_techo - zb, ((r0 + r1) / 2, (y_in + y_out) / 2, (zb + z_techo) / 2))
+        ys0, ys1 = s * (L / 2 - SW_OREJA - 0.5), s * (L / 2 + 0.2)
+        ranura = caja(tp + 0.4, abs(ys1 - ys0), zc + W / 2 + 0.2 - (zb - 1), (SW_R_PLACA - (tp + 0.4) / 2, (ys0 + ys1) / 2, (zc + W / 2 + 0.2 + zb - 1) / 2))
+        poste = poste.cut(ranura)
+        c = poste if c is None else c.union(poste)
+    c = c.intersect(cil(SW_PUNTA, zb - 1, z_techo + 1))           # que no pase del radio de la tapa
+    return rot(c, ang)
+
+def interruptor(ang, zc):
+    """Muestra del interruptor (placa, cuerpo, palanca ya cortada y patas)."""
+    L, W, tp = SW_PLACA; Lc, Wc, F = SW_CUERPO
+    c = caja(tp, L, W, (SW_R_PLACA - tp / 2, 0, zc))
+    c = c.union(caja(F, Lc, Wc - 0.4, (SW_R_PLACA - tp - F / 2, 0, zc)))
+    c = c.union(caja(SW_PUNTA - SW_R_PLACA, SW_PALANCA[0], SW_PALANCA[1], ((SW_PUNTA + SW_R_PLACA) / 2, SW_RECORRIDO / 2, zc)))
+    for k in (-1, 0, 1):
+        c = c.union(caja(3.5, 0.6, 0.6, (SW_R_PLACA - tp - F - 1.75, k * 3.0, zc)))
+    return rot(c, ang)
+
+def ventana_interruptor(ang, zc):
+    return rot(caja(T + 3.0, SW_VENTANA[0], SW_VENTANA[1], (R - T / 2, 0, zc)), ang)
+
+def pestana_guia(ang, z_arriba, r_cara):
+    """Pestaña en el borde de una tapa: solo deja meterla en una posición (con el interruptor frente a la ventana).
+    Si la tapa está girada, la pestaña topa con el borde del tubo y la tapa no asienta."""
+    a, h, e = GUIA; r0, r1 = r_cara - 1.0, RI + e
+    return rot(caja(r1 - r0, a, h, ((r0 + r1) / 2, 0, z_arriba - h / 2)), ang)
+
+def muesca_guia(ang, z_arriba):
+    """Muesca por dentro del borde del tubo (no llega a la cara de afuera: quedan 0.6 mm)."""
+    a, h, e = GUIA; r0, r1 = RI - 1.0, RI + e + 0.2
+    return rot(caja(r1 - r0, a + 0.6, h + 0.5 + 1.0, ((r0 + r1) / 2, 0, z_arriba - (h + 0.5) / 2 + 0.5)), ang)
+
 # ============================================================ SECUNDARIA ===
 def carcasa_secundaria():
     c = cil(R, 0, H_SEC).cut(cil(RI, 1.2, H_SEC + 1))
@@ -149,7 +211,8 @@ def carcasa_secundaria():
     # nervaduras que funcionan como zona de deformación al impactar
     for a in range(0, 360, 45):
         c = c.union(rot(caja(17.0, 1.2, 4.8, (10.5, 0, 3.6)), a + 22.5))
-    return c
+    c = c.cut(ventana_interruptor(ANG_INT_SEC, Z_INT_SEC))          # ventana del interruptor
+    return c.cut(muesca_guia(ANG_INT_SEC, H_SEC))                  # muesca para la pestaña de la tapa
 
 def tapa_secundaria():
     z0, z1 = H_SEC - 3.0, H_SEC
@@ -167,7 +230,8 @@ def tapa_secundaria():
         t = t.cut(cil(1.7, z0 - 1, z1 + 1, x, y)).cut(cil(3.2, z1 - 1.6, z1 + 1, x, y))
     for (x, y) in ((-12.0, 40.0), (-12.0, -40.0), (-40.0, 0.0), (6.0, 0.0)):  # ganchos de la hamaca (abajo de la tapa)
         t = t.union(gancho(x, y, z0, hacia_arriba=False))
-    return t
+    t = t.union(cuna_interruptor(ANG_INT_SEC, Z_INT_SEC, z0 + 0.5))
+    return t.union(pestana_guia(ANG_INT_SEC, z1, RI - 0.2))
 
 def bandeja_secundaria():
     zb = 1.2
@@ -343,6 +407,8 @@ def tapa_electronica():
     gx, gy = GPS_POS; lado = GPS_ANT[0] + 0.6
     queda = queda.union(caja(lado + 4.0, lado + 4.0, alto - z0 + 1, (gx, gy, (z0 + alto) / 2)))   # marco de la antena GPS
     t = t.intersect(queda)
+    t = t.union(cuna_interruptor(ANG_INT_PRI, Z_INT_PRI, z0 + 0.5))
+    t = t.union(pestana_guia(ANG_INT_PRI, Z_TUBO_ARRIBA, RI - 0.5))
     return despejar(t)
 
 def rotor():
@@ -354,26 +420,36 @@ def rotor():
     perno = cil(BALERO[1] / 2 - 0.05, Z_TAPA[1] + 3.7 - BALERO[2] + 0.1, Z_ROTOR_PLATO)
     r = r.union(perno).cut(cil(1.25, Z_TAPA[1] - 1, Z_ROTOR_PLATO - 2))
     r = r.union(cil(5.2, Z_TAPA[1] + 3.8, Z_ROTOR_PLATO))                       # hombro sobre la pista interior
+    za, zb = Z_ROTOR0, Z_TOP - 1.8
+    yi = LENGUETA / 2 + 0.2                            # cara de adentro de las orejas
+    ye = yi + OREJA[0]                                 # cara de afuera: la falda sigue desde ahí (todo el tornillo queda adentro)
     for a in ANG_ASPAS:
-        muesca = caja(8.0, 24.4, Z_ROTOR_PLATO - Z_ROTOR0 + 0.2, (R - 1.0, 0, (Z_ROTOR0 + Z_ROTOR_PLATO) / 2 - 0.1))
+        muesca = caja(8.0, 2 * ye, zb - za + 0.2, (R - 1.0, 0, (za + zb) / 2 - 0.1))  # hasta el plato: el aspa abre sin rozar
         r = r.cut(rot(muesca, a))
-        for s in (-1, 1):  # orejas de la bisagra
-            oreja = (caja(3.0, 2.5, Z_TOP - 1.8 - Z_ROTOR0, (R_BISAGRA, s * 10.75, (Z_ROTOR0 + Z_TOP - 1.8) / 2))
-                     .cut(cq.Workplane('XZ').workplane(offset=-20).center(R_BISAGRA, Z_BISAGRA).circle(0.8).extrude(40)))
+        for s in (-1, 1):  # orejas de la bisagra (3.6 mm), con el tornillo M2 como eje
+            oreja = caja(47.9 - 41.6, OREJA[0], zb - za, ((41.6 + 47.9) / 2, s * (yi + OREJA[0] / 2), (za + zb) / 2))
+            eje = lambda d, y0, y1: cq.Workplane('XZ').workplane(offset=-y1).center(R_BISAGRA, Z_BISAGRA).circle(d / 2).extrude(y1 - y0)
+            if s > 0:   # entra el tornillo: paso libre y avellanado para la cabeza
+                oreja = oreja.cut(eje(2.3, 0, 20)).cut(eje(4.2, ye - OREJA[1], 20))
+            else:       # la rosca agarra aquí (barreno guía de 1.7)
+                oreja = oreja.cut(eje(1.7, -20, 0))
             r = r.union(rot(oreja, a))
     return r
 
 def aspa(a):
     # panel curvo de 1.6 mm que va en su canal, al ras del cilindro
     r_in = R_CANAL + HOLGURA_ASPA
-    panel = anillo(r_in, R, Z_ASPA_PUNTA - 5, Z_BISAGRA - 2.2).intersect(perfil_aspa(z_arriba=Z_BISAGRA - 2.2))
-    # arriba, una lengüeta de 18 mm entre las orejas del rotor, con el nudillo de la bisagra
-    lengueta = anillo(r_in, R, Z_BISAGRA - 2.6, Z_BISAGRA + 1.0).intersect(caja(20.0, 18.0, 10.0, (R - 1.0, 0, Z_BISAGRA)))
-    nudillo = cq.Workplane('XZ').workplane(offset=-9.0).center(R_BISAGRA, Z_BISAGRA).circle(1.5).extrude(18.0)
+    z_panel = Z_BISAGRA - 3.2                          # el panel termina abajo de las orejas del rotor
+    panel = anillo(r_in, R, Z_ASPA_PUNTA - 5, z_panel).intersect(perfil_aspa(z_arriba=z_panel))
+    for s in (-1, 1):                                   # esquinas de la raíz recortadas: al abrir no tocan las orejas
+        panel = panel.cut(caja(20.0, 10.0, 2.5, (R, s * (LENGUETA / 2 + 5.0), z_panel - 1.25 + 0.01)))   # 2.5 mm bastan (revisar_apertura.py)
+    # arriba, una lengüeta de 15 mm entre las orejas del rotor, con el nudillo de la bisagra (Ø 5)
+    lengueta = anillo(r_in, R, z_panel - 0.4, Z_BISAGRA).intersect(caja(20.0, LENGUETA, 12.0, (R - 1.0, 0, Z_BISAGRA)))
+    nudillo = cq.Workplane('XZ').workplane(offset=-LENGUETA / 2).center(R_BISAGRA, Z_BISAGRA).circle(2.5).extrude(LENGUETA)
     b = panel.union(lengueta).union(nudillo)
     # alojamiento del imán de la punta (se pega por dentro; afuera quedan 0.5 mm de plástico)
     b = b.cut(cq.Workplane('YZ').workplane(offset=r_in - 0.05).center(0, Z_IMAN).circle(IMAN_ASPA[0] / 2 + 0.1).extrude(IMAN_ASPA[1] + 0.15))
-    b = b.cut(cq.Workplane('XZ').workplane(offset=-12).center(R_BISAGRA, Z_BISAGRA).circle(0.8).extrude(24))
+    b = b.cut(cq.Workplane('XZ').workplane(offset=-12).center(R_BISAGRA, Z_BISAGRA).circle(1.2).extrude(24))   # gira en el tornillo M2
     return rot(b, a)
 
 def carcasa_primaria():
@@ -382,7 +458,8 @@ def carcasa_primaria():
     for a in ANG_ASPAS:
         t = t.union(rot(canal(RI_CANAL, R, Z_PISO1, Z_TUBO_ARRIBA, HOLGURA_ASPA + T), a))
         t = t.cut(rot(canal(R_CANAL, R + 1, Z_PISO1 - 1, Z_TUBO_ARRIBA + 1, HOLGURA_ASPA), a))
-    return t
+    t = t.cut(ventana_interruptor(ANG_INT_PRI, Z_INT_PRI))          # ventana del interruptor
+    return t.cut(muesca_guia(ANG_INT_PRI, Z_TUBO_ARRIBA))          # muesca para la pestaña de la tapa
 
 def espaciador(z0, z1, x, y, r=3.0):
     return cil(r, z0, z1, x, y).cut(cil(M3 / 2, z0 - 1, z1 + 1, x, y))
@@ -467,6 +544,13 @@ def componentes():
     comp['neo_6m'] = caja(25.0, 35.0, 1.6, (28.5, 0, 56.8)).union(caja(25.0, 25.0, 4.0, (28.5, 0, 59.6)))
     comp['esp32_c3'] = caja(22.5, 18.0, 3.5, (-20.0, -22.0, H_SEC - 3.0 - 1.75 - 0.2))
     comp['rfm95w'] = caja(16.0, 16.0, 3.2, (-24.0, 16.0, H_SEC - 3.0 - 1.6 - 0.2))
+    for k, a in enumerate(ANG_ASPAS):   # tornillos M2 × 20 de las bisagras (cabeza en el avellanado)
+        y_cab = LENGUETA / 2 + 0.2 + OREJA[0] - OREJA[1]
+        cab = cq.Workplane('XZ').workplane(offset=-(y_cab + 1.3)).center(R_BISAGRA, Z_BISAGRA).circle(1.9).extrude(1.3)
+        cuerpo = cq.Workplane('XZ').workplane(offset=-y_cab).center(R_BISAGRA, Z_BISAGRA).circle(0.8).extrude(TORNILLO_BISAGRA[1])   # núcleo de la rosca
+        comp[f'tornillo_bisagra_{k + 1}'] = rot(cab.union(cuerpo), a)
+    comp['interruptor_primaria'] = interruptor(ANG_INT_PRI, Z_INT_PRI)
+    comp['interruptor_secundaria'] = interruptor(ANG_INT_SEC, Z_INT_SEC)
     for i, a in enumerate(ANG_COLUMNA):
         x, y = ang_xy(R_COLUMNA, a)
         comp[f'varilla_columna_{i}'] = cil(1.5, ZU + 0.5, Z_TAPA[0] + HEX_ALTO, x, y)
@@ -478,7 +562,7 @@ MASA_COMPRADOS = {  # g (valores típicos; pesar los reales)
     'Huevos (2, según la guía)': 130, 'Pilas 9 V de litio (2; las alcalinas pesan 24 g más)': 68, 'Servos SG90 (2, con cable)': 21,
     'Heltec WiFi LoRa 32 V3': 15, 'Placas perforadas 4×6 (3)': 18, 'GY-91 + OpenLog + reguladores': 10,
     'NEO-M8N + antena': 14, 'ESP32-C3 + RFM95W + NEO-6M': 15, 'Balero 688ZZ': 4,
-    'Varillas M3 de acero (3) + tornillería': 26, 'Cables, conectores, o-ring y hules': 20, 'Espuma EVA y ligas': 12,
+    'Varillas M3 de acero (3) + tornillería': 26, 'Cables, conectores, o-ring y hules': 20, 'Interruptores deslizables (2)': 2, 'Tornillos M2 × 20 de las bisagras (3)': 1.2, 'Espuma EVA y ligas': 12,
     'Pasador de acero y alambres': 4, 'Imanes de neodimio (6)': 4,
 }
 
