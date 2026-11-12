@@ -7,16 +7,25 @@ profesor pueda revisarlo y proponer cambios. **Todas las medidas están en milí
 
 ## 1. Archivos que se entregan
 
-| Archivo | Qué es | Cómo abrirlo en AutoCAD |
+| Archivo | Qué es | Para qué sirve |
 |---|---|---|
-| `ensamble_cansat.step` | Todo el CanSat armado, en **sólidos** (con los componentes comprados de muestra) | Dibujo nuevo en milímetros → comando **IMPORT** → elegir el .step |
-| `piezas_step/*.step` | Cada pieza impresa por separado, en sólidos (16 archivos) | Igual: **IMPORT** |
-| `Zenit_CanSat_ensamble_3D.dxf` | Ensamble 3D en mallas, una capa por pieza | **Open** → tipo DXF |
-| `Zenit_CanSat_plano_cotas.dxf` | Plano 2D con las medidas generales | **Open** → tipo DXF |
+| `dwg/Zenit_CanSat_plano_cotas.dwg` | Plano 2D con las medidas generales (cotas de AutoCAD) | Ver y cambiar las medidas generales; marcar ahí los cambios |
+| `dwg/Zenit_CanSat_ensamble_3D.dwg` | El CanSat armado en 3D (superficies), una capa por pieza | Ver cómo va todo armado y medir |
+| `ensamble_cansat.step` | Todo el CanSat armado, en **sólidos** | Revisar cómo encaja todo, en sólidos |
+| `piezas_step/*.step` | Cada pieza impresa por separado, en sólidos (16) | **Modificar las piezas** |
+| `*.dxf` | Los mismos 2 dibujos en DXF | Respaldo |
 
-**Para tener el .dwg:** abrir el .dxf (o importar el .step) y **Save As → AutoCAD 2018 Drawing (*.dwg)**.
-Para modificar piezas conviene el .step, porque son sólidos que se pueden editar. El .dxf 3D es solo
-superficie.
+Los .dwg están en formato AutoCAD 2018 y se abren directo con **Open**.
+
+**Cómo modificar una pieza en AutoCAD** (ejemplo: el aspa):
+1. Dibujo nuevo en milímetros → comando **IMPORT** → `piezas_step/aspa.step`. Queda como sólido.
+2. Medir con **DIST** o **MEASUREGEOM**; cambiar medidas con **PRESSPULL** (clic en la cara y escribir
+   cuánto se mueve) o **SOLIDEDIT → Face → Offset**.
+3. Guardar con **Save As → .dwg**. Para imprimir, **STLOUT** saca el STL.
+
+Si una pieza cambia, puede afectar a las que encajan con ella (por ejemplo, un aspa más gruesa necesita un
+canal más hondo en la carcasa). Si nos indica las medidas que quiere, nosotros ajustamos todas las piezas
+relacionadas, revisamos choques y peso, y le regresamos los archivos nuevos.
 
 **Ejes del modelo:** Z hacia arriba. **Z = 0 es el fondo de la carga secundaria**; la unión de las dos
 cargas está en Z = 70. Las aspas están a 90°, 210° y 330° (medidos desde +X, antihorario visto desde
