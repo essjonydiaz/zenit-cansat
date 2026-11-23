@@ -53,7 +53,17 @@
 // firmware/comun/ZenitComun/src/RadioConfig.h (compartidos con las otras placas).
 
 // Clave que deben traer los comandos desde tierra ($C,<clave>,<orden>*HH).
+// La real va en include/clave_local.h, que no se sube a GitHub (copiar
+// clave_local.ejemplo.h). Sin ese archivo se usa "ZENIT", que es pública: solo
+// sirve para pruebas en la mesa. La estación terrena lee el mismo archivo.
+#if defined(__has_include)
+#if __has_include("clave_local.h")
+#include "clave_local.h"
+#endif
+#endif
+#ifndef CLAVE_COMANDOS
 #define CLAVE_COMANDOS       "ZENIT"
+#endif
 
 // ---------------------------------------------------------------- Servos ----
 // Ajustar con la prueba P6 (firmware/pruebas, entorno p6_servos) según los

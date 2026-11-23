@@ -104,9 +104,12 @@ En la cancha la laptop comparte WiFi con otros equipos. Por eso:
 - **Una página de internet abierta en la laptop no puede mandar órdenes** a la estación: el
   servidor solo acepta las órdenes como las manda el panel y con la dirección `localhost`.
 
-> Los comandos por radio llevan la clave `CLAVE_COMANDOS` (`firmware/primaria/include/config.h`,
-> en la estación `--clave`). Hoy es `ZENIT`, está en GitHub y viaja sin cifrar: **cualquiera con
-> un LoRa a 915 MHz y los mismos parámetros podría mandar `DESACOPLAR`**. Cómo protegerlo es una
-> decisión pendiente del equipo (ver `docs/10-pendientes-del-equipo.md`).
+> Los comandos por radio llevan la clave `CLAVE_COMANDOS`. La real va en
+> `firmware/primaria/include/clave_local.h`, que **no se sube a GitHub**: se copia de
+> `clave_local.ejemplo.h`, y el firmware y la estación terrena leen ese mismo archivo. Sin él se
+> usa `ZENIT`, que es pública, y el servidor lo avisa al arrancar. Después de cambiar la clave hay
+> que volver a subir `env:primaria` a la torre, y cada laptop que mande comandos necesita su copia
+> del archivo. La clave viaja sin cifrar: alguien que escuche la radio podría copiarla. Cómo
+> protegerlo del todo sigue pendiente (ver `docs/10-pendientes-del-equipo.md`).
 
 La prueba `estacion-terrena/test/seguridad.test.js` revisa estas protecciones.

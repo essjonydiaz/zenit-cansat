@@ -29,3 +29,6 @@ desktop.ini
 
 # Configuración local de asistentes de IA (no se sube)
 .claude/
+
+# Clave real de los comandos por radio (copiar clave_local.ejemplo.h)
+firmware/primaria/include/clave_local.h

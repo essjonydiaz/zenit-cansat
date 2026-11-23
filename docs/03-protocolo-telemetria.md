@@ -64,8 +64,9 @@ GPS). Una trama con el checksum mal se descarta. Implementado en C++
 
 ### `C` — Comandos desde tierra
 
-`$C,<clave>,<orden>*HH` — la clave está en `CLAVE_COMANDOS` (`config.h`) y en la estación
-(`--clave`). Órdenes: `PING`, `BUZZER`, `CALIBRAR` (solo en tierra), `CERRAR` (solo en tierra),
+`$C,<clave>,<orden>*HH` — la clave está en `CLAVE_COMANDOS`: la real en
+`firmware/primaria/include/clave_local.h` (no se sube; ver `clave_local.ejemplo.h`), que también lee
+la estación. Sin ese archivo es `ZENIT`. Se puede forzar con `--clave` o `ZENIT_CLAVE`. Órdenes: `PING`, `BUZZER`, `CALIBRAR` (solo en tierra), `CERRAR` (solo en tierra),
 `DESACOPLAR` (respaldo manual, en cualquier momento).
 
 ### `R` — Prueba de alcance (programa `p3_alcance_lora`)

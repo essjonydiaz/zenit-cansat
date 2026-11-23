@@ -28,6 +28,18 @@ const express = require('express');
 const { WebSocketServer } = require('ws');
 
 const { procesarLinea, enmarcar } = require('./src/protocolo');
+
+// La clave de los comandos sale del mismo archivo que usa el firmware
+// (firmware/primaria/include/clave_local.h, que no se sube a GitHub). Sin él se
+// usa "ZENIT", que es pública.
+const ARCHIVO_CLAVE = path.join(__dirname, '..', 'firmware', 'primaria', 'include', 'clave_local.h');
+function claveLocal() {
+  try {
+    const m = /#define\s+CLAVE_COMANDOS\s+"([^"]+)"/.exec(fs.readFileSync(ARCHIVO_CLAVE, 'utf8'));
+    if (m) return m[1];
+  } catch { /* sin archivo: clave pública */ }
+  return 'ZENIT';
+}
 const { Registro } = require('./src/registro');
 const { PuertoSerie, Reproduccion } = require('./src/fuentes');
 const { Simulador } = require('./src/simulador');
@@ -41,7 +53,7 @@ const { values: args, positionals } = parseArgs({
     replay: { type: 'string' },
     velocidad: { type: 'string', default: '1' },
     http: { type: 'string', default: '3000' },
-    clave: { type: 'string', default: process.env.ZENIT_CLAVE || 'ZENIT' },
+    clave: { type: 'string', default: process.env.ZENIT_CLAVE || claveLocal() },
     red: { type: 'boolean', default: false },
     pin: { type: 'string', default: process.env.ZENIT_PIN },
   },
@@ -264,6 +276,10 @@ async function alEscuchar() {
     console.log(`  PIN para comandos desde otro aparato: ${PIN}`);
   } else {
     console.log('  Solo en esta compu (para verlo en celulares: --red)');
+  }
+  if (args.clave === 'ZENIT') {
+    console.log('  AVISO: comandos con la clave pública "ZENIT". Para el vuelo crea');
+    console.log('  firmware/primaria/include/clave_local.h (ver clave_local.ejemplo.h).');
   }
   console.log('==================================================');
   try {
