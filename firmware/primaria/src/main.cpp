@@ -26,6 +26,8 @@
 // =============================================================================
 #include <Arduino.h>
 #include <ESP32Servo.h>
+#include <Preferences.h>
+#include <mbedtls/md.h>
 #include <TinyGPS++.h>
 #include <Wire.h>
 #include <ZenitPantalla.h>
@@ -279,16 +281,66 @@ static void calibrar() {
 }
 
 // ---------------------------------------------------------- Comandos ------
-static void procesarComando(const char* carga, size_t n) {
-  char clave[16], orden[24];
-  if (!protocolo::campo(carga, n, 1, clave, sizeof(clave)) ||
-      !protocolo::campo(carga, n, 2, orden, sizeof(orden))) {
-    return;
+// $C,<contador>,<orden>,<firma>*HH. La firma son los primeros 16 dígitos hex del
+// HMAC-SHA256 de "C,<contador>,<orden>" con CLAVE_COMANDOS: la clave no viaja por
+// radio. El contador (hora de la laptop en ms) debe ser mayor que el último
+// aceptado, que se guarda en la memoria flash: un comando grabado y repetido se
+// rechaza aunque la primaria se haya reiniciado.
+static Preferences memoriaComandos;
+static uint64_t ultimoContador = 0;
+
+static bool firmaValida(const char* contador, const char* orden, const char* firma) {
+  if (strlen(firma) != 16) return false;
+  char mensaje[64];
+  const int largo = snprintf(mensaje, sizeof(mensaje), "C,%s,%s", contador, orden);
+  if (largo <= 0 || largo >= (int)sizeof(mensaje)) return false;
+  uint8_t hmac[32];
+  if (mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256),
+                      (const uint8_t*)CLAVE_COMANDOS, strlen(CLAVE_COMANDOS),
+                      (const uint8_t*)mensaje, largo, hmac) != 0) {
+    return false;
   }
-  if (strcmp(clave, CLAVE_COMANDOS) != 0) {
+  static const char HEXA[] = "0123456789ABCDEF";
+  uint8_t diferencia = 0;  // se comparan todos los dígitos (sin salir antes)
+  for (int i = 0; i < 8; ++i) {
+    diferencia |= HEXA[hmac[i] >> 4] ^ toupper((unsigned char)firma[2 * i]);
+    diferencia |= HEXA[hmac[i] & 0x0F] ^ toupper((unsigned char)firma[2 * i + 1]);
+  }
+  return diferencia == 0;
+}
+
+static bool leerContador(const char* texto, uint64_t* valor) {
+  const size_t largo = strlen(texto);
+  if (largo == 0 || largo > 19) return false;
+  for (size_t i = 0; i < largo; ++i) {
+    if (!isdigit((unsigned char)texto[i])) return false;
+  }
+  *valor = strtoull(texto, nullptr, 10);
+  return true;
+}
+
+static void ejecutarOrden(const char* orden);
+
+static void procesarComando(const char* carga, size_t n) {
+  char contador[24], orden[24], firma[24];
+  uint64_t numero = 0;
+  if (!protocolo::campo(carga, n, 1, contador, sizeof(contador)) ||
+      !protocolo::campo(carga, n, 2, orden, sizeof(orden)) ||
+      !protocolo::campo(carga, n, 3, firma, sizeof(firma)) ||
+      !leerContador(contador, &numero) || !firmaValida(contador, orden, firma)) {
     enviarEvento("CMD_RECHAZADO", "clave");
     return;
   }
+  if (numero <= ultimoContador) {
+    enviarEvento("CMD_RECHAZADO", "repetido");
+    return;
+  }
+  ultimoContador = numero;
+  ejecutarOrden(orden);
+  memoriaComandos.putULong64("contador", numero);  // después de actuar: tarda unos ms
+}
+
+static void ejecutarOrden(const char* orden) {
   const bool enTierra = maquina.estado() == Estado::PREVUELO;
   if (strcmp(orden, "DESACOPLAR") == 0) {
     // Respaldo manual: funciona en cualquier estado (útil si falla el automático).
@@ -531,6 +583,8 @@ void setup() {
   voltajeBateria = leerBateria();
 
   comms::iniciar(ENCABEZADO_SD);
+  memoriaComandos.begin("zenit", false);
+  ultimoContador = memoriaComandos.getULong64("contador", 0);
   const comms::Estado& c = comms::estado();
 
   char detalle[140];

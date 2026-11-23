@@ -64,10 +64,23 @@ GPS). Una trama con el checksum mal se descarta. Implementado en C++
 
 ### `C` — Comandos desde tierra
 
-`$C,<clave>,<orden>*HH` — la clave está en `CLAVE_COMANDOS`: la real en
-`firmware/primaria/include/clave_local.h` (no se sube; ver `clave_local.ejemplo.h`), que también lee
-la estación. Sin ese archivo es `ZENIT`. Se puede forzar con `--clave` o `ZENIT_CLAVE`. Órdenes: `PING`, `BUZZER`, `CALIBRAR` (solo en tierra), `CERRAR` (solo en tierra),
-`DESACOPLAR` (respaldo manual, en cualquier momento).
+`$C,<contador>,<orden>,<firma>*HH` — la clave **no viaja por radio**:
+
+- `firma`: los primeros 16 dígitos hexadecimales del HMAC-SHA256 de `C,<contador>,<orden>` hecho con
+  la clave `CLAVE_COMANDOS`. Quien escuche la radio ve la firma, pero no puede sacar la clave de ella
+  ni firmar otra orden.
+- `contador`: la hora de la laptop en milisegundos. La primaria solo acepta un contador mayor que el
+  último que aceptó y lo guarda en su memoria flash, así que un comando grabado y vuelto a mandar se
+  rechaza (`CMD_RECHAZADO,repetido`), aunque la primaria se haya reiniciado.
+
+Ejemplo: `$C,1764000000000,PING,<16 dígitos hex>*HH`. La clave es `ZENIT` por defecto. Para usar una
+privada (opcional), se crea `firmware/primaria/include/clave_local.h` (no se sube; ver
+`clave_local.ejemplo.h`), que también lee la estación. Se puede forzar con `--clave` o `ZENIT_CLAVE`.
+Órdenes: `PING`, `BUZZER`, `CALIBRAR` (solo en tierra), `CERRAR` (solo en tierra), `DESACOPLAR`
+(respaldo manual, en cualquier momento).
+
+Como el contador es la hora de la laptop, la fecha y hora de la laptop deben estar bien. Si una laptop
+con la hora adelantada manda un comando, las demás quedan rechazadas hasta alcanzar esa hora.
 
 ### `R` — Prueba de alcance (programa `p3_alcance_lora`)
 

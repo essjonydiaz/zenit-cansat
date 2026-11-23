@@ -52,10 +52,11 @@
 // Frecuencia (915 MHz), SF, ancho de banda y palabra de sincronía están en
 // firmware/comun/ZenitComun/src/RadioConfig.h (compartidos con las otras placas).
 
-// Clave que deben traer los comandos desde tierra ($C,<clave>,<orden>*HH).
-// La real va en include/clave_local.h, que no se sube a GitHub (copiar
-// clave_local.ejemplo.h). Sin ese archivo se usa "ZENIT", que es pública: solo
-// sirve para pruebas en la mesa. La estación terrena lee el mismo archivo.
+// Clave con la que se firman los comandos desde tierra
+// ($C,<contador>,<orden>,<firma>*HH; ver procesarComando en main.cpp). La clave
+// no viaja por radio. Por defecto es "ZENIT". Opcional: para una clave privada,
+// crear include/clave_local.h (copiar clave_local.ejemplo.h); no se sube a
+// GitHub y la estación terrena lee el mismo archivo.
 #if defined(__has_include)
 #if __has_include("clave_local.h")
 #include "clave_local.h"

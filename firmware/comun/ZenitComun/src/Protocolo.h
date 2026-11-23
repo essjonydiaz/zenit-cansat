@@ -13,7 +13,7 @@
 //     B  baliza de la carga secundaria (posición GPS)
 //     E  evento (cambio de estado, desacople, respuesta a comando, error)
 //     R  paquete de prueba de alcance (prueba P3)
-//     C  comando desde tierra: $C,<clave>,<orden>*HH
+//     C  comando desde tierra: $C,<contador>,<orden>,<firma>*HH (firmado)
 // =============================================================================
 #pragma once
 #include <stddef.h>

@@ -10,7 +10,7 @@
 'use strict';
 
 const { EventEmitter } = require('events');
-const { enmarcar, validar, parsearCarga } = require('./protocolo');
+const { enmarcar, validar, parsearCarga, firmaValida } = require('./protocolo');
 
 const G = 9.80665;
 const M_POR_GRADO = 111320;
@@ -22,6 +22,7 @@ class Simulador extends EventEmitter {
     this.repetir = repetir;       // al terminar, vuelve a empezar
     this.perdidas = perdidas;     // fracción de paquetes perdidos
     this.clave = clave;
+    this.ultimoContador = 0;
     this.p = {
       tEsperaInicial: 10, velocidadSubida: 15, alturaLiberacion: 450, tEsperaArriba: 5,
       vTerminalCaida: 37, vTerminalAutogiro: 10, presionTierra: 96300,
@@ -189,7 +190,9 @@ class Simulador extends EventEmitter {
   }
 
   _comando(c) {
-    if (c.clave !== this.clave) { this._evento('CMD_RECHAZADO', 'clave'); return; }
+    if (!firmaValida(this.clave, c)) { this._evento('CMD_RECHAZADO', 'clave'); return; }
+    if (Number(c.contador) <= this.ultimoContador) { this._evento('CMD_RECHAZADO', 'repetido'); return; }
+    this.ultimoContador = Number(c.contador);
     switch (c.orden) {
       case 'PING': this._evento('PONG', ['PREVUELO', 'ASCENSO', 'CAIDA_LIBRE', 'DESCENSO_AUTOGIRO', 'ATERRIZADO'][this.estado]); break;
       case 'DESACOPLAR': this._desacoplar(this.desacople ? 'REPETIDO' : 'MANUAL'); break;

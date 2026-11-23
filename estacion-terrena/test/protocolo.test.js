@@ -5,7 +5,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
-const { enmarcar, validar, procesarLinea, parsearCarga } = require('../src/protocolo');
+const { enmarcar, validar, procesarLinea, parsearCarga, comandoFirmado, firmaValida } = require('../src/protocolo');
 const { Simulador } = require('../src/simulador');
 
 test('enmarcar y validar son inversos', () => {
@@ -81,4 +81,27 @@ test('el simulador produce un vuelo completo con desacople', async () => {
   const des = eventos.find((e) => e.codigo === 'DESACOPLE');
   const h = Number(/h=([\d.]+)/.exec(des.detalle)[1]);
   assert.ok(Math.abs(h - 200) < 5, `desacople a ${h} m`);
+});
+
+test('el comando va firmado y no lleva la clave', () => {
+  const trama = comandoFirmado('ZENIT', 'PING', 1764000000000);
+  assert.match(trama, /^\$C,1764000000000,PING,[0-9A-F]{16}\*[0-9A-F]{2}$/);
+  assert.ok(!trama.includes('ZENIT'));
+  const c = parsearCarga(validar(trama));
+  assert.ok(firmaValida('ZENIT', c));
+  assert.ok(!firmaValida('OTRA', c));
+  assert.ok(!firmaValida('ZENIT', { ...c, orden: 'DESACOPLAR' }));
+});
+
+test('el simulador rechaza comandos sin firma o repetidos', async () => {
+  const sim = new Simulador({ clave: 'ZENIT' });
+  sim._reiniciar();
+  const eventos = [];
+  sim._evento = (codigo, detalle) => eventos.push(`${codigo}:${detalle}`);
+  const bueno = comandoFirmado('ZENIT', 'PING', 1000);
+  sim._comando(parsearCarga(validar(bueno)));
+  sim._comando(parsearCarga(validar(bueno)));
+  sim._comando(parsearCarga(validar(comandoFirmado('OTRA', 'PING', 2000))));
+  sim._comando(parsearCarga('C,ZENIT,PING'));
+  assert.deepStrictEqual(eventos, ['PONG:PREVUELO', 'CMD_RECHAZADO:repetido', 'CMD_RECHAZADO:clave', 'CMD_RECHAZADO:clave']);
 });

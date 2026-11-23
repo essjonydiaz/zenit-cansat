@@ -27,7 +27,7 @@ const { parseArgs } = require('util');
 const express = require('express');
 const { WebSocketServer } = require('ws');
 
-const { procesarLinea, enmarcar } = require('./src/protocolo');
+const { procesarLinea, comandoFirmado } = require('./src/protocolo');
 
 // La clave de los comandos sale del mismo archivo que usa el firmware
 // (firmware/primaria/include/clave_local.h, que no se sube a GitHub). Sin él se
@@ -216,7 +216,7 @@ app.post('/api/comando', (req, res) => {
     res.status(400).json({ ok: false, error: 'No hay receptor conectado' });
     return;
   }
-  const trama = enmarcar(`C,${args.clave},${orden}`);
+  const trama = comandoFirmado(args.clave, orden);
   fuente.escribir(`TX,${trama}`);
   alRecibirLinea(`INFO,COMANDO_ENVIADO,${orden}`);
   res.json({ ok: true, trama });
@@ -278,8 +278,7 @@ async function alEscuchar() {
     console.log('  Solo en esta compu (para verlo en celulares: --red)');
   }
   if (args.clave === 'ZENIT') {
-    console.log('  AVISO: comandos con la clave pública "ZENIT". Para el vuelo crea');
-    console.log('  firmware/primaria/include/clave_local.h (ver clave_local.ejemplo.h).');
+    console.log('  Comandos firmados con la clave "ZENIT" (la clave no viaja por radio).');
   }
   console.log('==================================================');
   try {

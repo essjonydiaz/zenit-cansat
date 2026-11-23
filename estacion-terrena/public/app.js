@@ -256,7 +256,9 @@ function procesarEvento(d, t, msg) {
     case 'CMD_RECHAZADO':
       resolverComando(comandoPendiente ? comandoPendiente.orden : d.detalle, `rechazado (${d.detalle})`);
       alerta(`cmdrech-${msg.pc_ms}`, 'aviso', 'Comando rechazado por la primaria',
-        d.detalle === 'clave' ? 'La clave no coincide con CLAVE_COMANDOS del firmware.' : `${d.detalle}: solo se permite en tierra (fase Prevuelo).`, true);
+        d.detalle === 'clave' ? 'La firma no coincide: la clave de la estación no es la del firmware.'
+          : d.detalle === 'repetido' ? 'Comando repetido o con hora vieja: revisa la fecha y hora de la laptop.'
+            : `${d.detalle}: solo se permite en tierra (fase Prevuelo).`, true);
       break;
     default: break;
   }

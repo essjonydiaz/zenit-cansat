@@ -5,6 +5,8 @@
 // =============================================================================
 'use strict';
 
+const crypto = require('crypto');
+
 // Nombres de los campos de cada tipo de trama (el índice 0 es el tipo).
 const CAMPOS = {
   T: ['tipo', 'seq', 't_ms', 'estado', 'alt', 'vel', 'alt_max', 'pres', 'temp',
@@ -14,11 +16,11 @@ const CAMPOS = {
   B: ['tipo', 'seq', 't_ms', 'lat', 'lon', 'sats', 'fix', 'bat'],
   E: ['tipo', 'seq', 't_ms', 'codigo', 'detalle'],
   R: ['tipo', 'seq', 't_ms', 'potencia'],
-  C: ['tipo', 'clave', 'orden'],
+  C: ['tipo', 'contador', 'orden', 'firma'],
 };
 
 // Campos que se dejan como texto (el resto se convierte a número).
-const TEXTO = new Set(['tipo', 'codigo', 'detalle', 'clave', 'orden']);
+const TEXTO = new Set(['tipo', 'codigo', 'detalle', 'contador', 'orden', 'firma']);
 
 const ESTADOS = ['PREVUELO', 'ASCENSO', 'CAIDA_LIBRE', 'DESCENSO_AUTOGIRO', 'ATERRIZADO'];
 
@@ -38,6 +40,28 @@ function checksum(texto) {
 
 function enmarcar(carga) {
   return `$${carga}*${checksum(carga).toString(16).toUpperCase().padStart(2, '0')}`;
+}
+
+// Comandos firmados: $C,<contador>,<orden>,<firma>*HH
+//  - firma: los primeros 16 dígitos hex del HMAC-SHA256 de "C,<contador>,<orden>"
+//    hecho con la clave. La clave nunca viaja por radio, así que escuchar no la revela.
+//  - contador: la hora de la laptop en ms. La primaria solo acepta un contador mayor
+//    que el último que aceptó (lo guarda aunque se apague), así que un comando
+//    grabado y vuelto a mandar se rechaza.
+function firmaComando(clave, contador, orden) {
+  return crypto.createHmac('sha256', clave).update(`C,${contador},${orden}`)
+    .digest('hex').slice(0, 16).toUpperCase();
+}
+
+function comandoFirmado(clave, orden, contador = Date.now()) {
+  return enmarcar(`C,${contador},${orden},${firmaComando(clave, contador, orden)}`);
+}
+
+// true si la firma de un comando ya interpretado (parsearCarga) es correcta.
+function firmaValida(clave, c) {
+  if (!/^\d{1,19}$/.test(c.contador || '') || !/^[0-9A-Fa-f]{16}$/.test(c.firma || '')) return false;
+  const esperada = Buffer.from(firmaComando(clave, c.contador, c.orden));
+  return crypto.timingSafeEqual(esperada, Buffer.from(c.firma.toUpperCase()));
 }
 
 // Devuelve la carga útil (entre $ y *) o null si la trama es inválida.
@@ -115,4 +139,5 @@ function procesarLinea(linea) {
 module.exports = {
   CAMPOS, ESTADOS, BANDERAS, FUENTE,
   checksum, enmarcar, validar, parsearCarga, procesarLinea, decodificarBanderas,
+  firmaComando, comandoFirmado, firmaValida,
 };
