@@ -6,12 +6,12 @@
 - Unclassified: 68 file(s) not represented in the graph (top: .step 23, .stl 21, (none) 6)
 
 ## Summary
-- 1236 nodes · 2027 edges · 83 communities (69 shown, 14 thin omitted)
+- 1242 nodes · 2031 edges · 78 communities (65 shown, 13 thin omitted)
 - Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 97 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ce3e3aee`
+- Built from commit: `f98b92d7`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -83,18 +83,14 @@
 - Estado
 - GRAPHIFY.md — Mapa de conocimiento del repositorio
 - Protección de la electrónica · carga primaria
-- test_vuelo_simulado_completo
+- Reproduccion
 - Geo.cpp
 - Entrada
-- test_modo_prueba_techo
 - render_cansat.py
-- Estado
-- ZenitRadio.h
 - Imu
 - LecturaImu
 - exportar_web.py
 - ZenitSensores.h
-- Recibido
 
 ## God Nodes (most connected - your core abstractions)
 1. `Simulador` - 24 edges
@@ -102,28 +98,28 @@
 3. `Orientacion` - 23 edges
 4. `DatosSensores` - 22 edges
 5. `MaquinaEstados` - 21 edges
-6. `Imu` - 19 edges
-7. `Lectura` - 19 edges
+6. `Lectura` - 19 edges
+7. `Imu` - 19 edges
 8. `iniciar()` - 18 edges
-9. `Secuencia` - 17 edges
-10. `dibujarTodo()` - 17 edges
+9. `dibujarTodo()` - 17 edges
+10. `Secuencia` - 17 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `Consecuencias` --references--> `crearCanSat()`  [INFERRED]
+  docs/decisiones/0003-modelo-3d-procedural-ilustrativo.md → estacion-terrena/public/cansat3d.js
 - `Modos de compilación` --references--> `SimuladorVuelo`  [INFERRED]
   docs/01-arquitectura.md → firmware/comun/ZenitComun/src/SimuladorVuelo.h
 - `Todo el equipo` --references--> `procesarComando()`  [INFERRED]
   docs/10-pendientes-del-equipo.md → firmware/primaria/src/main.cpp
-- `Consecuencias` --references--> `crearCanSat()`  [INFERRED]
-  docs/decisiones/0003-modelo-3d-procedural-ilustrativo.md → estacion-terrena/public/cansat3d.js
+- `4. Reglas que NO se pueden romper` --references--> `banderas()`  [INFERRED]
+  AGENTS.md → firmware/primaria/src/main.cpp
 - `Conceptos que el grafo debe conectar` --references--> `MaquinaEstados`  [INFERRED]
   GRAPHIFY.md → firmware/comun/ZenitComun/src/MaquinaEstados.h
-- `Decisión` --references--> `crearCanSat()`  [INFERRED]
-  docs/decisiones/0005-modelo-3d-desde-el-cad.md → estacion-terrena/public/cansat3d.js
 
 ## Import Cycles
 - None detected.
 
-## Communities (83 total, 14 thin omitted)
+## Communities (78 total, 13 thin omitted)
 
 ### Community 0 - "Panel web: dibujo, alertas y diagnóstico (app.js)"
 Cohesion: 0.07
@@ -146,19 +142,19 @@ Cohesion: 0.20
 Nodes (3): diferenciaAngular(), invSqrt(), test_yaw_converge_a_la_brujula()
 
 ### Community 5 - "Comunicaciones.cpp"
-Cohesion: 0.19
-Nodes (10): encolar(), enviarTrama(), escribirLinea(), guardarFisicamente(), iniciarRegistro(), Mensaje, texto, recibir() (+2 more)
+Cohesion: 0.08
+Nodes (25): encolar(), enviarTrama(), escribirLinea(), Estado, archivo, crcMalos, descartadas, errorLora (+17 more)
 
 ### Community 6 - "cansat_completo.py"
 Cohesion: 0.13
 Nodes (40): ang_xy(), anillo(), anillo_retencion(), aspa(), bandeja_secundaria(), caja(), canal(), carcasa_primaria() (+32 more)
 
 ### Community 7 - "Enlace"
-Cohesion: 0.20
-Nodes (3): Enlace, radio_, spi_
+Cohesion: 0.10
+Nodes (9): Enlace, radio_, spi_, Module, Paquete, rssi, snr, texto (+1 more)
 
 ### Community 8 - "Servidor de la estación terrena (server.js)"
-Cohesion: 0.07
+Cohesion: 0.06
 Nodes (19): app, ARRANQUE_MS, CARPETA_LOGS, crypto, express, fs, historial, http (+11 more)
 
 ### Community 9 - "Análisis de vuelo para el RAM (Python)"
@@ -166,7 +162,7 @@ Cohesion: 0.16
 Nodes (9): analizar(), cumple(), elegir_vuelo(), escribir_resumen(), graficar(), leer_datos(), main(), numero_en() (+1 more)
 
 ### Community 11 - "Secuencia"
-Cohesion: 0.17
+Cohesion: 0.13
 Nodes (7): Secuencia, autogiro_, cambioMax_, gRef_, p_, reintentando_, t0_
 
 ### Community 12 - "Datos de sensores de la primaria"
@@ -187,11 +183,11 @@ Nodes (17): Lectura, alturaReal, ax, ay, az, fase, gx, gy (+9 more)
 
 ### Community 16 - "cansat3d.js"
 Cohesion: 0.05
-Nodes (72): 0005 · El modelo 3D de la web sale del CAD real, Consecuencias, Contexto, Decisión, calcomaniaLogo(), crearCanSat(), actualizar(), GRUPOS (+64 more)
+Nodes (73): 0005 · El modelo 3D de la web sale del CAD real, Consecuencias, Contexto, Decisión, three@0.169.0, calcomaniaLogo(), crearCanSat(), actualizar() (+65 more)
 
 ### Community 17 - "package.json"
-Cohesion: 0.07
-Nodes (29): dependencies, chart.js@^4.4.7, express@^4.21.2, @fontsource-variable/archivo@^5.3.0, @fontsource-variable/jetbrains-mono@^5.3.0, serialport@^12.0.0, @serialport/parser-readline@^12.0.0, three@0.169.0 (+21 more)
+Cohesion: 0.09
+Nodes (27): dependencies, chart.js@^4.4.7, express@^4.21.2, @fontsource-variable/archivo@^5.3.0, @fontsource-variable/jetbrains-mono@^5.3.0, serialport@^12.0.0, @serialport/parser-readline@^12.0.0, ws@^8.18.0 (+19 more)
 
 ### Community 19 - "Parámetros del simulador"
 Cohesion: 0.14
@@ -218,8 +214,8 @@ Cohesion: 0.22
 Nodes (9): 1. Ahorra tokens: lee el mapa antes que el código, 2. Qué es cada cosa, 3. Comandos, 4. Reglas que NO se pueden romper, 5. Antes de dar algo por terminado, 6. Lo que todavía depende del hardware, AGENTS.md — Guía para asistentes de IA (Claude Code, Copilot, Codex, Cursor…), Radio (+1 more)
 
 ### Community 26 - "fuentes.js"
-Cohesion: 0.18
-Nodes (4): { EventEmitter }, fs, readline, Reproduccion
+Cohesion: 0.20
+Nodes (4): { EventEmitter }, fs, PuertoSerie, readline
 
 ### Community 27 - "6. Día del lanzamiento — checklist"
 Cohesion: 0.17
@@ -258,8 +254,8 @@ Cohesion: 0.15
 Nodes (13): 1. Instalar una sola vez, 2. Abrir el proyecto, 3. Probar TODO sin hardware (5 minutos), 4. Con la Heltec V3 sola (sin sensores), 5. Con el hardware armado, 6. Después del vuelo (documento RAM, máximo 7 h), Cómo cumple la misión, Documentación (+5 more)
 
 ### Community 36 - "4. Máquina de estados de la misión"
-Cohesion: 0.33
-Nodes (5): 4. Máquina de estados de la misión, Cómo probar cambios, Parámetros, Protecciones del desacople, Secuencia de separación (2 servos)
+Cohesion: 0.22
+Nodes (8): 4. Máquina de estados de la misión, Cómo probar cambios, Modo prueba (techo), Parámetros, Protecciones del desacople, Secuencia de separación (2 servos), test_modo_prueba_techo(), test_sin_modo_prueba_el_techo_no_desacopla()
 
 ### Community 37 - "8. Git y GitHub para el equipo"
 Cohesion: 0.29
@@ -274,8 +270,8 @@ Cohesion: 0.20
 Nodes (8): Barometro::iniciar(), configurarGpsAereo(), escanearI2c(), Imu::escribir(), Imu::iniciar(), Imu::iniciarMag(), Imu::leerBytes(), Imu::modelo()
 
 ### Community 41 - "FiltroVertical"
-Cohesion: 0.19
-Nodes (7): FiltroVertical, h_, iniciado_, k1_, k2_, v_, test_filtro_sigue_bajada_constante()
+Cohesion: 0.18
+Nodes (8): FiltroVertical, h_, iniciado_, k1_, k2_, v_, test_filtro_sigue_bajada_constante(), test_vuelo_simulado_completo()
 
 ### Community 42 - "protocolo.js"
 Cohesion: 0.18
@@ -342,7 +338,7 @@ Cohesion: 0.36
 Nodes (8): alEscuchar(), alRecibirLinea(), avisarEstado(), desactualizado(), difundir(), direccionesDeRed(), mensajeEstado(), usarFuente()
 
 ### Community 62 - "MaquinaEstados"
-Cohesion: 0.19
+Cohesion: 0.18
 Nodes (7): MaquinaEstados, alturaMax_, cuentaDesacople_, p_, tInicioCondicion_, tInicioQuieto_, test_no_desacopla_si_no_se_armo()
 
 ### Community 63 - "CanSat Zénit completo · diseño en CAD (versión 2)"
@@ -369,21 +365,9 @@ Nodes (4): distanciaMetros(), grad(), rad(), rumboGrados()
 Cohesion: 0.40
 Nodes (5): Entrada, altura, gTotal, t, velocidad
 
-### Community 71 - "test_modo_prueba_techo"
-Cohesion: 0.67
-Nodes (3): Modo prueba (techo), test_modo_prueba_techo(), test_sin_modo_prueba_el_techo_no_desacopla()
-
 ### Community 72 - "render_cansat.py"
 Cohesion: 0.22
 Nodes (4): lin(), mat(), lin(), mat()
-
-### Community 73 - "Estado"
-Cohesion: 0.18
-Nodes (11): Estado, archivo, crcMalos, descartadas, errorLora, lineasSd, loraOk, sdConfirmada (+3 more)
-
-### Community 75 - "ZenitRadio.h"
-Cohesion: 0.22
-Nodes (6): Module, Paquete, rssi, snr, texto, PhysicalLayer
 
 ### Community 76 - "Imu"
 Cohesion: 0.22
@@ -397,28 +381,24 @@ Nodes (9): Imu::leer(), LecturaImu, ax, ay, az, gx, gy, gz (+1 more)
 Cohesion: 0.29
 Nodes (5): Imu::leerMag(), LecturaMag, mx, my, mz
 
-### Community 81 - "Recibido"
-Cohesion: 0.40
-Nodes (4): Recibido, rssi, snr, texto
-
 ## Knowledge Gaps
-- **190 isolated node(s):** `texto_`, `texto`, `dir_`, `ajusteMag_`, `bus_` (+185 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 612 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **190 isolated node(s):** `dir_`, `autogiro_`, `cambioMax_`, `gRef_`, `p_` (+185 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 618 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `crearCanSat()` connect `cansat3d.js` to `decisiones/README.md`?**
-  _High betweenness centrality (0.290) - this node is a cross-community bridge._
+- **Why does `Consecuencias` connect `decisiones/README.md` to `cansat3d.js`?**
+  _High betweenness centrality (0.342) - this node is a cross-community bridge._
 - **Are the 4 inferred relationships involving `SimuladorVuelo` (e.g. with `Modos de compilación` and `test_frenon_del_autogiro_no_confirma_separacion()`) actually correct?**
   _`SimuladorVuelo` has 4 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `texto_`, `texto`, `dir_` to the rest of the system?**
+- **What connects `dir_`, `autogiro_`, `cambioMax_` to the rest of the system?**
   _190 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Panel web: dibujo, alertas y diagnóstico (app.js)` be split into smaller, more focused modules?**
   _Cohesion score 0.06631578947368422 - nodes in this community are weakly interconnected._
-- **Why does `Consecuencias` connect `decisiones/README.md` to `cansat3d.js`?**
-  _High betweenness centrality (0.289) - this node is a cross-community bridge._
+- **Why does `crearCanSat()` connect `cansat3d.js` to `decisiones/README.md`?**
+  _High betweenness centrality (0.340) - this node is a cross-community bridge._
 - **Should `Firmware de vuelo de la primaria (main.cpp)` be split into smaller, more focused modules?**
   _Cohesion score 0.08843537414965986 - nodes in this community are weakly interconnected._
 - **Should `Parametros` be split into smaller, more focused modules?**
