@@ -8,9 +8,11 @@
 #include <stdint.h>
 
 // ---------------------------------------------------------------- Misión ----
-// (Guía de Misión CASAT-FIT2026 y PDR del equipo)
-#define ALTURA_DESACOPLE_M        200.0f  // desacople + despliegue del autogiro
-#define ALTURA_ARMADO_M           250.0f  // debe superarse antes de poder desacoplar
+// 2026-11-24: el dron sube a 100 m y suelta; el desacople es a 80 m.
+// (Antes: liberación a 450 m y desacople a 200 m, según la guía CASAT-FIT2026.)
+// Si cambia, actualizar también MISION en estacion-terrena/public/app.js.
+#define ALTURA_DESACOPLE_M        80.0f   // desacople + despliegue del autogiro
+#define ALTURA_ARMADO_M           90.0f   // debe superarse antes de poder desacoplar
 #define TRANSMISION_POST_ATERRIZAJE_S 10  // mínimo exigido (seguimos transmitiendo después)
 
 // ---------------------------------------------------------- Modo prueba ----
@@ -79,11 +81,14 @@
 #define SEPARACION_CAMBIO_MIN_G  0.6f // "jalón" mínimo para confirmar con el IMU
 
 // --------------------------------------------------------------- Registro ---
-// El PDR usa un OpenLog (microSD por puerto serie). Si electrónica cambia a
-// un lector microSD SPI, poner REGISTRO_TIPO en REGISTRO_SD_SPI.
+// El equipo decidió volar SIN microSD (no se compró el OpenLog): los datos
+// quedan solo en la laptop, con lo que llega por radio. Si algún día se pone
+// un OpenLog o un lector microSD SPI, cambiar REGISTRO_TIPO y volver a mostrar
+// la microSD en el panel (app.js y diagnostico.js).
+#define REGISTRO_NINGUNO 0
 #define REGISTRO_OPENLOG 1
 #define REGISTRO_SD_SPI  2
-#define REGISTRO_TIPO    REGISTRO_OPENLOG
+#define REGISTRO_TIPO    REGISTRO_NINGUNO
 // El OpenLog trae 9600 baudios de fábrica: es MUY lento para 25 líneas/s.
 // Copiar documentos/openlog/config.txt a la microSD (pone 115200).
 #define OPENLOG_BAUDIOS  115200

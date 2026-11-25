@@ -28,7 +28,16 @@ char encabezado[TAM_MENSAJE * 2] = "";
 zradio::Enlace enlace;
 
 // ------------------------------------------------------------ Registro -----
-#if REGISTRO_TIPO == REGISTRO_OPENLOG
+#if REGISTRO_TIPO == REGISTRO_NINGUNO
+// Sin microSD: no se usa GPIO4 ni GPIO41.
+bool iniciarRegistro() {
+  strncpy(est.archivo, "SIN_SD", sizeof(est.archivo) - 1);
+  return false;
+}
+void escribirLinea(const char*) {}
+void guardarFisicamente() {}
+
+#elif REGISTRO_TIPO == REGISTRO_OPENLOG
 HardwareSerial& openlog = Serial2;
 
 bool iniciarRegistro() {

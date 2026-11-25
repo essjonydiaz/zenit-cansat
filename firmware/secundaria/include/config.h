@@ -12,6 +12,11 @@
 #define GPS_BAUDIOS            9600
 #define GPS_MODO_AEREO         1     // UBX-CFG-NAV5 "aerotransportado < 1 g"
 
+// Potencia de la radio. A 20 dBm (la de la torre) el RFM95W pide ~120 mA al
+// transmitir y con la pila se congelaba después de la primera baliza
+// (2026-11-24). A 14 dBm pide ~45 mA y sigue alcanzando cientos de metros.
+#define POTENCIA_SECUNDARIA_DBM 14
+
 // Batería (opcional; mismo divisor que la primaria: 100k / 33k hacia GPIO1).
 // Sin divisor se reporta 0.00 V y el panel lo muestra como "sin medir".
 #define USAR_MEDICION_BATERIA  1

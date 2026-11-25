@@ -37,7 +37,7 @@ int16_t Enlace::iniciarHeltec() {
 }
 
 int16_t Enlace::iniciarRfm95(int8_t sck, int8_t miso, int8_t mosi, int8_t nss, int8_t rst,
-                             int8_t dio0) {
+                             int8_t dio0, int8_t potenciaDbm) {
 #if defined(CONFIG_IDF_TARGET_ESP32C3) || defined(CONFIG_IDF_TARGET_ESP32S3)
   spi_ = new SPIClass(FSPI);
 #else
@@ -49,8 +49,8 @@ int16_t Enlace::iniciarRfm95(int8_t sck, int8_t miso, int8_t mosi, int8_t nss, i
   radio_ = r;
   chip_ = "SX1276";
   int16_t e = r->begin(radio::FRECUENCIA_MHZ, radio::ANCHO_BANDA_KHZ, radio::SPREADING_FACTOR,
-                       radio::CODING_RATE_4_DE, radio::SYNC_WORD, radio::POTENCIA_DBM,
-                       radio::PREAMBULO, 0);
+                       radio::CODING_RATE_4_DE, radio::SYNC_WORD,
+                       potenciaDbm > 0 ? potenciaDbm : radio::POTENCIA_DBM, radio::PREAMBULO, 0);
   if (e == RADIOLIB_ERR_NONE) e = r->setCurrentLimit(radio::LIMITE_CORRIENTE_MA);
   if (e == RADIOLIB_ERR_NONE) e = r->setCRC(true);
   return terminarInicio(e);

@@ -14,7 +14,7 @@ después de aterrizar.
  CARGA SECUNDARIA              CARGA PRIMARIA                          ESTACIÓN TERRENA
  ESP32-C3 SuperMini   ──B──>   Heltec WiFi LoRa 32 V3 (ESP32-S3)  ──T,P,E──> Heltec V3 receptor
  + RFM95W 915 MHz              + GY-91 (MPU9250 + BMP280)                 │ USB
- + GPS NEO-6M                  + GPS NEO-M8N + OpenLog (microSD)          ▼
+ + GPS NEO-6M                  + GPS NEO-M8N                             ▼
  + pila 9 V                    + 2 servos SG90 (desacople, autogiro)    Node.js ──> panel web
                                + pila 9 V            <──── C (comandos) ────┘
 ```
@@ -26,7 +26,7 @@ Hardware tal como quedó en el **PDR (etapa 3)**. Pines y diferencias encontrada
 
 | Carpeta | Qué es | Lenguaje |
 |---|---|---|
-| [`firmware/primaria`](firmware/primaria) | Firmware de vuelo (Heltec V3): GY-91, filtros, máquina de estados, 2 servos, radio, OpenLog, pantalla. Incluye **modo simulación** | C++ (PlatformIO) |
+| [`firmware/primaria`](firmware/primaria) | Firmware de vuelo (Heltec V3): GY-91, filtros, máquina de estados, 2 servos, radio, pantalla (sin microSD: los datos quedan en la laptop). Incluye **modo simulación** | C++ (PlatformIO) |
 | [`firmware/secundaria`](firmware/secundaria) | Baliza GPS de la carga secundaria (ESP32-C3 + RFM95W) | C++ |
 | [`firmware/receptor`](firmware/receptor) | Receptor LoRa de tierra (Heltec V3, puente radio ↔ USB, pantalla con RSSI) | C++ |
 | [`firmware/pruebas`](firmware/pruebas) | Programas para las pruebas P1–P6 (autodiagnóstico, GY-91, alcance, pila, OpenLog, servos) | C++ |
@@ -128,8 +128,6 @@ pantalla). Conexiones en [docs/02-conexiones.md](docs/02-conexiones.md). Antes d
 ```powershell
 pip install -r herramientas/requirements.txt
 python herramientas/analisis_vuelo.py estacion-terrena/logs/sesion_XXXX_telemetria.csv
-# o con el archivo del OpenLog (microSD):
-python herramientas/analisis_vuelo.py E:/LOG00001.TXT
 ```
 Genera `resumen.md` con la tabla de resultados (altura máxima, velocidades, desacople,
 autogiro, transmisión post-aterrizaje) y las gráficas. Para practicar:

@@ -13,8 +13,7 @@ flowchart LR
       GY[GY-91<br/>MPU9250 + BMP280] -- I2C 47/48 --> ESP1[ESP32-S3]
       GPS1[GPS NEO-M8N] -- UART1 5/6 --> ESP1
       ESP1 -- PWM 2 --> SD1[Servo desacople]
-      ESP1 -- PWM 3 --> SA[Servo autogiro]
-      ESP1 -- UART2 4/5 --> OL[OpenLog + microSD]
+      ESP1 -- PWM 4 --> SA[Servo autogiro]
       ESP1 -- SPI interno --> LORA1[SX1262]
       ESP1 -- I2C interno --> OLED[OLED]
     end
@@ -41,7 +40,7 @@ Dos núcleos del ESP32-S3 trabajando en paralelo:
 | Núcleo | Tarea | Qué hace |
 |---|---|---|
 | 1 | `loop()` de Arduino, 50 Hz | Lee el GY-91 → orientación (Mahony + brújula) → altitud y velocidad (filtro complementario) → máquina de estados → secuencia de los 2 servos → arma tramas → pantalla (solo en tierra) |
-| 0 | `comms` (FreeRTOS) | Radio y registro: envía por LoRa, escribe en el OpenLog, escucha baliza y comandos |
+| 0 | `comms` (FreeRTOS) | Radio: envía por LoRa y escucha baliza y comandos (sin microSD: el registro queda en la laptop) |
 
 Así, los ~90 ms que tarda en salir una trama LoRa o una escritura lenta **nunca
 retrasan** la lectura de sensores ni la decisión del desacople. Se comunican por colas.

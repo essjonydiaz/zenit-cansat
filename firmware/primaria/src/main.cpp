@@ -512,9 +512,14 @@ static void actualizarPantalla(uint32_t ahora) {
   tUltimaPantalla = ahora;
   const comms::Estado& c = comms::estado();
   pantalla.renglon(0, "ZENIT %s", mision::nombre(e));
+#if REGISTRO_TIPO == REGISTRO_NINGUNO
+  pantalla.renglon(1, "LoRa:%s Bat:%s", c.loraOk ? "OK" : "X",
+                   bateriaMedida() ? String(voltajeBateria, 1).c_str() : "--");
+#else
   pantalla.renglon(1, "LoRa:%s SD:%s Bat:%s", c.loraOk ? "OK" : "X",
                    c.sdOk ? (c.sdConfirmada ? "OK" : "?") : "X",
                    bateriaMedida() ? String(voltajeBateria, 1).c_str() : "--");
+#endif
   pantalla.renglon(2, "Alt:%.1fm Vel:%.1f", filtro.altura(), filtro.velocidad());
   pantalla.renglon(3, "GPS:%s sat:%u Bal:%s", posPropia.fix ? "fix" : "--", posPropia.sats,
                    balizaVigente() ? "OK" : "--");

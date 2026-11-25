@@ -58,7 +58,7 @@ test('entiende las tramas del firmware de la primaria', () => {
     }
   }
   assert.ok(tipos.has('T') && tipos.has('P') && tipos.has('E'));
-  // Secuencia de los 2 servos a 200 m: desacople -> separación -> autogiro.
+  // Secuencia de los 2 servos a 80 m: desacople -> separación -> autogiro.
   const orden = ['DESACOPLE', 'SEPARACION', 'AUTOGIRO', 'ATERRIZAJE'].map((c) => eventos.indexOf(c));
   assert.ok(orden.every((i) => i >= 0), `faltan eventos: ${eventos.join(' ')}`);
   assert.deepStrictEqual([...orden].sort((a, b) => a - b), orden);
@@ -80,7 +80,7 @@ test('el simulador produce un vuelo completo con desacople', async () => {
   }
   const des = eventos.find((e) => e.codigo === 'DESACOPLE');
   const h = Number(/h=([\d.]+)/.exec(des.detalle)[1]);
-  assert.ok(Math.abs(h - 200) < 5, `desacople a ${h} m`);
+  assert.ok(Math.abs(h - 80) < 5, `desacople a ${h} m`);  // misión 2026-11-24: 80 m
 });
 
 test('el comando va firmado y no lleva la clave', () => {

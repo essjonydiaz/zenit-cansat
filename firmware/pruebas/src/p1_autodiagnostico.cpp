@@ -122,21 +122,7 @@ static void diagnosticar() {
                   "GND). 2) el TX del GPS va a GPIO5 (si esta en GPIO6 estan invertidos)."
                 : "llegan datos basura: velocidad distinta de 9600 baudios o cable con ruido.");
 
-  // --- OpenLog: al reiniciarse imprime '<' cuando ya abrió su archivo ---
-  Serial2.println("# P1 autodiagnostico");
-  bool openlog = false;
-  t0 = millis();
-  while (millis() - t0 < 300) {
-    while (Serial2.available()) {
-      if (Serial2.read() == '<') openlog = true;
-    }
-  }
-  static bool openlogVisto = false;
-  openlogVisto = openlogVisto || openlog;
-  resultado("OpenLog (microSD)", openlogVisto,
-            openlogVisto ? "respondio '<' (archivo abierto)" : "no respondio",
-            "1) LED del OpenLog: si parpadea rapido, la microSD falta o no es FAT32. 2) RXI del "
-            "OpenLog <- GPIO4 y TXO -> GPIO41. 3) config.txt en la microSD (115200).");
+  // (Sin OpenLog: el equipo decidió volar sin microSD.)
 
   // --- Batería ---
   uint32_t mv = 0;
@@ -164,7 +150,7 @@ static void diagnosticar() {
   pantalla.renglon(0, "P1: %d pasan %d fallan", pasan, fallan);
   pantalla.renglon(1, "BARO:%s IMU:%s", lecturaOk ? "OK" : "X", gBien ? "OK" : "X");
   pantalla.renglon(2, "LoRa:%s GPS:%s", enlace.ok() ? "OK" : "X", dolares ? "OK" : "X");
-  pantalla.renglon(3, "OpenLog:%s Bat:%.1fV", openlogVisto ? "OK" : "X", vBat);
+  pantalla.renglon(3, "Bat:%.1fV", vBat);
   pantalla.renglon(4, "%s", nArreglos ? "Ver lista en la laptop" : "TODO BIEN");
   pantalla.mostrar();
 }

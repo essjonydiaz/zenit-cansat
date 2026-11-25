@@ -2,7 +2,7 @@
 //  P6 — Mecanismos de desacople y autogiro (2 servos SG90)
 //  Comandos por el Monitor Serial (escribir y Enter):
 //     d          -> elegir el servo de DESACOPLE (GPIO2)
-//     g          -> elegir el servo del AUTOGIRO (GPIO3)
+//     g          -> elegir el servo del AUTOGIRO (GPIO4)
 //     c          -> posición CERRADO del servo elegido
 //     a          -> posición ABIERTO del servo elegido
 //     0..180     -> ir a ese ángulo (para encontrar los valores correctos)

@@ -22,10 +22,10 @@ Idioma del proyecto: **español** (código, comentarios, commits y respuestas).
 
 | Ruta | Qué hay | Lenguaje |
 |---|---|---|
-| `firmware/primaria/` | Vuelo: Heltec WiFi LoRa 32 V3 (ESP32-S3), GY-91, NEO-M8N, OpenLog, 2 servos, OLED | C++ / PlatformIO |
+| `firmware/primaria/` | Vuelo: Heltec WiFi LoRa 32 V3 (ESP32-S3), GY-91, NEO-M8N, 2 servos, OLED (sin OpenLog desde 2026-11-24) | C++ / PlatformIO |
 | `firmware/secundaria/` | Baliza: ESP32-C3 SuperMini + RFM95W + NEO-6M | C++ |
 | `firmware/receptor/` | Receptor de tierra: Heltec V3 por USB (puente radio ↔ PC) | C++ |
-| `firmware/pruebas/` | P1 autodiagnóstico, P2 GY-91, P3 alcance, P4 pila, P5 OpenLog, P6 servos | C++ |
+| `firmware/pruebas/` | P1 autodiagnóstico, P2 GY-91, P3 alcance, P4 pila, P5 OpenLog (no se usa), P6 servos | C++ |
 | `firmware/comun/ZenitComun` | **C++ puro** (sin Arduino): pines, radio, protocolo, filtros, máquina de estados, separación, Haversine, UBX, tiempo en el aire, simulador | C++ |
 | `firmware/comun/ZenitRadio` · `ZenitSensores` · `ZenitPantalla` | Drivers solo-ESP32 (RadioLib, GY-91, OLED) | C++ |
 | `estacion-terrena/` | Node.js: `server.js` + `src/` (protocolo, simulador, registro) + `public/` (panel web) | JavaScript |

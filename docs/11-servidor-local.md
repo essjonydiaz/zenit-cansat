@@ -78,7 +78,7 @@ En la tarjeta **Consola** del panel está el botón **Diagnóstico**. Abre un re
 1. **Qué pasa:** la causa más grave en una frase y qué revisar. Si es un sensor, dice el cable
    y el pin (por ejemplo «Barómetro: SDA → GPIO 47, SCL → GPIO 48»).
 2. **Cadena de conexión:** navegador → servidor → receptor → radio → primaria → secundaria.
-3. **Sensores de la primaria:** barómetro, IMU, radio, microSD, GPS y pila.
+3. **Sensores de la primaria:** barómetro, IMU, radio, GPS y pila.
 4. **Enlace:** paquetes recibidos y perdidos, tramas con checksum malo, señal y archivo de registro.
 5. **Historia de la sesión:** cada alerta con su hora, aunque ya se haya quitado sola.
 

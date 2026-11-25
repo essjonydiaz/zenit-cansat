@@ -13,7 +13,7 @@ Interfaces con electrónica y software que deben respetarse (ver `docs/02-conexi
 
 - Dos servos SG90 en la primaria:
   - desacople: señal en GPIO2;
-  - autogiro: señal en GPIO3.
+  - autogiro: señal en GPIO4.
 
   Los ángulos están en `firmware/primaria/include/config.h` (`DESACOPLE_ANGULO_*`, `AUTOGIRO_ANGULO_*`) y se ajustan con la prueba P6.
 - La primaria se calibra al encender, así que debe estar **vertical y quieta**. La Heltec y el GY-91 (IMU) van **fijos**, nunca colgando de ligas ni sueltos entre la espuma.

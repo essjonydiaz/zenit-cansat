@@ -37,8 +37,10 @@ class Enlace {
   // o el código de error de RadioLib (ver textoError()).
   int16_t iniciarHeltec();
   // RFM95W/SX1276 externo con sus pines SPI.
+  // potenciaDbm: 0 = la de RadioConfig.h. La secundaria usa menos para no
+  // hundir su pila al transmitir (ver secundaria/include/config.h).
   int16_t iniciarRfm95(int8_t sck, int8_t miso, int8_t mosi, int8_t nss, int8_t rst,
-                       int8_t dio0);
+                       int8_t dio0, int8_t potenciaDbm = 0);
 
   bool ok() const { return ok_; }
   int16_t error() const { return error_; }

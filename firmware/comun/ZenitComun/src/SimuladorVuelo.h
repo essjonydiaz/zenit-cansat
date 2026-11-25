@@ -4,7 +4,7 @@
 //  Permite probar TODO el firmware (filtros, máquina de estados, desacople,
 //  radio, microSD) y la estación terrena con solo un ESP32 en la mesa, sin
 //  sensores ni dron. Reproduce:
-//    tierra (10 s) -> subida con el dron hasta 450 m -> espera -> liberación
+//    tierra (10 s) -> subida con el dron hasta 100 m -> espera -> liberación
 //    -> caída libre con arrastre (v terminal ≈ 37 m/s, igual que el CoDR)
 //    -> desacople a 200 m (lo decide el FIRMWARE, no el simulador)
 //    -> descenso con autogiro (~10 m/s) -> impacto -> suelo.
@@ -22,7 +22,7 @@ enum class Fase : uint8_t { TIERRA, SUBIDA, ESPERA, CAIDA, AUTOGIRO, SUELO };
 struct ParametrosSim {
   float tEsperaInicial = 10.0f;     // s en tierra antes de subir
   float velocidadSubida = 15.0f;    // m/s (acelerado para demos; el dron real sube más lento)
-  float alturaLiberacion = 450.0f;  // m (requisito de la misión)
+  float alturaLiberacion = 100.0f;  // m (el dron sube a 100 m; antes 450)
   float tEsperaArriba = 5.0f;       // s de espera antes de soltar
   float vTerminalCaida = 37.0f;     // m/s (cálculo de la pregunta 9 del CoDR)
   float vTerminalAutogiro = 10.0f;  // m/s (meta 8–12 m/s)

@@ -52,7 +52,9 @@ constexpr int8_t I2C_SCL = 48;
 constexpr int8_t GPS_RX = 5;   // la placa RECIBE aquí  <- TX del GPS
 constexpr int8_t GPS_TX = 6;   // la placa ENVÍA aquí   -> RX del GPS
 
-// OpenLog (registro en microSD) por UART2
+// OpenLog (registro en microSD) por UART2. NO SE USA: se vuela sin microSD
+// (REGISTRO_NINGUNO en config.h) y GPIO4 ahora es del servo del autogiro.
+// Si algún día se agrega un OpenLog o lector SPI, moverlo a otros pines.
 constexpr int8_t OPENLOG_TX = 4;  // la placa ENVÍA aquí  -> RXI del OpenLog
 constexpr int8_t OPENLOG_RX = 41; // la placa RECIBE aquí <- TXO del OpenLog (para saber si está vivo)
 
@@ -65,7 +67,7 @@ constexpr int8_t SD_MOSI = 40;
 
 // Servos SG90 (señal PWM; alimentación 5 V del MP1584EN, NO de la placa)
 constexpr int8_t SERVO_DESACOPLE = 2;  // suelta la carga secundaria
-constexpr int8_t SERVO_AUTOGIRO  = 3;  // libera las palas del autogiro
+constexpr int8_t SERVO_AUTOGIRO  = 4;  // libera las palas del autogiro (Diego lo soldó en GPIO4)
 
 // Voltaje de la pila de 9 V: divisor 100k / 33k hacia este pin (ADC1_CH6)
 constexpr int8_t BATERIA_ADC = 7;

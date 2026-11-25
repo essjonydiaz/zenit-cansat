@@ -1,5 +1,7 @@
 # 2. Conexiones (pinout) — según el PDR
 
+> **Decisión del 2026-11-24:** el CanSat vuela **sin OpenLog ni microSD** (no se compró). Los datos quedan en la laptop (`estacion-terrena/logs/`), solo con lo que llega por radio. GPIO41 queda libre y GPIO4 pasó al servo del autogiro. El software todavía soporta OpenLog o microSD SPI (`REGISTRO_TIPO` en `config.h`) por si algún día se agrega.
+
 Fuente única en el código: [`firmware/comun/ZenitComun/src/Pines.h`](../firmware/comun/ZenitComun/src/Pines.h).
 Si se cambia un cable, cambiar **ese archivo y esta tabla**.
 
@@ -7,7 +9,7 @@ Componentes (PDR, diapositivas 10 y 12):
 
 | Carga | Placa | Radio | Sensores / módulos | Energía |
 |---|---|---|---|---|
-| Primaria | **Heltec WiFi LoRa 32 V3** (ESP32-S3) | SX1262 integrado, 915 MHz | GY-91 (MPU9250 + BMP280), GPS NEO-M8N, OpenLog + microSD, 2× SG90 | Pila 9 V → interruptor → MP1584EN (5 V) → AMS1117 (3.3 V) |
+| Primaria | **Heltec WiFi LoRa 32 V3** (ESP32-S3) | SX1262 integrado, 915 MHz | GY-91 (MPU9250 + BMP280), GPS NEO-M8N, 2× SG90 (sin OpenLog) | Pila 9 V → interruptor → MP1584EN (5 V) → AMS1117 (3.3 V) |
 | Secundaria | **ESP32-C3 SuperMini** | RFM95W (SX1276), 915 MHz | GPS NEO-6M, baliza LED/buzzer | Pila 9 V → reed switch → MP1584EN (3.3 V) |
 | Receptor de tierra | **Heltec WiFi LoRa 32 V3** | SX1262 integrado + antena SMA 915 MHz | — | USB de la laptop |
 
@@ -20,13 +22,10 @@ Componentes (PDR, diapositivas 10 y 12):
 | **GPS NEO-M8N** | VCC / GND | 3.3 V o 5 V según el módulo / GND | Antena cerámica mirando hacia arriba |
 | | TX del GPS | **GPIO5** | La placa recibe aquí |
 | | RX del GPS | **GPIO6** | Para mandarle el modo "aerotransportado" |
-| **OpenLog** | VCC / GND | 3.3 V / GND | microSD FAT32 con `documentos/openlog/config.txt` (115200 baudios) |
-| | RXI | **GPIO4** | La placa escribe aquí |
-| | TXO | **GPIO41** | Para saber si el OpenLog está vivo (responde `<`) |
 | **Servo DESACOPLE (SG90)** | Rojo / Café | **5 V del MP1584EN** / GND | Nunca del 3.3 V de la placa. Capacitor 470 µF entre 5 V y GND |
 | | Naranja (señal) | **GPIO2** | |
 | **Servo AUTOGIRO (SG90)** | Rojo / Café | 5 V del MP1584EN / GND | |
-| | Naranja (señal) | **GPIO3** | |
+| | Naranja (señal) | **GPIO4** | |
 | **Pila 9 V (medición)** | divisor 100 kΩ / 33 kΩ | **GPIO7** | **Falta en el PDR**: ver abajo |
 | Buzzer activo (opcional) | + / − | **GPIO42** / GND | Para encontrar el CanSat en el pasto |
 | Radio SX1262 | — | GPIO 8–14 (internos) | Ya viene conectado. Antena IPEX de 915 MHz, **nunca transmitir sin antena** |
@@ -39,7 +38,7 @@ Componentes (PDR, diapositivas 10 y 12):
 Pila 9V ─ reed switch ─┬─> MP1584EN ajustado a 5.0 V ─┬─> pin 5V de la Heltec
                        │                              ├─> servo DESACOPLE  (470 µF junto a los servos)
                        │                              ├─> servo AUTOGIRO
-                       │                              └─> AMS1117-3.3 ─> GY-91, NEO-M8N, OpenLog
+                       │                              └─> AMS1117-3.3 ─> GY-91, NEO-M8N
                        └─> 100 kΩ ─┬─ GPIO7
                                    33 kΩ
                                    └─ GND
@@ -93,7 +92,7 @@ correcta o para ambas, pero conviene corregirlas en el documento y en el armado:
 | 3 | Diap. 13 y 24 vs 10 | "BME280 + MPU9250" separados vs "GY-91" | El GY-91 trae **BMP280**; la diap. 21 además dice MPU6050 | Detecta solo BMP280 o BME280 y MPU9250/6500/6050 |
 | 4 | Diap. 27 | "GPS NEO-6M (x2)" | La primaria lleva **NEO-M8N** (diap. 6 y 10) | Funciona con los dos (ambos u-blox, 9600 baudios) |
 | 5 | Diap. 25 | Estación terrena con "RFM95W + ESP32" | La tabla de la diap. 12 dice **Heltec V3** | Receptor para Heltec V3 |
-| 6 | Diap. 8/11 vs 10 | OpenLog vs "Módulo MicroSD" | Son distintos (UART vs SPI) | OpenLog por defecto; `REGISTRO_TIPO` en `config.h` cambia a lector SPI |
+| 6 | Diap. 8/11 vs 10 | OpenLog vs "Módulo MicroSD" | Son distintos (UART vs SPI) | **Ninguno** (decisión del 2026-11-24): se vuela sin microSD. `REGISTRO_TIPO` en `config.h` permite agregar uno después |
 | 7 | Diap. 5, requisito 3 | "Diámetro máximo ≤ 600 cm" | Error de captura: el CanSat mide Ø 9–10 cm | — |
 | 8 | Diap. 26 | "Batería + TP4056" | El TP4056 carga Li-Po; no se usa con pila de 9 V | — |
 | 9 | Diap. 24 | "Voltaje de batería, 0.01 V" | El diagrama no trae divisor para medirlo | Agregar 100k/33k a GPIO7 (primaria) y GPIO1 (secundaria) |

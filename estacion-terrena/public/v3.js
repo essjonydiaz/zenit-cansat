@@ -27,15 +27,15 @@
     const alt = Math.max(0, T.alt);
     switch (T.estado) {
       case 0: return { titulo: 'Despegue', detalle: `En la plataforma · ${fmt(alt)} m`, avance: 0 };
-      case 1: return { titulo: 'Liberación · 450 m', detalle: `Faltan ${fmt(Math.max(0, 450 - alt), 0)} m`, avance: alt / 450 };
+      case 1: return { titulo: `Liberación · ${MISION.liberacion} m`, detalle: `Faltan ${fmt(Math.max(0, MISION.liberacion - alt), 0)} m`, avance: alt / MISION.liberacion };
       case 2:
         if (!S.marcas.desacople) {
-          const tope = Math.max(T.alt_max, 250);
-          return { titulo: 'Desacople · 200 m', detalle: `Faltan ${fmt(Math.max(0, alt - 200), 0)} m`, avance: (tope - alt) / (tope - 200) };
+          const tope = Math.max(T.alt_max, MISION.armado);
+          return { titulo: `Desacople · ${MISION.desacople} m`, detalle: `Faltan ${fmt(Math.max(0, alt - MISION.desacople), 0)} m`, avance: (tope - alt) / (tope - MISION.desacople) };
         }
         return { titulo: 'Autogiro', detalle: '400 ms después del desacople', avance: 1 };
       case 3: {
-        const desde = (S.marcas.autogiro && S.marcas.autogiro.h) || 200;
+        const desde = (S.marcas.autogiro && S.marcas.autogiro.h) || MISION.desacople;
         return { titulo: 'Aterrizaje', detalle: `${fmt(alt)} m · bajando a ${fmt(Math.abs(T.vel))} m/s`, avance: 1 - alt / desde };
       }
       default: {

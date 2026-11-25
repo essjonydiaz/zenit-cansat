@@ -154,6 +154,12 @@ void test_vuelo_simulado_completo() {
   filtros::FiltroVertical f;
   filtros::Orientacion o;
   mision::MaquinaEstados m;
+  // Misión del 2026-11-24: el dron sube a 100 m y el desacople es a 80 m
+  // (los mismos valores que config.h).
+  mision::Parametros pm;
+  pm.alturaArmado = 90.0f;
+  pm.alturaDesacople = 80.0f;
+  m.configurar(pm);
   separacion::Secuencia sep;
   const float dt = 0.02f;
   float p0 = 0;
@@ -179,14 +185,14 @@ void test_vuelo_simulado_completo() {
     if (sep.actualizar(static_cast<uint32_t>(i * dt * 1000), g) & separacion::ABRIR_AUTOGIRO) {
       servo = true;
     }
-    if (l.fase == sim::Fase::AUTOGIRO && l.alturaReal < 150 && l.alturaReal > 20) {
+    if (l.fase == sim::Fase::AUTOGIRO && l.alturaReal < 50 && l.alturaReal > 10) {
       sumaV += f.velocidad();
       nV++;
     }
   }
   TEST_ASSERT_TRUE(m.desacopleHecho());
-  TEST_ASSERT_FLOAT_WITHIN(8.0, 200.0, hDesacopleReal);   // desacople ~200 m
-  TEST_ASSERT_FLOAT_WITHIN(15.0, 450.0, m.alturaMaxima());  // altura máxima
+  TEST_ASSERT_FLOAT_WITHIN(8.0, 80.0, hDesacopleReal);    // desacople ~80 m
+  TEST_ASSERT_FLOAT_WITHIN(8.0, 100.0, m.alturaMaxima());   // altura máxima ~100 m
   TEST_ASSERT_TRUE(nV > 0);
   TEST_ASSERT_FLOAT_WITHIN(1.0, -10.0, sumaV / nV);        // velocidad con autogiro
   TEST_ASSERT_TRUE(m.estado() == mision::Estado::ATERRIZADO);

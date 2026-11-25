@@ -12,7 +12,7 @@ a 200 m, qué mueve cada servo y dónde va cada pieza. Todas las medidas salen d
 | Liberación a 450 m | Caída libre. El programa la detecta (casi 0 g) | Firmware |
 | **200 m, t = 0** | El servo de desacople jala el pasador: **se suelta la secundaria** | Servo de desacople (GPIO2) |
 | t ≈ 0.1 s | El IMU siente el jalón (≥ 0.6 g) y confirma la separación | GY-91 + firmware |
-| **t = 0.4 s** | El servo del autogiro gira el anillo 15°: **se sueltan las 3 aspas** | Servo del autogiro (GPIO3) |
+| **t = 0.4 s** | El servo del autogiro gira el anillo 15°: **se sueltan las 3 aspas** | Servo del autogiro (GPIO4) |
 | t ≈ 0.5–1.5 s | Las ligas abren las aspas y el aire las termina de abrir; el rotor gira sobre el balero | Pasivo (sin motor) |
 | Hasta el suelo | Primaria a 8–12 m/s con el autogiro; la secundaria cae libre | — |
 
@@ -41,7 +41,7 @@ separación. Así la primaria nunca cae sin aspas.
 - Medidas usadas, de la hoja de datos del SG90: A 32, B 23, C 28.5, D 12, E 32, F 19.5 mm. Si sus
   servos miden distinto, avisen antes de imprimir el piso.
 - **Cables:** salen hacia la pared y suben pegados a ella hasta la placa 1. Desacople → **GPIO2**,
-  autogiro → **GPIO3**; los dos con 5 V del MP1584EN y un capacitor de 470 µF junto.
+  autogiro → **GPIO4**; los dos con 5 V del MP1584EN y un capacitor de 470 µF junto.
 
 ![Servos en 3D](salida/imagenes/despliegue/servos.png)
 
@@ -82,7 +82,7 @@ reales y se copian a `config.h`:
 | Servo | Cerrado | Abierto | Qué revisar |
 |---|---|---|---|
 | Desacople (GPIO2) | cuerno a 45° hacia el centro | 90° más, hacia afuera | Que el pasador salga del poste por completo |
-| Autogiro (GPIO3) | cuerno hacia arriba | 90° más, hacia afuera | Que el anillo gire 15° y los imanes queden separados |
+| Autogiro (GPIO4) | cuerno hacia arriba | 90° más, hacia afuera | Que el anillo gire 15° y los imanes queden separados |
 
 ## 7. Lo que hay que probar con las piezas impresas
 

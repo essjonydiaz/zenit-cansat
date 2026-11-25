@@ -111,8 +111,6 @@ Así tus compañeros (y la PC del laboratorio) tienen la misma versión.
 - [ ] Antena IPEX de 915 MHz para la primaria y antena **SMA** de 915 MHz para el receptor.
 - [ ] Antena de 915 MHz para el RFM95W de la secundaria.
 - [ ] Multímetro.
-- [ ] microSD (FAT32, ≤ 32 GB) con el archivo `documentos/openlog/config.txt` copiado en la
-      raíz (pone el OpenLog a 115200 baudios).
 - [ ] 2 pilas de 9 V nuevas.
 - [ ] Laptop cargada con todo lo de esta Parte A ya hecho.
 
@@ -185,7 +183,6 @@ Cada 10 s imprime una lista como esta (también la resume en la pantalla de la p
   [PASA ] Magnetometro AK8963       28 / -3 / -40 uT
   [PASA ] LoRa SX1262               SX1262 915.0 MHz, ok
   [PASA ] GPS NEO-M8N (UART1)       1032 caracteres en 1.5 s
-  [PASA ] OpenLog (UART2)           respondio '<'
   [PASA ] Pila 9 V                  pin=2.30 V -> pila ~9.27 V
 ```
 
@@ -261,7 +258,6 @@ autogiro): están en [05-plan-de-pruebas.md](05-plan-de-pruebas.md).
 | La placa se reinicia en bucle | Fuente débil o corto | Medir 5 V con la carga conectada; revisar soldaduras |
 | `LoRa: FALLA` / `no se encontro el chip` | Antena o placa dañada, firmware equivocado | Revisar antena; subir de nuevo el entorno correcto |
 | No llegan paquetes al receptor | Frecuencia o parámetros distintos | Las 3 placas deben compilarse con el mismo `RadioConfig.h` |
-| El OpenLog no responde | Cables RXI/TXO al revés, microSD no FAT32, sin `config.txt` | Revisar con `env:p5_registro_openlog` |
 | Altitud que se mueve sola varios metros | Sol o viento sobre el barómetro | Taparlo con espuma; comando *Calibrar en tierra* antes de volar |
 | `pio` no se reconoce en la terminal | PlatformIO no está en el PATH | Usar la terminal de PlatformIO (A3) |
 

@@ -14,7 +14,10 @@ import * as THREE from 'three';
 import { crearCanSat, prepararEstudio, webglDisponible } from './cansat3d.js';
 
 const ESCALA = 0.01 * 9;          // el modelo está en cm; se ve 9 veces más grande para leerlo
-const LIBERACION = 450, DESACOPLE = 200, TOPE = 520;
+// Alturas de la misión: vienen de MISION (app.js); 2026-11-24: 100 m y 80 m.
+const LIBERACION = (window.MISION && window.MISION.liberacion) || 100;
+const DESACOPLE = (window.MISION && window.MISION.desacople) || 80;
+const TOPE = LIBERACION;   // la regla llega hasta la liberación (100 m)
 // Con "reducir movimiento" la cámara no gira sola y nada late; el CanSat
 // sigue moviéndose con los datos (eso es telemetría, no adorno).
 const reducido = matchMedia('(prefers-reduced-motion: reduce)');
@@ -111,7 +114,7 @@ async function iniciar() {
     puntosRegla.push(new THREE.Vector3(-1.7, h, 0), new THREE.Vector3(-1.7 + largo, h, 0));
   }
   guia.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(puntosRegla), lineaMat));
-  for (let h = 2; h <= 500; h += 2) {
+  for (let h = 2; h <= TOPE; h += 2) {
     if (h === LIBERACION || h === DESACOPLE) continue;
     const grande = h % 10 === 0;
     const s = textoSprite(h % 50 === 0 ? `${h} m` : String(h), grande ? '#dfe8ff' : '#8ea3cc', 48, grande ? 700 : 500);
@@ -135,8 +138,8 @@ async function iniciar() {
     guia.add(g);
     return g;
   };
-  const anilloLib = anillo(LIBERACION, 0x6d9bff, 'LIBERACIÓN · 450 m');
-  const anilloDes = anillo(DESACOPLE, 0xf6b73c, 'DESACOPLE · 200 m');
+  const anilloLib = anillo(LIBERACION, 0x6d9bff, `LIBERACIÓN · ${LIBERACION} m`);
+  const anilloDes = anillo(DESACOPLE, 0xf6b73c, `DESACOPLE · ${DESACOPLE} m`);
 
   // ---------------------------------------------------------- el CanSat --
   const cansat = crearCanSat({ calidad: 'alta' });

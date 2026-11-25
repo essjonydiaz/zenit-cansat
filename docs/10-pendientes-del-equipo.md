@@ -11,7 +11,7 @@ para las 3 placas; lo único que falta es probarlo con el hardware real.
 
 | Carga | Placa | Radio | Sensores y módulos | Energía |
 |---|---|---|---|---|
-| Primaria | Heltec WiFi LoRa 32 V3 (ESP32-S3) | SX1262 integrado, 915 MHz | GY-91 (MPU9250 + BMP280), GPS NEO-M8N, OpenLog con microSD, 2 servos SG90 | Pila 9 V, interruptor, MP1584EN (5 V), AMS1117 (3.3 V) |
+| Primaria | Heltec WiFi LoRa 32 V3 (ESP32-S3) | SX1262 integrado, 915 MHz | GY-91 (MPU9250 + BMP280), GPS NEO-M8N, 2 servos SG90 (sin OpenLog) | Pila 9 V, interruptor, MP1584EN (5 V), AMS1117 (3.3 V) |
 | Secundaria | ESP32-C3 SuperMini | RFM95W (SX1276), 915 MHz | GPS NEO-6M, buzzer de baliza | Pila 9 V, reed switch, MP1584EN (3.3 V) |
 | Receptor de tierra | Heltec WiFi LoRa 32 V3 | SX1262 integrado, antena SMA 915 MHz | Ninguno | USB de la laptop |
 
@@ -27,13 +27,10 @@ Parámetros del radio (deben ser iguales en las 3 placas, ya están en el softwa
 | GPS NEO-M8N | VCC / GND | 3.3 V o 5 V según el módulo / GND | Antena del GPS mirando hacia arriba |
 | GPS NEO-M8N | TX del GPS | GPIO5 | La placa recibe aquí |
 | GPS NEO-M8N | RX del GPS | GPIO6 | La placa manda aquí la configuración de vuelo |
-| OpenLog | VCC / GND | 3.3 V / GND | microSD en FAT32 |
-| OpenLog | RXI | GPIO4 | La placa escribe aquí los datos |
-| OpenLog | TXO | GPIO41 | Para saber si el OpenLog está vivo |
 | Servo de desacople (SG90) | Rojo / Café | 5 V del MP1584EN / GND | Nunca del 3.3 V de la placa |
 | Servo de desacople (SG90) | Naranja (señal) | GPIO2 | |
 | Servo del autogiro (SG90) | Rojo / Café | 5 V del MP1584EN / GND | |
-| Servo del autogiro (SG90) | Naranja (señal) | GPIO3 | |
+| Servo del autogiro (SG90) | Naranja (señal) | GPIO4 | |
 | Pila 9 V (medición) | Divisor 100 kΩ / 33 kΩ | GPIO7 | No aparece en el PDR; ver sección 4 |
 | Buzzer activo (opcional) | + / - | GPIO42 / GND | Para encontrar el CanSat en el pasto |
 | Radio SX1262 | Interno | GPIO 8 a 14 | Ya viene conectado. Antena IPEX de 915 MHz |
@@ -48,7 +45,7 @@ Capacitor de 470 µF entre 5 V y GND junto a los servos.
 Pila 9V -- interruptor --+--> MP1584EN ajustado a 5.0 V --+--> pin 5V de la Heltec
                          |                                +--> servo de desacople
                          |                                +--> servo del autogiro (470 uF junto)
-                         |                                +--> AMS1117-3.3 --> GY-91, NEO-M8N, OpenLog
+                         |                                +--> AMS1117-3.3 --> GY-91, NEO-M8N
                          +--> 100 kOhm --+-- GPIO7
                                        33 kOhm
                                          +-- GND
@@ -100,13 +97,7 @@ La secundaria transmite su posición cada 2 segundos. El C3 se programa por su U
 11. La antena debe quedar dentro del cilindro, vertical, lejos de la pila y de los cables de
     los servos.
 12. Entregar la segunda Heltec V3 (receptor de la estación terrena) a Control y programación.
-13. Preparar la microSD del OpenLog: formatearla en FAT32 y crear en la raíz un archivo
-    llamado `config.txt` con este contenido exacto (deja el OpenLog a 115200 baudios):
-
-```
-115200,26,3,0,1,1,0
-baud,escape,esc#,mode,verb,echo,ignoreRX
-```
+13. ~~Preparar la microSD del OpenLog~~: ya no aplica, se vuela sin OpenLog.
 
 ## 5. Mecánica
 
@@ -143,7 +134,7 @@ Una sola reunión con el CanSat abierto, en este orden:
 1. Electrónica mide voltajes (pila, 5 V, 3.3 V) y que no haya cortos.
 2. Control y programación prueba que las dos Heltec se comuniquen (receptor y primaria).
 3. Control y programación corre el autodiagnóstico. El programa revisa cada módulo (GY-91,
-   barómetro, IMU, brújula, radio, GPS, OpenLog, pila) y al final imprime la lista "QUE
+   barómetro, IMU, brújula, radio, GPS, pila) y al final imprime la lista "QUE
    ARREGLAR" con la pieza y el cable exactos. Electrónica corrige y la prueba se repite sola
    cada 10 segundos. El resumen también sale en la pantalla de la Heltec.
 4. Se prueba la secundaria: su baliza debe aparecer en el panel de la estación terrena.
@@ -160,7 +151,7 @@ Una sola reunión con el CanSat abierto, en este orden:
 | P2 Sensores | Quieto 10 s, luego girarlo 30 s, luego subirlo un piso | Altitud con ruido menor a 0.5 m, aceleración 1.00 ± 0.05 g, subir 3 m se ve como 3 m, rumbo ± 15 grados |
 | P3 Alcance LoRa | CanSat cerrado, alejarse 100, 250, 500, 750 y 1000 m | A 1 km: menos de 10 % de paquetes perdidos y señal mejor que -115 dBm. Grabar video |
 | P4 Autonomía | Pila nueva transmitiendo sin parar | 60 minutos o más (el PDR pide 30 min) |
-| P4b Registro | Escribir 1000 líneas en el OpenLog | 1000 de 1000 líneas en el archivo |
+| ~~P4b Registro~~ | No aplica: sin OpenLog | — |
 | P5 Autogiro | Soltarlo desde un edificio o puente con permiso | Velocidad estable entre 8 y 12 m/s |
 | P6 Desacople y autogiro | Programa de servos con la secundaria colgando | 20 de 20 liberaciones de cada mecanismo |
 | P7 Impacto | Soltar la carga a unos 10 m/s (desde unos 5 m) con huevo | Huevo intacto en 5 de 5 caídas |
@@ -183,7 +174,7 @@ software supone, hay que avisar antes de la primera prueba para cambiarlo.
 |---|---|
 | ¿El GY-91 que compraron trae brújula (chip AK8963)? Algunos traen MPU6500 sin brújula | Trae brújula. Si no la trae, el vuelo funciona igual pero sin rumbo |
 | ¿El GPS NEO-M8N se alimenta a 3.3 V o a 5 V? ¿Trae antena externa? | Se alimenta del 3.3 V del AMS1117 |
-| ¿Compraron OpenLog o un módulo microSD por SPI? El PDR menciona los dos | OpenLog. Si es módulo SPI, el software también lo soporta pero cambian los pines |
+| ¿Compraron OpenLog o un módulo microSD por SPI? El PDR menciona los dos | **Resuelto 2026-11-24:** ninguno; se vuela sin microSD |
 | ¿Tienen las resistencias de 100 kΩ y 33 kΩ para el divisor? Si usan otros valores, ¿cuáles? | 100 kΩ arriba y 33 kΩ abajo |
 | ¿Va a llevar buzzer cada carga? ¿Es activo (suena solo con voltaje) o pasivo? | Buzzer activo que suena con HIGH, opcional |
 | ¿La pila de 9 V es alcalina o recargable? | Alcalina: aviso de pila baja en 7.0 V, mínimo 8.5 V para volar |
@@ -229,5 +220,5 @@ software supone, hay que avisar antes de la primera prueba para cambiarlo.
 | 25 | Estación terrena con RFM95W y ESP32 | Heltec WiFi LoRa 32 V3 |
 | 26 | Batería y TP4056 | Pila de 9 V (el TP4056 es para Li-Po) |
 | 27 | GPS NEO-6M (x2) | NEO-M8N en la primaria y NEO-6M en la secundaria |
-| 8, 10 y 11 | OpenLog y "Módulo MicroSD" mezclados | Definir uno (el software usa OpenLog) |
+| 8, 10 y 11 | OpenLog y "Módulo MicroSD" mezclados | **Resuelto:** ninguno, se vuela sin microSD |
 | 24 | Voltaje de batería con 0.01 V | Agregar el divisor 100k / 33k para poder medirlo |

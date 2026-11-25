@@ -25,8 +25,6 @@
       revisar: 'Mismo cable I2C del GY-91: SDA → GPIO 47, SCL → GPIO 48. Dirección 0x68. Sin IMU no hay orientación ni aceleración.' },
     { bandera: 'lora', nombre: 'Radio LoRa SX1262 de la primaria', falla: 'critico',
       revisar: 'Antena de 915 MHz bien enroscada antes de prender la Heltec. Reinicia la placa (RST).' },
-    { bandera: 'sd', nombre: 'microSD (OpenLog)', falla: 'aviso',
-      revisar: 'OpenLog: GPIO 4 → RXI y TXO → GPIO 41; microSD en FAT32 con config.txt a 115200. Sin ella no queda respaldo del vuelo.' },
     { bandera: 'gps', nombre: 'GPS NEO-M8N de la primaria', falla: 'aviso',
       revisar: 'TX del GPS → GPIO 5 y RX del GPS ← GPIO 6. Necesita cielo abierto 1–2 minutos para tener posición.' },
   ];
@@ -56,10 +54,6 @@
     const sensores = sensoresVigentes
       ? SENSORES.map((s) => ({ nombre: s.nombre, estado: b[s.bandera] ? 'ok' : s.falla, revisar: b[s.bandera] ? '' : s.revisar }))
       : [];
-    if (sensoresVigentes && b.sd && b.sd_sin_confirmar) {
-      sensores.find((s) => s.nombre.startsWith('microSD')).estado = 'aviso';
-      sensores.find((s) => s.nombre.startsWith('microSD')).revisar = 'Se escribe al OpenLog pero no contesta: revisa TXO → GPIO 41, la microSD (FAT32) y config.txt a 115200.';
-    }
     const bat = sensoresVigentes ? bateria(T) : null;
     if (bat) sensores.push({ nombre: 'Pila de 9 V', estado: bat.estado, revisar: bat.revisar, valor: bat.texto });
     if (sensoresVigentes && fuente.modo === 'serie' && b.simulacion) {

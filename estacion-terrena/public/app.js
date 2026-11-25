@@ -16,6 +16,10 @@ const $ = (id) => document.getElementById(id);
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const ESTADOS = ['Prevuelo', 'Ascenso', 'Caída libre', 'Descenso autogiro', 'Aterrizado'];
 const MAX_PUNTOS = 8000;
+// Alturas de la misión: deben coincidir con firmware/primaria/include/config.h.
+// 2026-11-24: el dron sube a 100 m y el desacople es a 80 m.
+const MISION = { liberacion: 100, armado: 90, desacople: 80, tolerancia: 10, escala: 100 };
+window.MISION = MISION;
 const MAX_CONSOLA = 400;
 
 const fmt = (v, d = 1) => {
@@ -232,8 +236,8 @@ function procesarEvento(d, t, msg) {
       if (!S.marcas.desacople) {
         const h = numeroEn(d.detalle, 'h');
         S.marcas.desacople = { t, h, v: numeroEn(d.detalle, 'v'), origen: (d.detalle || '').split(' ')[0], pc: ahora() };
-        if (h !== null && Math.abs(h - 200) > 20) {
-          alerta('des-altura', 'aviso', `Desacople a ${fmt(h)} m`, 'La misión pide 200 m. Revisa el barómetro o la calibración en tierra.', true);
+        if (h !== null && Math.abs(h - MISION.desacople) > MISION.tolerancia) {
+          alerta('des-altura', 'aviso', `Desacople a ${fmt(h)} m`, `La misión pide ${MISION.desacople} m. Revisa el barómetro o la calibración en tierra.`, true);
         }
       }
       resolverComando('DESACOPLAR', d.detalle);
@@ -343,7 +347,7 @@ function diagnosticar() {
     c.pri = { estado: 'gris', sub: 'Sin telemetría', ayuda: 'Aún no llega ninguna trama T.' };
   } else {
     const criticos = [!b.baro && 'BARO', !b.imu && 'IMU', !b.lora && 'LoRa'].filter(Boolean);
-    const avisos = [!b.sd && 'microSD', !b.gps && 'GPS', b.bateria_baja && 'batería baja'].filter(Boolean);
+    const avisos = [!b.gps && 'GPS', b.bateria_baja && 'batería baja'].filter(Boolean);
     if (criticos.length) c.pri = { estado: 'critico', sub: `Falla: ${criticos.join(', ')}`, ayuda: `Sensores sin respuesta: <b>${criticos.join(', ')}</b>. Corre env:p1_autodiagnostico para ver cuál cable falla.` };
     else if (avisos.length) c.pri = { estado: 'aviso', sub: avisos.join(', '), ayuda: `Revisar: <b>${avisos.join(', ')}</b>. El vuelo funciona, pero se pierde información.` };
     else c.pri = { estado: 'ok', sub: 'Transmitiendo', ayuda: 'Todos los sensores de la primaria responden.' };
@@ -373,14 +377,11 @@ function evaluarAlertas(c) {
   condicion('sin-tele', enVuelo() && hace(S.tPriPc) > 3 && fuente.conectado, 'critico',
     `Sin telemetría de la primaria hace ${Math.round(hace(S.tPriPc))} s`, 'Revisa: ¿primaria apagada, fuera de alcance o frecuencia distinta?');
   const T = S.T;
-  const sinDesacople = T && (T.estado === 1 || T.estado === 2) && T.alt_max >= 250 && T.alt < 180 && !S.marcas.desacople;
-  condicion('no-desacople', sinDesacople, 'critico', '¡No se desacopló a 200 m!', 'Considera el desacople manual (botón rojo, doble clic).');
+  const sinDesacople = T && (T.estado === 1 || T.estado === 2) && T.alt_max >= MISION.armado && T.alt < MISION.desacople - MISION.tolerancia && !S.marcas.desacople;
+  condicion('no-desacople', sinDesacople, 'critico', `¡No se desacopló a ${MISION.desacople} m!`, 'Considera el desacople manual (botón rojo, doble clic).');
   const b = T && T.banderas;
   condicion('s-baro', b && !b.baro, 'critico', 'Barómetro (BMP280) sin respuesta', 'Sin barómetro no hay altitud ni desacople automático.');
   condicion('s-imu', b && !b.imu, 'critico', 'IMU (MPU9250 del GY-91) sin respuesta', 'Sin IMU no hay orientación ni aceleración.');
-  condicion('s-sd', b && !b.sd, 'aviso', 'microSD no detectada', 'No se guardará el respaldo del vuelo en la tarjeta.');
-  condicion('s-sd-conf', b && b.sd && b.sd_sin_confirmar, 'aviso', 'OpenLog sin confirmar',
-    'Se escribe al OpenLog pero no respondió. Revisa el cable TXO -> GPIO41, la microSD (FAT32) y config.txt a 115200.');
   condicion('bat-sin-medir', b && b.bateria_sin_medir && !b.simulacion, 'aviso', 'Voltaje de la pila sin medir',
     'Falta el divisor 100k/33k hacia GPIO7. Mide la pila con multímetro antes del vuelo (mínimo 8.5 V).');
   const sinAutogiro = S.marcas.desacople && !S.marcas.autogiro && hace(S.marcas.desacople.pc) > 2;
@@ -458,7 +459,6 @@ function dibujarSalud(c) {
   const tiles = [
     ['BARO', 'i-baro', b ? (b.baro ? 'ok' : 'critico') : 'gris'],
     ['IMU', 'i-imu', b ? (b.imu ? 'ok' : 'critico') : 'gris'],
-    ['microSD', 'i-sd', b ? (b.sd ? 'ok' : 'aviso') : 'gris'],
     ['LoRa', 'i-receptor', b ? (b.lora ? 'ok' : 'critico') : 'gris'],
     ['GPS', 'i-gps', b ? (b.gps ? 'ok' : 'aviso') : 'gris'],
     ['Baliza', 'i-baliza', !Number.isFinite(edadSec) ? 'gris' : (edadSec > 15 ? 'critico' : (edadSec > 5 || (S.B && S.B.fix === 0) ? 'aviso' : 'ok'))],
@@ -539,25 +539,33 @@ function planRestante() {
   const T = S.T;
   const ult = S.perfil[S.perfil.length - 1];
   if (!T || !ult) {
-    return [[0, 0], [10, 0], [40, 450], [45, 450], [54, 200], [74, 0], [80, 0]];
+    return planDesde(0, 0, 0);
   }
   let t = ult.t, h = ult.alt;
   const pts = [[t, h]];
-  if (T.estado === 0) { pts.push([t + 5, 0], [t + 35, 450], [t + 40, 450], [t + 49, 200], [t + 69, 0]); return pts; }
-  if (T.estado === 1) {
-    const v = T.vel > 1 ? T.vel : 5;
-    if (h < 445) { t += (450 - h) / v; h = 450; pts.push([t, h]); }
-    t += 5; pts.push([t, 450]);
-    t += 9; pts.push([t, 200]);
-    t += 20; pts.push([t, 0]);
-    return pts;
-  }
+  if (T.estado === 0) return planDesde(t, h, 0);
+  if (T.estado === 1) return planDesde(t, h, 1, T.vel > 1 ? T.vel : 5);
   if (T.estado === 2) {
-    if (h > 200) { t += (h - 200) / 30; pts.push([t, 200]); h = 200; }
+    const des = MISION.desacople;
+    if (h > des) { t += Math.sqrt((2 * (h - des)) / 9.8); pts.push([t, des]); h = des; }
     t += h / 10; pts.push([t, 0]);
     return pts;
   }
   if (T.estado === 3 && h > 0.5) { pts.push([t + h / 10, 0]); return pts; }
+  return pts;
+}
+
+// Plan esperado: subida con el dron, espera, caída libre hasta el desacople y
+// descenso con autogiro a ~10 m/s.
+function planDesde(t, h, estado, vSubida = 5) {
+  const { liberacion: lib, desacople: des } = MISION;
+  const pts = [[t, h]];
+  if (estado === 0) { t += 10; pts.push([t, 0]); h = 0; }
+  if (h < lib - 2) { t += (lib - h) / vSubida; pts.push([t, lib]); }
+  t += 5; pts.push([t, lib]);
+  t += Math.sqrt((2 * (lib - des)) / 9.8); pts.push([t, des]);
+  t += des / 10; pts.push([t, 0]);
+  t += 6; pts.push([t, 0]);
   return pts;
 }
 
@@ -569,12 +577,13 @@ function dibujarPerfil() {
   el.textContent = '';
   const plan = planRestante();
   const tFin = Math.max(plan[plan.length - 1][0], S.perfil.length ? S.perfil[S.perfil.length - 1].t : 0, 60);
-  const hMax = Math.max(500, S.T ? S.T.alt_max * 1.1 : 0);
+  const hMax = Math.max(MISION.escala, S.T ? S.T.alt_max * 1.1 : 0);
   const mL = 40, mR = 10, mT = 10, mB = 20;
   const x = (t) => mL + (t / tFin) * (W - mL - mR);
   const y = (h) => mT + (1 - clamp(h, -20, hMax) / hMax) * (H - mT - mB);
 
-  [0, 200, 400].concat(hMax >= 600 ? [600] : []).forEach((h) => {
+  const pasoH = hMax > 300 ? 200 : hMax > 150 ? 50 : 25;
+  Array.from({ length: Math.floor(hMax / pasoH) + 1 }, (_, i) => i * pasoH).forEach((h) => {
     el.append(svg('line', { class: 'rej', x1: mL, x2: W - mR, y1: y(h), y2: y(h) }));
     el.append(svg('text', { class: 'eje', x: mL - 6, y: y(h) + 4, 'text-anchor': 'end' }, String(h)));
   });
@@ -645,16 +654,17 @@ function dibujarFases() {
 function dibujarCinta() {
   const el = $('cinta');
   el.textContent = '';
-  const y = (h) => 178 - (clamp(h, 0, 500) / 500) * 166;
-  for (let h = 0; h <= 500; h += 100) {
+  const E = MISION.escala, PASO = E <= 150 ? 20 : E / 5;
+  const y = (h) => 178 - (clamp(h, 0, E) / E) * 166;
+  for (let h = 0; h <= E; h += PASO) {
     el.append(svg('text', { class: 'c-eje', x: 24, y: y(h) + 4, 'text-anchor': 'end' }, String(h)));
     el.append(svg('line', { class: 'c-rej', x1: 28, x2: 50, y1: y(h), y2: y(h) }));
   }
-  for (let h = 50; h < 500; h += 100) el.append(svg('line', { class: 'c-rej', x1: 30, x2: 36, y1: y(h), y2: y(h) }));
-  el.append(svg('rect', { class: 'c-tubo', x: 32, y: y(500), width: 12, height: y(0) - y(500), rx: 6 }));
+  for (let h = PASO / 2; h < E; h += PASO) el.append(svg('line', { class: 'c-rej', x1: 30, x2: 36, y1: y(h), y2: y(h) }));
+  el.append(svg('rect', { class: 'c-tubo', x: 32, y: y(E), width: 12, height: y(0) - y(E), rx: 6 }));
   const alt = S.T ? S.T.alt : 0;
   el.append(svg('rect', { class: 'c-lleno', x: 33, y: y(alt), width: 10, height: Math.max(0, y(0) - y(alt)), rx: 5 }));
-  [[450, 'c-lib', 'c-txt-lib', 'Liberación'], [200, 'c-des', 'c-txt-des', 'Desacople']].forEach(([h, cl, ct, t]) => {
+  [[MISION.liberacion, 'c-lib', 'c-txt-lib', 'Liberación'], [MISION.desacople, 'c-des', 'c-txt-des', 'Desacople']].forEach(([h, cl, ct, t]) => {
     el.append(svg('line', { class: `c-marca ${cl}`, x1: 46, x2: 70, y1: y(h), y2: y(h) }));
     el.append(svg('text', { class: ct, x: 74, y: y(h) - 2 }, t));
     el.append(svg('text', { class: ct, x: 74, y: y(h) + 12 }, `${h} m`));
@@ -824,7 +834,7 @@ function crearGrafica(id, series, extra = [], ejeY = {}) {
   });
 }
 graficas = {
-  alt: crearGrafica('gAlt', [{ nombre: 'Altitud (m)', datos: S.series.alt }], [], { suggestedMin: 0, suggestedMax: 500 }),
+  alt: crearGrafica('gAlt', [{ nombre: 'Altitud (m)', datos: S.series.alt }], [], { suggestedMin: 0, suggestedMax: MISION.escala }),
   vel: crearGrafica('gVel', [{ nombre: 'Velocidad (m/s)', datos: S.series.vel }], [bandaAutogiro], { suggestedMin: -40, suggestedMax: 20 }),
   acel: crearGrafica('gAcel', [
     { nombre: 'ax', datos: S.series.ax }, { nombre: 'ay', datos: S.series.ay }, { nombre: 'az', datos: S.series.az },
@@ -902,11 +912,11 @@ function itemsRequisitos() {
   it('Telemetría en tiempo real', T ? (vivo ? 'ok' : 'falla') : 'pendiente', T ? `${S.enlace.primaria.rec} paq.` : '');
   it('Velocidad en todo el trayecto', T && T.estado >= 1 ? 'ok' : 'pendiente');
   it('Altura máxima', T && T.estado >= 2 ? 'ok' : 'pendiente', T && T.estado >= 2 ? `${fmt(T.alt_max)} m` : '');
-  it('Liberación desde 450 m', S.marcas.liberacion ? 'ok' : 'pendiente', S.marcas.liberacion ? `${fmt(S.marcas.liberacion.h)} m` : '');
+  it(`Liberación desde ${MISION.liberacion} m`, S.marcas.liberacion ? 'ok' : 'pendiente', S.marcas.liberacion ? `${fmt(S.marcas.liberacion.h)} m` : '');
   if (S.marcas.desacople) {
     const h = S.marcas.desacople.h;
-    it('Desacople a 200 m', h !== null && Math.abs(h - 200) <= 20 ? 'ok' : 'falla', `${fmt(h)} m ${String(S.marcas.desacople.origen || '').toLowerCase()}`);
-  } else it('Desacople a 200 m', 'pendiente');
+    it(`Desacople a ${MISION.desacople} m`, h !== null && Math.abs(h - MISION.desacople) <= MISION.tolerancia ? 'ok' : 'falla', `${fmt(h)} m ${String(S.marcas.desacople.origen || '').toLowerCase()}`);
+  } else it(`Desacople a ${MISION.desacople} m`, 'pendiente');
   if (S.velsDescenso.length > 10) {
     const prom = Math.abs(S.velsDescenso.reduce((a, b) => a + b, 0) / S.velsDescenso.length);
     it('Descenso 8–12 m/s', prom >= 8 && prom <= 12 ? 'ok' : 'falla', `prom. ${fmt(prom)}`);
@@ -928,7 +938,6 @@ function itemsPrevuelo(c) {
   it('Paquetes llegando', hace(S.tPriPc) < 3, S.tPriPc ? `hace ${fmt(hace(S.tPriPc))} s` : 'sin datos');
   it('BARO', b && b.baro);
   it('IMU', b && b.imu);
-  it('microSD', b && b.sd);
   it('LoRa', b && b.lora);
   it('GPS primaria', b && b.gps);
   it('Baliza secundaria con GPS', edadSecundaria() < 5 && S.B && S.B.fix === 1, S.B ? `${S.B.sats} sat` : '');
@@ -1079,7 +1088,7 @@ function dibujarTodo() {
   $('reloj').textContent = fuente.conectado && wsAbierto && Number.isFinite(edadPaquete)
     ? `${fmt(edadPaquete)} s` : 'SIN DATOS';
   $('reloj').classList.toggle('atrasado', fuente.conectado && wsAbierto && edadPaquete > 3);
-  $('respuesta').textContent = S.respuesta || (comandoPendiente ? `Enviado ${comandoPendiente.orden}… esperando respuesta` : 'El desacople es automático a 200 m; el manual es solo respaldo.');
+  $('respuesta').textContent = S.respuesta || (comandoPendiente ? `Enviado ${comandoPendiente.orden}… esperando respuesta` : `El desacople es automático a ${MISION.desacople} m; el manual es solo respaldo.`);
   $('pieFuente').textContent = fuente.archivoLog ? `Registro: logs/${fuente.archivoLog}.txt` : '';
   $('btnConectar').classList.toggle('activo', fuente.conectado && fuente.modo === 'serie');
   $('btnSim').classList.toggle('activo', fuente.conectado && fuente.modo === 'simulacion');

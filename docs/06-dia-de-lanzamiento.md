@@ -7,7 +7,6 @@ El **líder** engancha el CanSat al dron; el resto opera la estación terrena.
 
 - [ ] Firmware final subido: primaria `env:primaria` (¡no `primaria_sim`!), secundaria, receptor.
 - [ ] Pilas de 9 V **nuevas** (y 2 de repuesto) — no usar las de las pruebas.
-- [ ] microSD formateada en FAT32 con `config.txt` del OpenLog (115200) dentro de la primaria.
 - [ ] Laptop cargada, cargador, extensión. `npm install` ya hecho (en la cancha no hay internet).
 - [ ] Cable USB **de datos** para el receptor (+ uno de repuesto).
 - [ ] Ensayo con `npm run simular` y con `env:primaria_sim`: todos saben qué mirar y qué botón NO tocar.
@@ -56,6 +55,6 @@ El **líder** engancha el CanSat al dron; el resto opera la estación terrena.
 - [ ] Recuperar ambas cargas (buzzer + brújula de la secundaria).
 - [ ] Entregar los 2 huevos a los jueces.
 - [ ] Anotar: estado de los huevos, distancia al centro del blanco de 3 m.
-- [ ] Copiar `estacion-terrena/logs/` y el `LOGxxxxx.TXT` del OpenLog a una USB y a GitHub.
+- [ ] Copiar `estacion-terrena/logs/` a una USB y a GitHub (es el único registro: no hay microSD).
 - [ ] `python herramientas/analisis_vuelo.py ...` → tabla y gráficas para el RAM.
 - [ ] Entregar **PEU-MC2024-RAM-EQUIPO.pdf** antes de **7 horas** después del aterrizaje.

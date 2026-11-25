@@ -24,7 +24,7 @@ class Simulador extends EventEmitter {
     this.clave = clave;
     this.ultimoContador = 0;
     this.p = {
-      tEsperaInicial: 10, velocidadSubida: 15, alturaLiberacion: 450, tEsperaArriba: 5,
+      tEsperaInicial: 10, velocidadSubida: 15, alturaLiberacion: 100, tEsperaArriba: 5,
       vTerminalCaida: 37, vTerminalAutogiro: 10, presionTierra: 96300,
       lat: 25.1936, lon: -99.8416, viento: 2.0,
     };
@@ -103,7 +103,7 @@ class Simulador extends EventEmitter {
         a = this._arrastre(this.v, this.p.vTerminalCaida);
         this.v += a * dt;
         this.h += this.v * dt;
-        if (!this.desacople && this.h <= 200 && this.altMax >= 250) this._desacoplar('AUTO');
+        if (!this.desacople && this.h <= 80 && this.altMax >= 90) this._desacoplar('AUTO');
         break;
       case 'AUTOGIRO':
         a = this._arrastre(this.v, this.p.vTerminalAutogiro);

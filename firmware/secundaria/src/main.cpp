@@ -15,6 +15,7 @@
 // =============================================================================
 #include <Arduino.h>
 #include <TinyGPS++.h>
+#include <esp_task_wdt.h>
 #include <ZenitRadio.h>
 
 #include "ZenitComun.h"
@@ -56,6 +57,9 @@ static void enviarBaliza() {
   if (protocolo::enmarcar(carga, trama, sizeof(trama)) == 0) return;
   Serial.print("USB,");
   Serial.println(trama);
+  // Sin este flush el USB nativo del C3 deja de mandar texto después de la
+  // primera baliza (la radio sí seguía transmitiendo). Probado el 2026-11-24.
+  Serial.flush();
   led(true);
   enlace.enviar(trama);  // ~60 ms en el aire
   led(false);
@@ -76,11 +80,12 @@ void setup() {
   puertoGps.write(ubxMsg, ubx::mensajeModeloDinamico(ubx::MODELO_AEREO_1G, ubxMsg, sizeof(ubxMsg)));
 #endif
   enlace.iniciarRfm95(c3::LORA_SCK, c3::LORA_MISO, c3::LORA_MOSI, c3::LORA_NSS, c3::LORA_RST,
-                      c3::LORA_DIO0);
+                      c3::LORA_DIO0, POTENCIA_SECUNDARIA_DBM);
   delay(500);  // dar tiempo a que abra el monitor serie USB
   Serial.printf("INFO,ZENIT_SECUNDARIA,lora=%d,chip=%s,err=%d(%s),freq=%.1f\n", enlace.ok(),
                 enlace.chip(), enlace.error(), zradio::textoError(enlace.error()),
                 radio::FRECUENCIA_MHZ);
+  Serial.flush();
   // 2 pitidos = listo; 1 largo = falla la radio
   for (int i = 0; i < (enlace.ok() ? 2 : 1); ++i) {
     buzzer(true);
@@ -91,9 +96,15 @@ void setup() {
     delay(80);
   }
   randomSeed(esp_random());
+  // Perro guardián: si el programa se traba más de 5 s (por ejemplo por una
+  // caída de voltaje al transmitir), el chip se reinicia solo y sigue mandando
+  // la baliza. No arregla la alimentación, pero evita que quede muda en vuelo.
+  esp_task_wdt_init(5, true);
+  esp_task_wdt_add(NULL);
 }
 
 void loop() {
+  esp_task_wdt_reset();
   while (puertoGps.available()) gps.encode(puertoGps.read());
 
   const uint32_t ahora = millis();
